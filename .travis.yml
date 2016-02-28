@@ -9,8 +9,6 @@ rust:
 
 env:
   global:
-    # GH_TOKEN=...
-    - secure: "hbB6EhELjgI79FKuov4M11ZWiIIZLyOikV+gcE9KpoedLgHbnhSgpbSBlMZ6QFbsXKNAFX7uHlnNkweqJB+pMHYCL8qL9Vxu4vFd1YRyexJSRo7Ly9T7U0aFYR7XCIboCwu26BKqWRPioWL/3W+e0dFctPDZ9Fp1dlFOGZKW1aAMC15r0ekFY0z7lvY4ph2eA45EygKyYnM3t1VAEzk+vq1cRqOL8zRpkB0ydeLkgW0JUWzM+tLdZCou7bsoqwPGEQgx+rUpBSpDEuB5FW0Bbbyhwhc5B1NKVLSTXpwKYY5sVG2YnC4B/hatagLUUpvXb0ncxzFah5rFL/qNZMiP2MB3G6Xn7SBZhapbnYClc7nsBsk8SQlSCKTnq6ypU1/0ZhR/UKhfZK4Yb5+k1TdQ4MeQUj+6elJOKmnIcrUQxGqVxFjuY5WarARjgyDoeG50iXqmVtC0jDdqpHEahIEzCHj79/KIiARsHss3Hm+eblRaWEQZzUzCSFQhoIUH1rzdSJ2twQyEpGpVVTttQjIGVRdhtute98NyvPz6Mk0hE9HO2m/RnYKieI3NG0TUzDkLANFYic/L8YxSek5uoJaZ3MNfEKELYxvZE7rtKm1TyDpwyJEDO7Sx2jSNX7ahqTX+e6a0so93vE+Wt5BlR9R6oVj7v9H9HfsGeTKpiis1Ol8="
     # CRATES_IO_TOKEN=...
     - secure: "FYoav+St+90i6AQzyMw+NJdtktG2UMK7szt7ar88ww7bkkCd9I9qgtqqW6mopzpnguRhBusxoCsmiroFbXVO1R3vSP1ugECUTDCK7x/Tqkc/wa0MOqlmBneG+bZOF3YjiDTfaAIUI8r10RstfRhRwIKgZI3vE/8TEgTGlWW+cZuHaz7U4wesHUY+euuSoLuD7XrlI1N9EBAbHwTtLpfHoONSw8fxVQc0nQ7vTBrC+UQiRZA8oFP7qpJ/9xfsCMWSyVihuSzdHoCRIxCs+rWROBpULAqvPa0vYdxE7oQHPwbaQ8bsv088Mowjaq5Dp8NimodimQsx7D58g/e+INEk9q3dwj/RN0iMgNYqhYv9Wu+vMWNMbvReSHlJtIYWtl2varXQI2hOPC/+6OhfzlAT1hBsrkJjZ6bQ9Yv9NUGNQHNrFvdCKOEvSG3wHNB10mfBB/KSVzB/ya8suEBR07CjzbrzTlH2SUYfSHS5iNbP791kAYp2MyMn69ZajeEZ3iYwwG2lHH2CONB/QiAX6ZDc5J3jM8gmxu2S5QkZkZieBnDZG/OsYjOw7Zka3ktlGW+Khn3RRRsDYMrpAN5qmiEO6vdDP/XcRZw4ERfHQd8A9kEhnhJGOlg6KGyNM0pi7s4IX8VWkbxAmY53HqsyK1eagIVLsxkzCn3GKfVQuufHBBc="
 
@@ -24,7 +22,7 @@ before_deploy:
   # Set up credentials for deploying
   # Decrypt GitHub deploy SSH key
   - mkdir -p ${HOME}/.ssh && touch ${HOME}/.ssh/deploy_key && chmod 0600 ${HOME}/.ssh/deploy_key
-  - openssl aes-256-cbc -K $encrypted_180303504686_key -iv $encrypted_180303504686_iv -in ci/deploy_key.enc -out ${HOME}/.ssh/deploy_key -d
+  - openssl aes-256-cbc -K $encrypted_47ef09588713_key -iv $encrypted_47ef09588713_iv -in ci/deploy_key.enc -out ${HOME}/.ssh/deploy_key -d
   # Make SSH aware of key
   - echo -e "Host github.com\n  IdentityFile ${HOME}/.ssh/deploy_key" >> ${HOME}/.ssh/config
   # Make git push via SSH
@@ -52,9 +50,10 @@ deploy:
   # Deploy crate to GitHub releases
   - provider: releases
     api_key:
-      secure: Ke5lOvpyyl1DvwCYlmbw8MH+mjMH2pnLKm29gJV12UsnLM/b3g0IiffcdQV6nnDGofFq6dvnVurz1EFoWG0IzgRrAMLSyA+V30rXp0AYCYgz4jUIXkJGAQz6OS0nDlE9R4Fnpu6qqHhwJV64ooyAaisIJUTXV7CJMhK5YXQh+MchEKgvwqbCkHUqpW4A9vKrlcZbZjYHF3xUAIwoQr+KO6nf3DVyYZJ4+NjLjZA0d7QNxMgpIqjHR5kvNhaS6fuxrMxuoH3PbmGIkmJInxpA5P4oWGH8Qmh3fQTUO7702zWCdpDwnw9mOBr67QIBfPDOefVQTFfvNOafZsRRQKSmSAvqMPSsJ1nVJNAoccObHp5wswdvSn+iG0SfTuFzUA5egx/h9Xd3jJ6Nt95M1ohvy40nOHhil5SqG9qXEMJVKoaDSL1ocgW59Tu+ZKk/h/jxQp38KDSNXBN/rGLmMWwYmk2QvyCEvMwgK3nPNSKLJ/SoAEf3SpLIWdQWEDArHFW72HaoR33sT58/cE4xHHDA0nuxE5BudBKiaUKXDPWwsmcxvA4usmPC9F45F+//JGXmZAuGgWsGl2DD0mBgfRQ2BBGHE++21xCIn2Vkwt0W0vfAKTjQwqCn2dBewhtuMl67Fz+cZ4aF11RvFAcZIxDFBEMCnvtHRzcx7Kkud4VOYe4=
+      secure: W1xFNaabWUDugVZIVVlfsw5XX9z+eDt3TI43OkQwftlOd1aZLBRa2Bb3WB6hrfSS+aRaRkzOLybYWJSR7e9yXwe2ClKB78Kfs2IhbxXtfw7f73dBBGRJKpF4vLgQ3hbzw0Zoq2VlQB1BgZNGAb3IxC9YHeEooLzhxFmfmqB68DPtSsgCW664X1EK7cmKrz6q/FqY9roPrfDjwXHuYROtXSB7axSoZFGPkS3kNSGKj04+/ZEKxrUdG+aAL03aHuxcWXu5RBnpREwYMoNbTcBdxv/hIVM9nxBAw1SUEXldJ6v3JuPDdutTy3NNV6zBdZR9yfpBrEbdDtvfpyStTso/0CDiHawpotKKpfEWChuz0rxsiGPVGKWICPHn5YcIMLD4DnfLjXE7cyyKS8ca9sfJbUb+2BvCdF87yiQ5PflaLgvMx5hb+tu2joCrzvVFE8T2xmipi9ka/n348mF1Vvlkz6gMnBX4ZznJpK5KJIPSPfcr2tQp+yFEUVJnnfBYWr8wT+Z76Z1Qd0XddDwKCr/2jJmj52SO/JeqNB8nbmsu1csyCRvda8+TDSMEOzKq96ajQ6jgTvXPb3S8k/2yTjyNBgL7mwvTXBcrVL0lfzmcMTZdC4a9evtPCZytziww2aA08SLWae8OTrtitn4xiiLUNeShpj6D2M23NdL6BB6CUQA=
     file: target/package/accurate-${TRAVIS_TAG}.crate
     skip_cleanup: true
     on:
+      repo: bsteinb/accurate
       tags: true
       condition: "${TRAVIS_RUST_VERSION} = stable"
