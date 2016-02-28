@@ -2,4 +2,4 @@
 
 set -e
 
-cargo publish
+cargo publish -v

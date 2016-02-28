@@ -28,7 +28,7 @@ before_deploy:
   # Make git push via SSH
   - git remote set-url origin git@github.com:bsteinb/accurate.git
   # Login to cates.io
-  - cargo login "${CRATES_IO_TOKEN}"
+  - cargo login -v "${CRATES_IO_TOKEN}"
   # Build crate
   - cargo package -v
 
