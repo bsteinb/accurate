@@ -1,9 +1,11 @@
-#![deny(missing_docs)]
-
 //! A collection of (more or less) accurate floating point algorithms
 
 #![cfg_attr(feature = "unstable", feature(op_assign_traits))]
 #![cfg_attr(feature = "unstable", feature(augmented_assignments))]
+
+#![cfg_attr(all(test, feature = "unstable"), feature(test))]
+
+#![deny(missing_docs)]
 
 extern crate ieee754;
 extern crate num;
@@ -1014,4 +1016,114 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
             self.i = 2 * 2.pow(F::exponent_length());
         }
     }
+}
+
+#[cfg(test)]
+extern crate rand;
+
+#[cfg(all(test, feature = "unstable"))]
+extern crate test;
+
+#[cfg(all(test, feature = "unstable"))]
+mod benches {
+    use std::ops::AddAssign;
+
+    use test::{self, Bencher};
+
+    use num::Float;
+
+    use rand::{self, Rand, Rng};
+
+    use super::*;
+
+    const N: usize = 10_000;
+
+    fn mk_vec<T>(n: usize) -> Vec<T>
+        where T: Rand
+    {
+        let mut rng = rand::thread_rng();
+        rng.gen_iter::<T>().take(n).collect()
+    }
+
+    fn regular_add<F>(b: &mut Bencher)
+        where F: Float + Rand
+    {
+        let d = mk_vec::<F>(N);
+        b.iter(|| {
+            let mut s = F::zero();
+            for &x in &d {
+                s = s + x;
+            }
+            test::black_box(s);
+        });
+    }
+    #[bench] fn regular_add_f32(b: &mut Bencher) { regular_add::<f32>(b); }
+    #[bench] fn regular_add_f64(b: &mut Bencher) { regular_add::<f64>(b); }
+
+    fn regular_add_assign<F>(b: &mut Bencher)
+        where F: Float + Rand + AddAssign
+    {
+        let d = mk_vec::<F>(N);
+        b.iter(|| {
+            let mut s = F::zero();
+            for &x in &d {
+                s += x;
+            }
+            test::black_box(s);
+        });
+    }
+    #[bench] fn regular_add_assign_f32(b: &mut Bencher) { regular_add_assign::<f32>(b); }
+    #[bench] fn regular_add_assign_f64(b: &mut Bencher) { regular_add_assign::<f64>(b); }
+
+    fn fold<F>(b: &mut Bencher)
+        where F: Float + Rand
+    {
+        let d = mk_vec::<F>(N);
+        b.iter(|| {
+            let s = d.iter().fold(F::zero(), |acc, &x| acc + x);
+            test::black_box(s);
+        });
+    }
+    #[bench] fn fold_f32(b: &mut Bencher) { fold::<f32>(b); }
+    #[bench] fn fold_f64(b: &mut Bencher) { fold::<f64>(b); }
+
+    fn sum_with<Acc, F>(b: &mut Bencher)
+        where F: Float + Rand,
+              Acc: SumAccumulator<F>
+    {
+        let d = mk_vec::<F>(N);
+        b.iter(|| {
+            let s = d.iter().cloned().sum_with_accumulator::<Acc>();
+            test::black_box(s);
+        });
+    }
+    #[bench] fn sum_with_naive_f32(b: &mut Bencher) { sum_with::<Naive<_>, f32>(b); }
+    #[bench] fn sum_with_naive_f64(b: &mut Bencher) { sum_with::<Naive<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum2_f32(b: &mut Bencher) { sum_with::<Sum2<_>, f32>(b); }
+    #[bench] fn sum_with_sum2_f64(b: &mut Bencher) { sum_with::<Sum2<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum3_f32(b: &mut Bencher) { sum_with::<Sum3<_>, f32>(b); }
+    #[bench] fn sum_with_sum3_f64(b: &mut Bencher) { sum_with::<Sum3<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum4_f32(b: &mut Bencher) { sum_with::<Sum4<_>, f32>(b); }
+    #[bench] fn sum_with_sum4_f64(b: &mut Bencher) { sum_with::<Sum4<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum5_f32(b: &mut Bencher) { sum_with::<Sum5<_>, f32>(b); }
+    #[bench] fn sum_with_sum5_f64(b: &mut Bencher) { sum_with::<Sum5<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum6_f32(b: &mut Bencher) { sum_with::<Sum6<_>, f32>(b); }
+    #[bench] fn sum_with_sum6_f64(b: &mut Bencher) { sum_with::<Sum6<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum7_f32(b: &mut Bencher) { sum_with::<Sum7<_>, f32>(b); }
+    #[bench] fn sum_with_sum7_f64(b: &mut Bencher) { sum_with::<Sum7<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum8_f32(b: &mut Bencher) { sum_with::<Sum8<_>, f32>(b); }
+    #[bench] fn sum_with_sum8_f64(b: &mut Bencher) { sum_with::<Sum8<_>, f64>(b); }
+
+    #[bench] fn sum_with_sum9_f32(b: &mut Bencher) { sum_with::<Sum9<_>, f32>(b); }
+    #[bench] fn sum_with_sum9_f64(b: &mut Bencher) { sum_with::<Sum9<_>, f64>(b); }
+
+    #[bench] fn sum_with_oes_f32(b: &mut Bencher) { sum_with::<OnlineExactSum<_>, f32>(b); }
+    #[bench] fn sum_with_oes_f64(b: &mut Bencher) { sum_with::<OnlineExactSum<_>, f64>(b); }
 }

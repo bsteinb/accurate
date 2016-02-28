@@ -18,3 +18,4 @@ num = "0.1"
 ieee754 = "0.2"
 
 [dev-dependencies]
+rand = "0.3"
