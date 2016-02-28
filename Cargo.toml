@@ -1,0 +1,20 @@
+[package]
+name = "accurate"
+version = "0.1.0"
+authors = ["Benedikt Steinbusch <ben@rockshrub.de>"]
+description = "(more or less) accurate floating point algorithms"
+homepage = "https://github.com/bsteinb/accurate"
+repository = "https://github.com/bsteinb/accurate"
+documentation = "http://bsteinb.github.io/accurate/"
+readme = "README.md"
+keywords = [ "floating-point", "accurate" ]
+license = "MIT OR Apache-2.0"
+
+[features]
+unstable = []
+
+[dependencies]
+num = "0.1"
+ieee754 = "0.2"
+
+[dev-dependencies]
