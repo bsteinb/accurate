@@ -10,9 +10,6 @@ extern crate num;
 
 use std::ops::Add;
 
-#[cfg(feature = "unstable")]
-use std::ops::AddAssign;
-
 use ieee754::Ieee754;
 
 use num::traits::{Float, PrimInt, Zero, One, ToPrimitive};
@@ -948,70 +945,73 @@ impl<I, F> DotWithAccumulator<F> for I
 }
 
 #[cfg(feature = "unstable")]
-mod unstable {
-    impl<F> AddAssign<F> for Naive<F>
-        where F: Float
-    {
-        fn add_assign(&mut self, rhs: F) {
-            self.0 = self.0 + rhs;
-        }
+use std::ops::AddAssign;
+
+#[cfg(feature = "unstable")]
+impl<F> AddAssign<F> for Naive<F>
+    where F: Float
+{
+    fn add_assign(&mut self, rhs: F) {
+        self.0 = self.0 + rhs;
     }
+}
 
-    impl<F, C> AddAssign<F> for SumK<F, C>
-        where F: Float,
-              C: SumAccumulator<F> + AddAssign<F>
-    {
-        fn add_assign(&mut self, rhs: F) {
-            let (x, y) = two_sum(self.s, rhs);
-            self.s = x;
-            self.c += y;
-        }
+#[cfg(feature = "unstable")]
+impl<F, C> AddAssign<F> for SumK<F, C>
+    where F: Float,
+          C: SumAccumulator<F> + AddAssign<F>
+{
+    fn add_assign(&mut self, rhs: F) {
+        let (x, y) = two_sum(self.s, rhs);
+        self.s = x;
+        self.c += y;
     }
+}
 
-    impl<F> AddAssign<F> for OnlineExactSum<F>
-        where F: Float + Ieee754Ext,
-              F::RawExponent: PrimInt
-    {
-        fn add_assign(&mut self, rhs: F) {
-            // Step 4(2)
-            let j = rhs.decompose_raw().1.to_usize().unwrap();
+#[cfg(feature = "unstable")]
+impl<F> AddAssign<F> for OnlineExactSum<F>
+    where F: Float + Ieee754Ext,
+          F::RawExponent: PrimInt
+{
+    fn add_assign(&mut self, rhs: F) {
+        // Step 4(2)
+        let j = rhs.decompose_raw().1.to_usize().unwrap();
 
-            // Step 4(3)
-            let (a, e) = two_sum(self.a1[j], rhs);
-            self.a1[j] = a;
+        // Step 4(3)
+        let (a, e) = two_sum(self.a1[j], rhs);
+        self.a1[j] = a;
 
-            // Step 4(4)
-            self.a2[j] = self.a2[j] + e;
+        // Step 4(4)
+        self.a2[j] = self.a2[j] + e;
 
-            // Step 4(5)
-            self.i += 1;
+        // Step 4(5)
+        self.i += 1;
 
-            // Step 4(6)
-            if self.i >= 2.pow(F::mantissa_length() / 2) {
-                // Step 4(6)(a)
-                let mut b1 = vec![F::zero(); 2.pow(F::exponent_length())];
-                let mut b2 = vec![F::zero(); 2.pow(F::exponent_length())];
+        // Step 4(6)
+        if self.i >= 2.pow(F::mantissa_length() / 2) {
+            // Step 4(6)(a)
+            let mut b1 = vec![F::zero(); 2.pow(F::exponent_length())];
+            let mut b2 = vec![F::zero(); 2.pow(F::exponent_length())];
 
-                // Step 4(6)(b)
-                for &y in self.a1.iter().chain(self.a2.iter()) {
-                    // Step 4(6)(b)(i)
-                    let j = y.decompose_raw().1.to_usize().unwrap();
+            // Step 4(6)(b)
+            for &y in self.a1.iter().chain(self.a2.iter()) {
+                // Step 4(6)(b)(i)
+                let j = y.decompose_raw().1.to_usize().unwrap();
 
-                    // Step 4(6)(b)(ii)
-                    let (b, e) = two_sum(b1[j], y);
-                    b1[j] = b;
+                // Step 4(6)(b)(ii)
+                let (b, e) = two_sum(b1[j], y);
+                b1[j] = b;
 
-                    // Step 4(6)(b)(iii)
-                    b2[j] = b2[j] + e;
-                }
-
-                // Step 4(6)(c)
-                self.a1 = b1;
-                self.a2 = b2;
-
-                // Step 4(6)(d)
-                self.i = 2 * 2.pow(F::exponent_length());
+                // Step 4(6)(b)(iii)
+                b2[j] = b2[j] + e;
             }
+
+            // Step 4(6)(c)
+            self.a1 = b1;
+            self.a2 = b2;
+
+            // Step 4(6)(d)
+            self.i = 2 * 2.pow(F::exponent_length());
         }
     }
 }
