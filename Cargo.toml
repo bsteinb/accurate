@@ -9,6 +9,7 @@ documentation = "http://bsteinb.github.io/accurate/"
 readme = "README.md"
 keywords = [ "floating-point", "accurate" ]
 license = "MIT OR Apache-2.0"
+build = "build.rs"
 
 [features]
 default = [ "parallel" ]
@@ -20,5 +21,9 @@ num = "0.1"
 ieee754 = "0.2"
 rayon = { version = "0.3", optional = true }
 
+[build-dependencies]
+skeptic = "0.4"
+
 [dev-dependencies]
 rand = "0.3"
+skeptic = "0.4"
