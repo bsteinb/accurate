@@ -16,6 +16,12 @@ use ieee754::Ieee754;
 
 use num::traits::{Float, PrimInt, Zero, One, ToPrimitive};
 
+#[cfg(feature = "parallel")]
+use rayon::par_iter::{ParallelIterator};
+
+#[cfg(feature = "parallel")]
+use rayon::par_iter::internal::{Consumer, Folder, Reducer, UnindexedConsumer};
+
 /// Accumulates terms of a sum
 pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> + Default {
     /// The sum of all terms accumulated so far
@@ -834,6 +840,10 @@ impl<F> Default for OnlineExactSum<F>
     }
 }
 
+unsafe impl<F> Send for OnlineExactSum<F>
+    where F: Send
+{}
+
 /// Calculates the dot product using product transformation and `OnlineExactSum`
 ///
 /// ![](https://rockshrub.de/accurate/OnlineExactDot.svg)
@@ -946,6 +956,18 @@ impl<I, F> DotWithAccumulator<F> for I
     }
 }
 
+impl<F> Add for OnlineExactSum<F>
+    where F: Float + Ieee754Ext,
+          F::Significand: PrimInt,
+          F::RawExponent: PrimInt
+{
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        self.absorb(rhs.a1.into_iter().chain(rhs.a2.into_iter()))
+    }
+}
+
 #[cfg(feature = "unstable")]
 use std::ops::AddAssign;
 
@@ -1018,8 +1040,147 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
     }
 }
 
+#[cfg(feature = "parallel")]
+extern crate rayon;
+
+#[cfg(feature = "parallel")]
+impl<F> Folder<F> for OnlineExactSum<F>
+    where F: Float + Ieee754Ext,
+          F::Significand: PrimInt,
+          F::RawExponent: PrimInt
+{
+    type Result = Self;
+
+    fn consume(self, item: F) -> Self {
+        self.add(item)
+    }
+
+    fn complete(self) -> Self::Result {
+        self
+    }
+}
+
+/// Reduce two parallel `OnlineExactSum` computations into one
+#[cfg(feature = "parallel")]
+pub struct OnlineExactSumReducer;
+
+#[cfg(feature = "parallel")]
+impl<F> Reducer<OnlineExactSum<F>> for OnlineExactSumReducer
+    where F: Float + Ieee754Ext,
+          F::Significand: PrimInt,
+          F::RawExponent: PrimInt
+{
+    fn reduce(self, left: OnlineExactSum<F>, right: OnlineExactSum<F>) -> OnlineExactSum<F> {
+        left + right
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<F> Consumer<F> for OnlineExactSum<F>
+    where F: Float + Ieee754Ext + Send,
+          F::Significand: PrimInt,
+          F::RawExponent: PrimInt
+{
+    type Folder = OnlineExactSum<F>;
+    type Reducer = OnlineExactSumReducer;
+    type Result = OnlineExactSum<F>;
+
+    fn cost(&mut self, producer_cost: f64) -> f64 {
+        producer_cost
+    }
+
+    fn split_at(self, _index: usize) -> (Self, Self, Self::Reducer) {
+        (self, OnlineExactSum::default(), OnlineExactSumReducer)
+    }
+
+    fn into_folder(self) -> Self::Folder {
+        OnlineExactSum::default()
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<F> UnindexedConsumer<F> for OnlineExactSum<F>
+    where F: Float + Ieee754Ext + Send,
+          F::Significand: PrimInt,
+          F::RawExponent: PrimInt
+{
+    fn split_off(&self) -> Self {
+        OnlineExactSum::default()
+    }
+
+    fn to_reducer(&self) -> Self::Reducer {
+        OnlineExactSumReducer
+    }
+}
+
+/// TODO
+#[cfg(feature = "parallel")]
+pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
+    where F: Send
+{
+    /// TODO
+    fn parallel_sum_with_accumulator<Acc>(self) -> F
+        where Acc: SumAccumulator<F> + UnindexedConsumer<F, Result = Acc>,
+              Acc::Reducer: Reducer<Acc>
+    {
+        self.drive_unindexed(Acc::default()).sum()
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<T, F> ParallelSumWithAccumulator<F> for T
+    where T: ParallelIterator<Item = F>,
+          F: Send
+{}
+
 #[cfg(test)]
 extern crate rand;
+
+#[cfg(test)]
+mod tests {
+    use rand::{self, Rand, Rng};
+
+    #[cfg(feature = "parallel")]
+    use rayon::prelude::*;
+
+    use super::*;
+
+    fn mk_vec<T>(n: usize) -> Vec<T>
+        where T: Rand
+    {
+        let mut rng = rand::thread_rng();
+        rng.gen_iter::<T>().take(n).collect()
+    }
+
+    #[test]
+    fn oes_add() {
+        let xs = mk_vec::<f64>(100_000);
+        let ys = mk_vec::<f64>(100_000);
+
+        let s = OnlineExactSum::default()
+            .absorb(xs.iter().cloned())
+            .absorb(ys.iter().cloned());
+
+        let s1 = OnlineExactSum::default()
+            .absorb(xs.iter().cloned());
+
+        let s2 = OnlineExactSum::default()
+            .absorb(ys.iter().cloned());
+
+        assert_eq!(s.sum(), (s1 + s2).sum());
+    }
+
+    #[cfg(feature = "parallel")]
+    #[test]
+    fn parallel_sum_oes() {
+        let xs = mk_vec::<f64>(100_000);
+
+        let s1 = xs.par_iter().map(|&x| x).parallel_sum_with_accumulator::<OnlineExactSum<_>>();
+        let s2 = xs.iter().cloned().sum_with_accumulator::<OnlineExactSum<_>>();
+
+        assert_eq!(s1, s2);
+    }
+}
 
 #[cfg(all(test, feature = "unstable"))]
 extern crate test;

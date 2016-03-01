@@ -11,11 +11,14 @@ keywords = [ "floating-point", "accurate" ]
 license = "MIT OR Apache-2.0"
 
 [features]
+default = [ "parallel" ]
 unstable = []
+parallel = [ "rayon" ]
 
 [dependencies]
 num = "0.1"
 ieee754 = "0.2"
+rayon = { version = "0.3", optional = true }
 
 [dev-dependencies]
 rand = "0.3"
