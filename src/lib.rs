@@ -237,7 +237,7 @@ pub type Sum2<F> = SumK<F, Naive<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum3<F> = SumK<F, SumK<F, Naive<F>>>;
+pub type Sum3<F> = SumK<F, Sum2<F>>;
 
 /// SumK with four cascaded accumulators
 ///
@@ -255,7 +255,7 @@ pub type Sum3<F> = SumK<F, SumK<F, Naive<F>>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum4<F> = SumK<F, SumK<F, SumK<F, Naive<F>>>>;
+pub type Sum4<F> = SumK<F, Sum3<F>>;
 
 /// SumK with five cascaded accumulators
 ///
@@ -273,7 +273,7 @@ pub type Sum4<F> = SumK<F, SumK<F, SumK<F, Naive<F>>>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum5<F> = SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>;
+pub type Sum5<F> = SumK<F, Sum4<F>>;
 
 /// SumK with six cascaded accumulators
 ///
@@ -291,7 +291,7 @@ pub type Sum5<F> = SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum6<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>>;
+pub type Sum6<F> = SumK<F, Sum5<F>>;
 
 /// SumK with seven cascaded accumulators
 ///
@@ -309,7 +309,7 @@ pub type Sum6<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum7<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>>>;
+pub type Sum7<F> = SumK<F, Sum6<F>>;
 
 /// SumK with eight cascaded accumulators
 ///
@@ -327,7 +327,7 @@ pub type Sum7<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>>
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum8<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>>>>;
+pub type Sum8<F> = SumK<F, Sum7<F>>;
 
 /// SumK with nine cascaded accumulators
 ///
@@ -345,7 +345,7 @@ pub type Sum8<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum9<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, Naive<F>>>>>>>>>;
+pub type Sum9<F> = SumK<F, Sum8<F>>;
 
 /// Product transformation
 ///
