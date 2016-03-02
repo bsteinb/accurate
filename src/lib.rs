@@ -88,6 +88,7 @@ pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Default {
 /// # References
 ///
 /// From Knuth's AoCP, Volume 2: Seminumerical Algorithms
+#[inline]
 pub fn two_sum<F>(a: F, b: F) -> (F, F)
     where F: Float
 {
@@ -117,6 +118,7 @@ impl<F> Add<F> for Naive<F>
 {
     type Output = Self;
 
+    #[inline]
     fn add(self, rhs: F) -> Self::Output {
         Naive(self.0 + rhs)
     }
@@ -176,6 +178,7 @@ impl<F, C> Add<F> for SumK<F, C>
 {
     type Output = Self;
 
+    #[inline]
     fn add(self, rhs: F) -> Self::Output {
         let (x, y) = two_sum(self.s, rhs);
         SumK { s: x, c: self.c + y }
@@ -363,6 +366,7 @@ pub type Sum9<F> = SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<F, SumK<
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[inline]
 pub fn two_product_fma<F>(a: F, b: F) -> (F, F)
     where F: Float
 {
@@ -401,6 +405,7 @@ impl<F, R> Add<(F, F)> for DotK<F, R>
 {
     type Output = Self;
 
+    #[inline]
     fn add(self, (a, b): (F, F)) -> Self {
         //let (a, b) = ab;
         let (h, r1) = two_product_fma(a, b);
@@ -580,11 +585,13 @@ impl<F> HalfUlp for F
     where F: Float + Ieee754,
           F::Significand: PrimInt
 {
+    #[inline]
     fn is_half_ulp(self) -> bool {
         let (_, _, m) = self.decompose_raw();
         m.count_ones() == 1
     }
 
+    #[inline]
     fn half_ulp(self) -> Self {
         self.ulp().unwrap_or(Self::zero()) / F::one().exp2()
     }
@@ -598,12 +605,14 @@ impl<F> Magnify for F
     where F: Ieee754,
           F::Significand: PrimInt
 {
+    #[inline]
     fn magnify(self) -> Self {
         let (s, e, m) = self.decompose_raw();
         Self::recompose_raw(s, e, m | F::Significand::one())
     }
 }
 
+#[inline]
 fn round3<F>(s0: F, s1: F, tau: F) -> F
     where F: Float + HalfUlp + Magnify
 {
@@ -772,6 +781,7 @@ impl<F> Add<F> for OnlineExactSum<F>
 {
     type Output = Self;
 
+    #[inline(always)]
     fn add(mut self, rhs: F) -> Self::Output {
         // Step 4(2)
         let j = rhs.decompose_raw().1.to_usize().unwrap();
@@ -876,6 +886,7 @@ impl<F> Add<(F, F)> for OnlineExactDot<F>
 {
     type Output = Self;
 
+    #[inline]
     fn add(mut self, (a, b): (F, F)) -> Self::Output {
         let (h, r1) = two_product_fma(a, b);
         self.s = (self.s + h) + r1;
