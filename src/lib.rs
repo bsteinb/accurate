@@ -459,7 +459,7 @@ pub type Dot2<F> = DotK<F, Naive<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot3::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -477,7 +477,7 @@ pub type Dot3<F> = DotK<F, Sum2<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot4::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -495,7 +495,7 @@ pub type Dot4<F> = DotK<F, Sum3<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot5::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -513,7 +513,7 @@ pub type Dot5<F> = DotK<F, Sum4<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot6::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -531,7 +531,7 @@ pub type Dot6<F> = DotK<F, Sum5<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot7::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -549,7 +549,7 @@ pub type Dot7<F> = DotK<F, Sum6<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot8::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -567,7 +567,7 @@ pub type Dot8<F> = DotK<F, Sum7<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot9::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
