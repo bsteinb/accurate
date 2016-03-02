@@ -666,7 +666,7 @@ fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
             let (a, b) = two_sum(st, xs[i]);
             st = a;
             // Step 3(2)(b)
-            if b.abs() != F::zero() {
+            if b != F::zero() {
                 xs[count] = b;
                 // Step 3(2)(b)(i)
                 count = count + 1;
@@ -767,8 +767,8 @@ impl<F> SumAccumulator<F> for OnlineExactSum<F>
     fn sum(&self) -> F {
         // Step 5
         let mut a = Vec::with_capacity(2 * 2.pow(F::exponent_length()));
-        a.extend(self.a1.iter().cloned().filter(|&x| x.abs() != F::zero()));
-        a.extend(self.a2.iter().cloned().filter(|&x| x.abs() != F::zero()));
+        a.extend(self.a1.iter().cloned().filter(|&x| x != F::zero()));
+        a.extend(self.a2.iter().cloned().filter(|&x| x != F::zero()));
 
         // Step 6
         i_fast_sum_in_place(&mut a[..])
