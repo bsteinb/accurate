@@ -1,12 +1,15 @@
 //! A collection of (more or less) accurate floating point algorithms
 
+#![deny(missing_docs)]
+
 #![cfg_attr(feature = "unstable", feature(op_assign_traits))]
 #![cfg_attr(feature = "unstable", feature(augmented_assignments))]
 
-#![deny(missing_docs)]
-
 extern crate ieee754;
 extern crate num;
+
+#[cfg(feature = "parallel")]
+extern crate rayon;
 
 use std::ops::Add;
 
@@ -1048,9 +1051,6 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
         }
     }
 }
-
-#[cfg(feature = "parallel")]
-extern crate rayon;
 
 #[cfg(feature = "parallel")]
 impl<F> Folder<F> for OnlineExactSum<F>
