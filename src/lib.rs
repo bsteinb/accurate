@@ -1141,12 +1141,28 @@ impl<F> UnindexedConsumer<F> for OnlineExactSum<F>
     }
 }
 
-/// TODO
+/// Sums the items of an iterator, possibly in parallel
+///
+/// # Examples
+///
+/// ```
+/// extern crate accurate;
+/// extern crate rayon;
+///
+/// use rayon::prelude::*;
+/// use accurate::*;
+///
+/// fn main() {
+///     let s = vec![1.0, 2.0, 3.0].par_iter().map(|&x| x)
+///         .parallel_sum_with_accumulator::<OnlineExactSum<_>>();
+///     assert_eq!(6.0f64, s);
+/// }
+/// ```
 #[cfg(feature = "parallel")]
 pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
     where F: Send
 {
-    /// TODO
+    /// Sums the items of an iterator, possibly in parallel
     fn parallel_sum_with_accumulator<Acc>(self) -> F
         where Acc: SumAccumulator<F> + UnindexedConsumer<F, Result = Acc>,
               Acc::Reducer: Reducer<Acc>
