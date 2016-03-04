@@ -826,40 +826,61 @@ impl<F> Add<F> for OnlineExactSum<F>
     #[inline(always)]
     fn add(mut self, rhs: F) -> Self::Output {
         // Step 4(2)
-        let j = rhs.raw_exponent();
+        {
+            let j = rhs.raw_exponent();
+            // These accesses are guaranteed to be within bounds, because:
+            debug_assert_eq!(self.a1.len(), F::two_pow_exponent_length());
+            debug_assert_eq!(self.a2.len(), F::two_pow_exponent_length());
+            debug_assert!(j < F::two_pow_exponent_length());
+            let a1 = unsafe { self.a1.get_unchecked_mut(j) };
+            let a2 = unsafe { self.a2.get_unchecked_mut(j) };
 
-        // Step 4(3)
-        let (a, e) = two_sum(self.a1[j], rhs);
-        self.a1[j] = a;
+            // Step 4(3)
+            let (a, e) = two_sum(*a1, rhs);
+            *a1 = a;
 
-        // Step 4(4)
-        self.a2[j] = self.a2[j] + e;
+            // Step 4(4)
+            *a2 = *a2 + e;
+        }
 
         // Step 4(5)
+        // This addition is guaranteed not to overflow because the next step ascertains that (at
+        // this point):
+        debug_assert!(self.i < F::two_pow_mantissa_length_half());
+        // and (for `f32` and `f64`) we have:
+        debug_assert!(F::two_pow_mantissa_length_half() < usize::max_value());
+        // thus we can assume:
+        debug_assert!(self.i.checked_add(1).is_some());
         self.i += 1;
 
         // Step 4(6)
         if self.i >= F::two_pow_mantissa_length_half() {
             // Step 4(6)(a)
-            let mut b1 = vec![F::zero(); F::two_pow_exponent_length()];
-            let mut b2 = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()];
 
             // Step 4(6)(b)
             for &y in self.a1.iter().chain(self.a2.iter()) {
                 // Step 4(6)(b)(i)
                 let j = y.raw_exponent();
+                // These accesses are guaranteed to be within bounds, because:
+                debug_assert_eq!(b1v.len(), F::two_pow_exponent_length());
+                debug_assert_eq!(b2v.len(), F::two_pow_exponent_length());
+                debug_assert!(j < F::two_pow_exponent_length());
+                let b1 = unsafe { b1v.get_unchecked_mut(j) };
+                let b2 = unsafe { b2v.get_unchecked_mut(j) };
 
                 // Step 4(6)(b)(ii)
-                let (b, e) = two_sum(b1[j], y);
-                b1[j] = b;
+                let (b, e) = two_sum(*b1, y);
+                *b1 = b;
 
                 // Step 4(6)(b)(iii)
-                b2[j] = b2[j] + e;
+                *b2 = *b2 + e;
             }
 
             // Step 4(6)(c)
-            self.a1 = b1;
-            self.a2 = b2;
+            self.a1 = b1v;
+            self.a2 = b2v;
 
             // Step 4(6)(d)
             self.i = 2 * F::two_pow_exponent_length();
@@ -1052,40 +1073,61 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
 {
     fn add_assign(&mut self, rhs: F) {
         // Step 4(2)
-        let j = rhs.raw_exponent();
+        {
+            let j = rhs.raw_exponent();
+            // These accesses are guaranteed to be within bounds, because:
+            debug_assert_eq!(self.a1.len(), F::two_pow_exponent_length());
+            debug_assert_eq!(self.a2.len(), F::two_pow_exponent_length());
+            debug_assert!(j < F::two_pow_exponent_length());
+            let a1 = unsafe { self.a1.get_unchecked_mut(j) };
+            let a2 = unsafe { self.a2.get_unchecked_mut(j) };
 
-        // Step 4(3)
-        let (a, e) = two_sum(self.a1[j], rhs);
-        self.a1[j] = a;
+            // Step 4(3)
+            let (a, e) = two_sum(*a1, rhs);
+            *a1 = a;
 
-        // Step 4(4)
-        self.a2[j] = self.a2[j] + e;
+            // Step 4(4)
+            *a2 = *a2 + e;
+        }
 
         // Step 4(5)
+        // This addition is guaranteed not to overflow because the next step ascertains that (at
+        // this point):
+        debug_assert!(self.i < F::two_pow_mantissa_length_half());
+        // and (for `f32` and `f64`) we have:
+        debug_assert!(F::two_pow_mantissa_length_half() < usize::max_value());
+        // thus we can assume:
+        debug_assert!(self.i.checked_add(1).is_some());
         self.i += 1;
 
         // Step 4(6)
         if self.i >= F::two_pow_mantissa_length_half() {
             // Step 4(6)(a)
-            let mut b1 = vec![F::zero(); F::two_pow_exponent_length()];
-            let mut b2 = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()];
 
             // Step 4(6)(b)
             for &y in self.a1.iter().chain(self.a2.iter()) {
                 // Step 4(6)(b)(i)
                 let j = y.raw_exponent();
+                // These accesses are guaranteed to be within bounds, because:
+                debug_assert_eq!(b1v.len(), F::two_pow_exponent_length());
+                debug_assert_eq!(b2v.len(), F::two_pow_exponent_length());
+                debug_assert!(j < F::two_pow_exponent_length());
+                let b1 = unsafe { b1v.get_unchecked_mut(j) };
+                let b2 = unsafe { b2v.get_unchecked_mut(j) };
 
                 // Step 4(6)(b)(ii)
-                let (b, e) = two_sum(b1[j], y);
-                b1[j] = b;
+                let (b, e) = two_sum(*b1, y);
+                *b1 = b;
 
                 // Step 4(6)(b)(iii)
-                b2[j] = b2[j] + e;
+                *b2 = *b2 + e;
             }
 
             // Step 4(6)(c)
-            self.a1 = b1;
-            self.a2 = b2;
+            self.a1 = b1v;
+            self.a2 = b2v;
 
             // Step 4(6)(d)
             self.i = 2 * F::two_pow_exponent_length();
