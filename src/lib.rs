@@ -1080,7 +1080,7 @@ impl<F> Folder<F> for OnlineExactSum<F>
     type Result = Self;
 
     fn consume(self, item: F) -> Self {
-        self.add(item)
+        self + item
     }
 
     fn complete(self) -> Self::Result {
@@ -1122,7 +1122,7 @@ impl<F> Consumer<F> for OnlineExactSum<F>
     }
 
     fn into_folder(self) -> Self::Folder {
-        OnlineExactSum::default()
+        self
     }
 }
 
