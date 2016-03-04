@@ -744,16 +744,38 @@ pub trait Ieee754Ext: Ieee754 {
     fn mantissa_length() -> u32;
     /// The length of the number format's exponent field in bits
     fn exponent_length() -> u32;
+
+    /// Two raised to the power of the exponent`s length
+    fn two_pow_exponent_length() -> usize {
+        2.pow(Self::exponent_length())
+    }
+    /// Two raised to the power of half the mantissa`s length
+    fn two_pow_mantissa_length_half() -> usize {
+        2.pow(Self::mantissa_length() / 2)
+    }
+
+    /// The raw bits of the exponent
+    fn raw_exponent(self) -> usize
+        where Self::RawExponent: PrimInt
+    {
+        self.decompose_raw().1.to_usize().expect("IEEE754 exponent should fit in a usize.")
+    }
 }
 
 impl Ieee754Ext for f32 {
     fn mantissa_length() -> u32 { 24 }
     fn exponent_length() -> u32 { 8 }
+
+    fn two_pow_exponent_length() -> usize { 256 }
+    fn two_pow_mantissa_length_half() -> usize { 4096 }
 }
 
 impl Ieee754Ext for f64 {
     fn mantissa_length() -> u32 { 53 }
     fn exponent_length() -> u32 { 11 }
+
+    fn two_pow_exponent_length() -> usize { 2048 }
+    fn two_pow_mantissa_length_half() -> usize { 67108864 }
 }
 
 /// Calculates a sum using separate accumulators for each possible exponent
@@ -786,7 +808,7 @@ impl<F> SumAccumulator<F> for OnlineExactSum<F>
 {
     fn sum(&self) -> F {
         // Step 5
-        let mut a = Vec::with_capacity(2 * 2.pow(F::exponent_length()));
+        let mut a = Vec::with_capacity(2 * F::two_pow_exponent_length());
         a.extend(self.a1.iter().cloned().filter(|&x| x != F::zero()));
         a.extend(self.a2.iter().cloned().filter(|&x| x != F::zero()));
 
@@ -804,7 +826,7 @@ impl<F> Add<F> for OnlineExactSum<F>
     #[inline(always)]
     fn add(mut self, rhs: F) -> Self::Output {
         // Step 4(2)
-        let j = rhs.decompose_raw().1.to_usize().unwrap();
+        let j = rhs.raw_exponent();
 
         // Step 4(3)
         let (a, e) = two_sum(self.a1[j], rhs);
@@ -817,15 +839,15 @@ impl<F> Add<F> for OnlineExactSum<F>
         self.i += 1;
 
         // Step 4(6)
-        if self.i >= 2.pow(F::mantissa_length() / 2) {
+        if self.i >= F::two_pow_mantissa_length_half() {
             // Step 4(6)(a)
-            let mut b1 = vec![F::zero(); 2.pow(F::exponent_length())];
-            let mut b2 = vec![F::zero(); 2.pow(F::exponent_length())];
+            let mut b1 = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b2 = vec![F::zero(); F::two_pow_exponent_length()];
 
             // Step 4(6)(b)
             for &y in self.a1.iter().chain(self.a2.iter()) {
                 // Step 4(6)(b)(i)
-                let j = y.decompose_raw().1.to_usize().unwrap();
+                let j = y.raw_exponent();
 
                 // Step 4(6)(b)(ii)
                 let (b, e) = two_sum(b1[j], y);
@@ -840,7 +862,7 @@ impl<F> Add<F> for OnlineExactSum<F>
             self.a2 = b2;
 
             // Step 4(6)(d)
-            self.i = 2 * 2.pow(F::exponent_length());
+            self.i = 2 * F::two_pow_exponent_length();
         }
 
         self
@@ -864,8 +886,8 @@ impl<F> Default for OnlineExactSum<F>
         // Steps 1, 2, 3
         OnlineExactSum {
             i: 0,
-            a1: vec![F::zero(); 2.pow(F::exponent_length())],
-            a2: vec![F::zero(); 2.pow(F::exponent_length())]
+            a1: vec![F::zero(); F::two_pow_exponent_length()],
+            a2: vec![F::zero(); F::two_pow_exponent_length()]
         }
     }
 }
@@ -1030,7 +1052,7 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
 {
     fn add_assign(&mut self, rhs: F) {
         // Step 4(2)
-        let j = rhs.decompose_raw().1.to_usize().unwrap();
+        let j = rhs.raw_exponent();
 
         // Step 4(3)
         let (a, e) = two_sum(self.a1[j], rhs);
@@ -1043,15 +1065,15 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
         self.i += 1;
 
         // Step 4(6)
-        if self.i >= 2.pow(F::mantissa_length() / 2) {
+        if self.i >= F::two_pow_mantissa_length_half() {
             // Step 4(6)(a)
-            let mut b1 = vec![F::zero(); 2.pow(F::exponent_length())];
-            let mut b2 = vec![F::zero(); 2.pow(F::exponent_length())];
+            let mut b1 = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b2 = vec![F::zero(); F::two_pow_exponent_length()];
 
             // Step 4(6)(b)
             for &y in self.a1.iter().chain(self.a2.iter()) {
                 // Step 4(6)(b)(i)
-                let j = y.decompose_raw().1.to_usize().unwrap();
+                let j = y.raw_exponent();
 
                 // Step 4(6)(b)(ii)
                 let (b, e) = two_sum(b1[j], y);
@@ -1066,7 +1088,7 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
             self.a2 = b2;
 
             // Step 4(6)(d)
-            self.i = 2 * 2.pow(F::exponent_length());
+            self.i = 2 * F::two_pow_exponent_length();
         }
     }
 }
