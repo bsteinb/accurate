@@ -648,10 +648,13 @@ fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
     let mut s = F::zero();
 
     // Step 2
+    // The following accesses are guaranteed to be inside bounds, because:
+    debug_assert!(*n <= xs.len());
     for i in 0 .. *n {
-        let (a, b) = two_sum(s, xs[i]);
+        let x = unsafe { xs.get_unchecked_mut(i) };
+        let (a, b) = two_sum(s, *x);
         s = a;
-        xs[i] = b;
+        *x = b;
     }
 
     // Step 3
@@ -662,15 +665,25 @@ fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
         let mut sm = F::zero();
 
         // Step 3(2)
+        // The following accesses are guaranteed to be inside bounds, because:
+        debug_assert!(*n <= xs.len());
         for i in 0 .. *n {
             // Step 3(2)(a)
-            let (a, b) = two_sum(st, xs[i]);
+            let (a, b) = two_sum(st, unsafe { *xs.get_unchecked(i) });
             st = a;
             // Step 3(2)(b)
             if b != F::zero() {
-                xs[count] = b;
+                // The following access is guaranteed to be inside bounds, because:
+                debug_assert!(count < xs.len());
+                unsafe { *xs.get_unchecked_mut(count) = b; }
+
                 // Step 3(2)(b)(i)
+                // The following addition is guaranteed not to overflow, because:
+                debug_assert!(count < usize::max_value());
+                // and thus:
+                debug_assert!(count.checked_add(1).is_some());
                 count = count + 1;
+
                 // Step 3(2)(b)(ii)
                 sm = sm.max(st.abs());
             }
@@ -683,7 +696,13 @@ fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
         let (a, b) = two_sum(s, st);
         s = a;
         st = b;
-        xs[count] = st;
+        // The following access is guaranteed to be inside bounds, because:
+        debug_assert!(count < xs.len());
+        unsafe { *xs.get_unchecked_mut(count) = st; }
+        // The following addition is guaranteed not to overflow, because:
+        debug_assert!(count < usize::max_value());
+        // and thus:
+        debug_assert!(count.checked_add(1).is_some());
         *n = count + 1;
 
         // Step 3(5)
