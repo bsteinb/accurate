@@ -797,8 +797,8 @@ impl Ieee754Ext for f64 {
 #[derive(Clone)]
 pub struct OnlineExactSum<F> {
     i: usize,
-    a1: Vec<F>,
-    a2: Vec<F>
+    a1: Box<[F]>,
+    a2: Box<[F]>
 }
 
 impl<F> SumAccumulator<F> for OnlineExactSum<F>
@@ -856,8 +856,8 @@ impl<F> Add<F> for OnlineExactSum<F>
         // Step 4(6)
         if self.i >= F::two_pow_mantissa_length_half() {
             // Step 4(6)(a)
-            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()];
-            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
+            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
 
             // Step 4(6)(b)
             for &y in self.a1.iter().chain(self.a2.iter()) {
@@ -907,8 +907,8 @@ impl<F> Default for OnlineExactSum<F>
         // Steps 1, 2, 3
         OnlineExactSum {
             i: 0,
-            a1: vec![F::zero(); F::two_pow_exponent_length()],
-            a2: vec![F::zero(); F::two_pow_exponent_length()]
+            a1: vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice(),
+            a2: vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice()
         }
     }
 }
@@ -1038,7 +1038,7 @@ impl<F> Add for OnlineExactSum<F>
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        self.absorb(rhs.a1.into_iter().chain(rhs.a2.into_iter()))
+        self.absorb(rhs.a1.iter().cloned().chain(rhs.a2.iter().cloned()))
     }
 }
 
@@ -1103,8 +1103,8 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
         // Step 4(6)
         if self.i >= F::two_pow_mantissa_length_half() {
             // Step 4(6)(a)
-            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()];
-            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()];
+            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
+            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
 
             // Step 4(6)(b)
             for &y in self.a1.iter().chain(self.a2.iter()) {
