@@ -1,6 +1,4 @@
 #![feature(test)]
-#![feature(op_assign_traits)]
-#![feature(augmented_assignments)]
 
 extern crate test;
 

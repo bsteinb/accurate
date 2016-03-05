@@ -2,9 +2,6 @@
 
 #![deny(missing_docs)]
 
-#![cfg_attr(feature = "unstable", feature(op_assign_traits))]
-#![cfg_attr(feature = "unstable", feature(augmented_assignments))]
-
 extern crate ieee754;
 extern crate num;
 
