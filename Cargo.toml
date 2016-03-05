@@ -17,6 +17,7 @@ unstable = []
 parallel = [ "rayon" ]
 
 [dependencies]
+clippy = { version = "0.0.46", optional = true }
 num = "0.1"
 ieee754 = "0.2"
 rayon = { version = "0.3", optional = true }
