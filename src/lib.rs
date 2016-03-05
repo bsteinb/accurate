@@ -817,6 +817,44 @@ pub struct OnlineExactSum<F> {
     a2: Box<[F]>
 }
 
+impl<F> OnlineExactSum<F>
+    where F:Float + Ieee754Ext,
+          F::RawExponent: PrimInt
+{
+    #[inline(never)]
+    fn compact(&mut self) {
+        // Step 4(6)(a)
+        let mut b1v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
+        let mut b2v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
+
+        // Step 4(6)(b)
+        for &y in self.a1.iter().chain(self.a2.iter()) {
+            // Step 4(6)(b)(i)
+            let j = y.raw_exponent();
+            // These accesses are guaranteed to be within bounds, because:
+            debug_assert_eq!(b1v.len(), F::two_pow_exponent_length());
+            debug_assert_eq!(b2v.len(), F::two_pow_exponent_length());
+            debug_assert!(j < F::two_pow_exponent_length());
+            let b1 = unsafe { b1v.get_unchecked_mut(j) };
+            let b2 = unsafe { b2v.get_unchecked_mut(j) };
+
+            // Step 4(6)(b)(ii)
+            let (b, e) = two_sum(*b1, y);
+            *b1 = b;
+
+            // Step 4(6)(b)(iii)
+            *b2 = *b2 + e;
+        }
+
+        // Step 4(6)(c)
+        self.a1 = b1v;
+        self.a2 = b2v;
+
+        // Step 4(6)(d)
+        self.i = 2 * F::two_pow_exponent_length();
+    }
+}
+
 impl<F> SumAccumulator<F> for OnlineExactSum<F>
     where F: Float + Ieee754Ext,
           F::Significand: PrimInt,
@@ -839,7 +877,7 @@ impl<F> Add<F> for OnlineExactSum<F>
 {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     fn add(mut self, rhs: F) -> Self::Output {
         // Step 4(2)
         {
@@ -870,37 +908,7 @@ impl<F> Add<F> for OnlineExactSum<F>
         self.i += 1;
 
         // Step 4(6)
-        if self.i >= F::two_pow_mantissa_length_half() {
-            // Step 4(6)(a)
-            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
-            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
-
-            // Step 4(6)(b)
-            for &y in self.a1.iter().chain(self.a2.iter()) {
-                // Step 4(6)(b)(i)
-                let j = y.raw_exponent();
-                // These accesses are guaranteed to be within bounds, because:
-                debug_assert_eq!(b1v.len(), F::two_pow_exponent_length());
-                debug_assert_eq!(b2v.len(), F::two_pow_exponent_length());
-                debug_assert!(j < F::two_pow_exponent_length());
-                let b1 = unsafe { b1v.get_unchecked_mut(j) };
-                let b2 = unsafe { b2v.get_unchecked_mut(j) };
-
-                // Step 4(6)(b)(ii)
-                let (b, e) = two_sum(*b1, y);
-                *b1 = b;
-
-                // Step 4(6)(b)(iii)
-                *b2 = *b2 + e;
-            }
-
-            // Step 4(6)(c)
-            self.a1 = b1v;
-            self.a2 = b2v;
-
-            // Step 4(6)(d)
-            self.i = 2 * F::two_pow_exponent_length();
-        }
+        if self.i >= F::two_pow_mantissa_length_half() { self.compact(); }
 
         self
     }
@@ -1117,37 +1125,7 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
         self.i += 1;
 
         // Step 4(6)
-        if self.i >= F::two_pow_mantissa_length_half() {
-            // Step 4(6)(a)
-            let mut b1v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
-            let mut b2v = vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice();
-
-            // Step 4(6)(b)
-            for &y in self.a1.iter().chain(self.a2.iter()) {
-                // Step 4(6)(b)(i)
-                let j = y.raw_exponent();
-                // These accesses are guaranteed to be within bounds, because:
-                debug_assert_eq!(b1v.len(), F::two_pow_exponent_length());
-                debug_assert_eq!(b2v.len(), F::two_pow_exponent_length());
-                debug_assert!(j < F::two_pow_exponent_length());
-                let b1 = unsafe { b1v.get_unchecked_mut(j) };
-                let b2 = unsafe { b2v.get_unchecked_mut(j) };
-
-                // Step 4(6)(b)(ii)
-                let (b, e) = two_sum(*b1, y);
-                *b1 = b;
-
-                // Step 4(6)(b)(iii)
-                *b2 = *b2 + e;
-            }
-
-            // Step 4(6)(c)
-            self.a1 = b1v;
-            self.a2 = b2v;
-
-            // Step 4(6)(d)
-            self.i = 2 * F::two_pow_exponent_length();
-        }
+        if self.i >= F::two_pow_mantissa_length_half() { self.compact(); }
     }
 }
 
