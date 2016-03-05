@@ -609,7 +609,7 @@ impl<F> HalfUlp for F
 
     #[inline]
     fn half_ulp(self) -> Self {
-        self.ulp().unwrap_or(Self::zero()) / F::one().exp2()
+        self.ulp().unwrap_or_else(Self::zero) / F::one().exp2()
     }
 }
 
@@ -705,7 +705,8 @@ fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
         }
 
         // Step 3(3)
-        let em = F::from(count).unwrap() * sm.half_ulp();
+        let em = F::from(count).expect("count not representable as floating point number")
+            * sm.half_ulp();
 
         // Step 3(4)
         let (a, b) = two_sum(s, st);
