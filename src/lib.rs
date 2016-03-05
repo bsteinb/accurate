@@ -762,15 +762,18 @@ pub trait Ieee754Ext: Ieee754 {
     fn exponent_length() -> u32;
 
     /// Two raised to the power of the exponent`s length
+    #[inline]
     fn two_pow_exponent_length() -> usize {
         2.pow(Self::exponent_length())
     }
     /// Two raised to the power of half the mantissa`s length
+    #[inline]
     fn two_pow_mantissa_length_half() -> usize {
         2.pow(Self::mantissa_length() / 2)
     }
 
     /// The raw bits of the exponent
+    #[inline]
     fn raw_exponent(self) -> usize
         where Self::RawExponent: PrimInt
     {
@@ -779,18 +782,26 @@ pub trait Ieee754Ext: Ieee754 {
 }
 
 impl Ieee754Ext for f32 {
+    #[inline]
     fn mantissa_length() -> u32 { 24 }
+    #[inline]
     fn exponent_length() -> u32 { 8 }
 
+    #[inline]
     fn two_pow_exponent_length() -> usize { 256 }
+    #[inline]
     fn two_pow_mantissa_length_half() -> usize { 4096 }
 }
 
 impl Ieee754Ext for f64 {
+    #[inline]
     fn mantissa_length() -> u32 { 53 }
+    #[inline]
     fn exponent_length() -> u32 { 11 }
 
+    #[inline]
     fn two_pow_exponent_length() -> usize { 2048 }
+    #[inline]
     fn two_pow_mantissa_length_half() -> usize { 67108864 }
 }
 
