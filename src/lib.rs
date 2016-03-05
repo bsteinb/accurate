@@ -423,7 +423,6 @@ impl<F, R> Add<(F, F)> for DotK<F, R>
 
     #[inline]
     fn add(self, (a, b): (F, F)) -> Self {
-        //let (a, b) = ab;
         let (h, r1) = two_product_fma(a, b);
         let (p, r2) = two_sum(self.p, h);
         DotK { p: p, r: (self.r + r1) + r2 }
