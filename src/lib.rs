@@ -654,7 +654,7 @@ pub fn i_fast_sum_in_place<F>(xs: &mut [F]) -> F
     i_fast_sum_in_place_aux(xs, &mut n, true)
 }
 
-#[allow(cyclomatic_complexity)]
+#[cfg_attr(feature="clippy", allow(cyclomatic_complexity))]
 fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
     where F: Float + Ieee754,
           F::Significand: PrimInt
