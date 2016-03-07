@@ -23,14 +23,14 @@ fn oes_add() {
     let xs = mk_vec::<f64>(100_000);
     let ys = mk_vec::<f64>(100_000);
 
-    let s = OnlineExactSum::default()
+    let s = OnlineExactSum::zero()
         .absorb(xs.iter().cloned())
         .absorb(ys.iter().cloned());
 
-    let s1 = OnlineExactSum::default()
+    let s1 = OnlineExactSum::zero()
         .absorb(xs.iter().cloned());
 
-    let s2 = OnlineExactSum::default()
+    let s2 = OnlineExactSum::zero()
         .absorb(ys.iter().cloned());
 
     assert_eq!(s.sum(), (s1 + s2).sum());

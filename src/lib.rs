@@ -39,7 +39,15 @@ use rayon::par_iter::{ParallelIterator};
 use rayon::par_iter::internal::{Consumer, Folder, Reducer, UnindexedConsumer};
 
 /// Accumulates terms of a sum
-pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> + Default {
+pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F>
+{
+    /// Initial value for an accumulator
+    fn zero() -> Self
+        where F: Zero
+    {
+        Self::from(F::zero())
+    }
+
     /// The sum of all terms accumulated so far
     fn sum(&self) -> F;
 
@@ -50,7 +58,7 @@ pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> + Default {
     /// ```
     /// use accurate::*;
     ///
-    /// let s = Sum2::default().absorb(vec![1.0, 2.0, 3.0]);
+    /// let s = Sum2::zero().absorb(vec![1.0, 2.0, 3.0]);
     /// assert_eq!(6.0f64, s.sum())
     /// ```
     fn absorb<I>(self, it: I) -> Self
@@ -61,7 +69,15 @@ pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> + Default {
 }
 
 /// Accumulates terms of a dot product
-pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Default {
+pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F>
+{
+    /// Initial value for an accumulator
+    fn zero() -> Self
+        where F: Zero
+    {
+        Self::from(F::zero())
+    }
+
     /// The dot product of all terms accumulated so far
     fn dot(&self) -> F;
 
@@ -75,7 +91,7 @@ pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Default {
     /// let x = vec![1.0, 2.0, 3.0];
     /// let y = x.clone();
     ///
-    /// let d = Dot2::default().absorb(x.into_iter().zip(y.into_iter()));
+    /// let d = Dot2::zero().absorb(x.into_iter().zip(y.into_iter()));
     /// assert_eq!(14.0f64, d.dot())
     /// ```
     fn absorb<I>(self, it: I) -> Self
@@ -123,7 +139,7 @@ pub fn two_sum<F>(a: F, b: F) -> (F, F)
 /// ```
 /// use accurate::*;
 ///
-/// let s = Naive::default() + 1.0 + 2.0 + 3.0;
+/// let s = Naive::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 #[derive(Copy, Clone)]
@@ -153,14 +169,6 @@ impl<F> From<F> for Naive<F>
 {
     fn from(x: F) -> Self {
         Naive(x)
-    }
-}
-
-impl<F> Default for Naive<F>
-    where F: Float
-{
-    fn default() -> Self {
-        Self::from(F::zero())
     }
 }
 
@@ -210,15 +218,6 @@ impl<F, C> From<F> for SumK<F, C>
     }
 }
 
-impl<F, C> Default for SumK<F, C>
-    where F: Float,
-          C: SumAccumulator<F>
-{
-    fn default() -> Self {
-        Self::from(F::zero())
-    }
-}
-
 /// SumK with two cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
@@ -228,7 +227,7 @@ impl<F, C> Default for SumK<F, C>
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum2::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum2::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -246,7 +245,7 @@ pub type Sum2<F> = SumK<F, Naive<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum3::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum3::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -264,7 +263,7 @@ pub type Sum3<F> = SumK<F, Sum2<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum4::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum4::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -282,7 +281,7 @@ pub type Sum4<F> = SumK<F, Sum3<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum5::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum5::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -300,7 +299,7 @@ pub type Sum5<F> = SumK<F, Sum4<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum6::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum6::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -318,7 +317,7 @@ pub type Sum6<F> = SumK<F, Sum5<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum7::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum7::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -336,7 +335,7 @@ pub type Sum7<F> = SumK<F, Sum6<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum8::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum8::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -354,7 +353,7 @@ pub type Sum8<F> = SumK<F, Sum7<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let s = Sum9::default() + 1.0 + 2.0 + 3.0;
+/// let s = Sum9::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -438,15 +437,6 @@ impl<F, R> From<F> for DotK<F, R>
     }
 }
 
-impl<F, R> Default for DotK<F, R>
-    where F: Float,
-          R: SumAccumulator<F>
-{
-    fn default() -> Self {
-        DotK::from(F::zero())
-    }
-}
-
 /// DotK with two cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
@@ -456,7 +446,7 @@ impl<F, R> Default for DotK<F, R>
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot2::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot2::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -474,7 +464,7 @@ pub type Dot2<F> = DotK<F, Naive<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot3::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot3::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -492,7 +482,7 @@ pub type Dot3<F> = DotK<F, Sum2<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot4::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot4::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -510,7 +500,7 @@ pub type Dot4<F> = DotK<F, Sum3<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot5::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot5::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -528,7 +518,7 @@ pub type Dot5<F> = DotK<F, Sum4<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot6::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot6::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -546,7 +536,7 @@ pub type Dot6<F> = DotK<F, Sum5<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot7::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot7::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -564,7 +554,7 @@ pub type Dot7<F> = DotK<F, Sum6<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot8::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot8::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -582,7 +572,7 @@ pub type Dot8<F> = DotK<F, Sum7<F>>;
 /// ```
 /// use accurate::*;
 ///
-/// let d = Dot9::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = Dot9::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 ///
@@ -814,7 +804,7 @@ impl Ieee754Ext for f64 {
 /// ```
 /// use accurate::*;
 ///
-/// let s = OnlineExactSum::default() + 1.0 + 2.0 + 3.0;
+/// let s = OnlineExactSum::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 ///
@@ -832,6 +822,15 @@ impl<F> OnlineExactSum<F>
     where F:Float + Ieee754Ext,
           F::RawExponent: PrimInt
 {
+    fn new() -> Self {
+        // Steps 1, 2, 3
+        OnlineExactSum {
+            i: 0,
+            a1: vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice(),
+            a2: vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice()
+        }
+    }
+
     #[inline(never)]
     fn compact(&mut self) {
         // Step 4(6)(a)
@@ -871,6 +870,10 @@ impl<F> SumAccumulator<F> for OnlineExactSum<F>
           F::Significand: PrimInt,
           F::RawExponent: PrimInt
 {
+    fn zero() -> Self {
+        Self::new()
+    }
+
     fn sum(&self) -> F {
         // Step 5
         let mut a = Vec::with_capacity(2 * F::two_pow_exponent_length());
@@ -931,20 +934,7 @@ impl<F> From<F> for OnlineExactSum<F>
           F::RawExponent: PrimInt
 {
     fn from(x: F) -> Self {
-        OnlineExactSum::default() + x
-    }
-}
-
-impl<F> Default for OnlineExactSum<F>
-    where F: Float + Ieee754Ext
-{
-    fn default() -> Self {
-        // Steps 1, 2, 3
-        OnlineExactSum {
-            i: 0,
-            a1: vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice(),
-            a2: vec![F::zero(); F::two_pow_exponent_length()].into_boxed_slice()
-        }
+        Self::new() + x
     }
 }
 
@@ -961,7 +951,7 @@ unsafe impl<F> Send for OnlineExactSum<F>
 /// ```
 /// use accurate::*;
 ///
-/// let d = OnlineExactDot::default() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// let d = OnlineExactDot::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
 pub struct OnlineExactDot<F> {
@@ -973,6 +963,10 @@ impl<F> DotAccumulator<F> for OnlineExactDot<F>
           F::Significand: PrimInt,
           F::RawExponent: PrimInt
 {
+    fn zero() -> Self {
+        OnlineExactDot::from(F::zero())
+    }
+
     fn dot(&self) -> F {
         self.s.sum()
     }
@@ -1002,16 +996,6 @@ impl<F> From<F> for OnlineExactDot<F>
     }
 }
 
-impl<F> Default for OnlineExactDot<F>
-    where F: Float + Ieee754Ext,
-          F::Significand: PrimInt,
-          F::RawExponent: PrimInt
-{
-    fn default() -> Self {
-        OnlineExactDot::from(F::zero())
-    }
-}
-
 /// Sums the items of an iterator
 ///
 /// # Examples
@@ -1025,16 +1009,18 @@ impl<F> Default for OnlineExactDot<F>
 pub trait SumWithAccumulator<F> {
     /// Sums the items of an iterator
     fn sum_with_accumulator<Acc>(self) -> F
-        where Acc: SumAccumulator<F>;
+        where Acc: SumAccumulator<F>,
+              F: Zero;
 }
 
 impl<I, F> SumWithAccumulator<F> for I
     where I: IntoIterator<Item = F>
 {
     fn sum_with_accumulator<Acc>(self) -> F
-        where Acc: SumAccumulator<F>
+        where Acc: SumAccumulator<F>,
+              F: Zero
     {
-        Acc::default().absorb(self).sum()
+        Acc::zero().absorb(self).sum()
     }
 }
 
@@ -1052,16 +1038,18 @@ impl<I, F> SumWithAccumulator<F> for I
 pub trait DotWithAccumulator<F> {
     /// Calculates the dot product of the items of an iterator
     fn dot_with_accumulator<Acc>(self) -> F
-        where Acc: DotAccumulator<F>;
+        where Acc: DotAccumulator<F>,
+              F: Float;
 }
 
 impl<I, F> DotWithAccumulator<F> for I
     where I: IntoIterator<Item = (F, F)>
 {
     fn dot_with_accumulator<Acc>(self) -> F
-        where Acc: DotAccumulator<F>
+        where Acc: DotAccumulator<F>,
+              F: Float
     {
-        Acc::default().absorb(self).dot()
+        Acc::zero().absorb(self).dot()
     }
 }
 
@@ -1187,7 +1175,7 @@ impl<F> Consumer<F> for OnlineExactSum<F>
     }
 
     fn split_at(self, _index: usize) -> (Self, Self, Self::Reducer) {
-        (self, OnlineExactSum::default(), OnlineExactSumReducer)
+        (self, OnlineExactSum::zero(), OnlineExactSumReducer)
     }
 
     fn into_folder(self) -> Self::Folder {
@@ -1202,7 +1190,7 @@ impl<F> UnindexedConsumer<F> for OnlineExactSum<F>
           F::RawExponent: PrimInt
 {
     fn split_off(&self) -> Self {
-        OnlineExactSum::default()
+        OnlineExactSum::zero()
     }
 
     fn to_reducer(&self) -> Self::Reducer {
@@ -1234,9 +1222,10 @@ pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
     /// Sums the items of an iterator, possibly in parallel
     fn parallel_sum_with_accumulator<Acc>(self) -> F
         where Acc: SumAccumulator<F> + UnindexedConsumer<F, Result = Acc>,
-              Acc::Reducer: Reducer<Acc>
+              Acc::Reducer: Reducer<Acc>,
+              F: Zero
     {
-        self.drive_unindexed(Acc::default()).sum()
+        self.drive_unindexed(Acc::zero()).sum()
     }
 }
 
