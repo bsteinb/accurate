@@ -1198,6 +1198,7 @@ use std::ops::AddAssign;
 impl<F> AddAssign<F> for Naive<F>
     where F: Float
 {
+    #[inline]
     fn add_assign(&mut self, rhs: F) {
         self.0 = self.0 + rhs;
     }
@@ -1208,6 +1209,7 @@ impl<F, C> AddAssign<F> for SumK<F, C>
     where F: Float,
           C: SumAccumulator<F> + AddAssign<F>
 {
+    #[inline]
     fn add_assign(&mut self, rhs: F) {
         let (x, y) = two_sum(self.s, rhs);
         self.s = x;
@@ -1220,6 +1222,7 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
     where F: Float + Ieee754Ext,
           F::RawExponent: PrimInt
 {
+    #[inline]
     fn add_assign(&mut self, rhs: F) {
         // Step 4(2)
         {
@@ -1343,6 +1346,7 @@ pub trait ParallelSumAccumulator<F>:
     + Sized
 {
     /// Turns an accumulator into a consumer
+    #[inline]
     fn into_consumer(self) -> SumConsumer<Self> {
         SumConsumer(self)
     }
@@ -1394,7 +1398,6 @@ pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
     where F: Send
 {
     /// Sums the items of an iterator, possibly in parallel
-    #[inline]
     fn parallel_sum_with_accumulator<Acc>(self) -> F
         where Acc: ParallelSumAccumulator<F>,
               F: Zero
