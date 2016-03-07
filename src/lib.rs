@@ -173,6 +173,58 @@ impl<F> From<F> for Naive<F>
     }
 }
 
+/// SumK with two cascaded accumulators
+///
+/// ![](https://rockshrub.de/accurate/SumK.svg)
+///
+/// # Examples
+///
+/// ```
+/// use accurate::*;
+///
+/// let s = Sum2::zero() + 1.0 + 2.0 + 3.0;
+/// assert_eq!(6.0f64, s.sum());
+/// ```
+///
+/// # References
+///
+/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[derive(Copy, Clone)]
+pub struct Sum2<F> {
+    s: F,
+    c: F,
+    _dummy: F // don't put me in a single register
+}
+
+impl<F> SumAccumulator<F> for Sum2<F>
+    where F: Float
+{
+    #[inline]
+    fn sum(self) -> F {
+        self.c + self.s
+    }
+}
+
+impl<F> Add<F> for Sum2<F>
+    where F: Float
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: F) -> Self::Output {
+        let (x, y) = two_sum(self.s, rhs);
+        Sum2 { s: x, c: self.c + y, _dummy: self._dummy }
+    }
+}
+
+impl<F> From<F> for Sum2<F>
+    where F: Float
+{
+    fn from(x: F) -> Self {
+        Sum2 { s: x, c: F::zero(), _dummy: F::zero() }
+    }
+}
+
 /// Calculates a sum using cascaded accumulators for the remainder terms
 ///
 /// See also `Sum2`... `Sum9`.
@@ -219,24 +271,6 @@ impl<F, C> From<F> for SumK<F, C>
         SumK { s: x, c: C::from(F::zero()) }
     }
 }
-
-/// SumK with two cascaded accumulators
-///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
-///
-/// # Examples
-///
-/// ```
-/// use accurate::*;
-///
-/// let s = Sum2::zero() + 1.0 + 2.0 + 3.0;
-/// assert_eq!(6.0f64, s.sum());
-/// ```
-///
-/// # References
-///
-/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Sum2<F> = SumK<F, Naive<F>>;
 
 /// SumK with three cascaded accumulators
 ///
@@ -392,6 +426,59 @@ pub fn two_product_fma<F>(a: F, b: F) -> (F, F)
     (x, y)
 }
 
+/// DotK with two cascaded accumulators
+///
+/// ![](https://rockshrub.de/accurate/DotK.svg)
+///
+/// # Examples
+///
+/// ```
+/// use accurate::*;
+///
+/// let d = Dot2::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// assert_eq!(14.0f64, d.dot());
+/// ```
+///
+/// # References
+///
+/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[derive(Copy, Clone)]
+pub struct Dot2<F> {
+    p: F,
+    r: F,
+    _dummy: F // don't put me in a single register
+}
+
+impl<F> DotAccumulator<F> for Dot2<F>
+    where F: Float
+{
+    #[inline]
+    fn dot(self) -> F {
+        self.r + self.p
+    }
+}
+
+impl<F> Add<(F, F)> for Dot2<F>
+    where F: Float
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, (a, b): (F, F)) -> Self {
+        let (h, r1) = two_product_fma(a, b);
+        let (p, r2) = two_sum(self.p, h);
+        Dot2 { p: p, r: (self.r + r1) + r2, _dummy: self._dummy }
+    }
+}
+
+impl<F> From<F> for Dot2<F>
+    where F: Float
+{
+    fn from(x: F) -> Self {
+        Dot2 { p: x, r: F::zero(), _dummy: F::zero() }
+    }
+}
+
 /// Calculates a dot product using both product transformation and cascaded accumulators
 ///
 /// See also `Dot2`... `Dot9`.
@@ -439,24 +526,6 @@ impl<F, R> From<F> for DotK<F, R>
         DotK { p: x, r: R::from(F::zero()) }
     }
 }
-
-/// DotK with two cascaded accumulators
-///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
-///
-/// # Examples
-///
-/// ```
-/// use accurate::*;
-///
-/// let d = Dot2::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
-/// assert_eq!(14.0f64, d.dot());
-/// ```
-///
-/// # References
-///
-/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-pub type Dot2<F> = DotK<F, Naive<F>>;
 
 /// DotK with three cascaded accumulators
 ///
