@@ -49,7 +49,7 @@ pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F>
     }
 
     /// The sum of all terms accumulated so far
-    fn sum(&self) -> F;
+    fn sum(self) -> F;
 
     /// Absorb the items of an iterator into the accumulator
     ///
@@ -79,7 +79,7 @@ pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F>
     }
 
     /// The dot product of all terms accumulated so far
-    fn dot(&self) -> F;
+    fn dot(self) -> F;
 
     /// Absorb the items of an iterator into the accumulator
     ///
@@ -145,6 +145,15 @@ pub fn two_sum<F>(a: F, b: F) -> (F, F)
 #[derive(Copy, Clone)]
 pub struct Naive<F>(F);
 
+impl<F> SumAccumulator<F> for Naive<F>
+    where F: Float
+{
+    #[inline]
+    fn sum(self) -> F {
+        self.0
+    }
+}
+
 impl<F> Add<F> for Naive<F>
     where F: Float
 {
@@ -153,14 +162,6 @@ impl<F> Add<F> for Naive<F>
     #[inline]
     fn add(self, rhs: F) -> Self::Output {
         Naive(self.0 + rhs)
-    }
-}
-
-impl<F> SumAccumulator<F> for Naive<F>
-    where F: Float
-{
-    fn sum(&self) -> F {
-        self.0
     }
 }
 
@@ -189,10 +190,11 @@ pub struct SumK<F, C> {
 
 impl<F, C> SumAccumulator<F> for SumK<F, C>
     where F: Float,
-          C: SumAccumulator<F> + Clone
+          C: SumAccumulator<F>
 {
-    fn sum(&self) -> F {
-        self.c.clone().add(self.s).sum()
+    #[inline]
+    fn sum(self) -> F {
+        (self.c + self.s).sum()
     }
 }
 
@@ -407,10 +409,11 @@ pub struct DotK<F, R> {
 
 impl<F, R> DotAccumulator<F> for DotK<F, R>
     where F: Float,
-          R: SumAccumulator<F> + Clone
+          R: SumAccumulator<F>
 {
-    fn dot(&self) -> F {
-        self.r.clone().add(self.p).sum()
+    #[inline]
+    fn dot(self) -> F {
+        (self.r + self.p).sum()
     }
 }
 
@@ -874,11 +877,13 @@ impl<F> SumAccumulator<F> for OnlineExactSum<F>
         Self::new()
     }
 
-    fn sum(&self) -> F {
+    #[inline]
+    fn sum(self) -> F {
         // Step 5
-        let mut a = Vec::with_capacity(2 * F::two_pow_exponent_length());
-        a.extend(self.a1.iter().cloned().filter(|&x| x != F::zero()));
-        a.extend(self.a2.iter().cloned().filter(|&x| x != F::zero()));
+        let mut a = self.a1.into_vec();
+        let mut b = self.a2.into_vec();
+        a.append(&mut b);
+        a.retain(|&x| x != F::zero());
 
         // Step 6
         i_fast_sum_in_place(&mut a[..])
@@ -967,7 +972,8 @@ impl<F> DotAccumulator<F> for OnlineExactDot<F>
         OnlineExactDot::from(F::zero())
     }
 
-    fn dot(&self) -> F {
+    #[inline]
+    fn dot(self) -> F {
         self.s.sum()
     }
 }
