@@ -173,6 +173,21 @@ impl<F> From<F> for Naive<F>
     }
 }
 
+impl<F> Add for Naive<F>
+    where F: Float
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        Naive(self.0 + rhs.0)
+    }
+}
+
+unsafe impl<F> Send for Naive<F>
+    where F: Send
+{}
+
 /// SumK with two cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
@@ -225,6 +240,22 @@ impl<F> From<F> for Sum2<F>
     }
 }
 
+impl<F> Add for Sum2<F>
+    where F: Float
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        let (s, c) = two_sum(self.s, rhs.s);
+        Sum2 { s: s, c: (self.c + c) + rhs.c, _dummy: self._dummy }
+    }
+}
+
+unsafe impl<F> Send for Sum2<F>
+    where F: Send
+{}
+
 /// Calculates a sum using cascaded accumulators for the remainder terms
 ///
 /// See also `Sum2`... `Sum9`.
@@ -271,6 +302,25 @@ impl<F, C> From<F> for SumK<F, C>
         SumK { s: x, c: C::from(F::zero()) }
     }
 }
+
+impl<F, C> Add for SumK<F, C>
+    where F: Float,
+          C: SumAccumulator<F>,
+          C::Output: Add<C, Output = C>
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        let (s, c) = two_sum(self.s, rhs.s);
+        SumK { s: s, c: (self.c + c) + rhs.c }
+    }
+}
+
+unsafe impl<F, C> Send for SumK<F, C>
+    where F: Send,
+          C: Send
+{}
 
 /// SumK with three cascaded accumulators
 ///
@@ -1012,6 +1062,19 @@ impl<F> From<F> for OnlineExactSum<F>
     }
 }
 
+impl<F> Add for OnlineExactSum<F>
+    where F: Float + Ieee754Ext,
+          F::Significand: PrimInt,
+          F::RawExponent: PrimInt
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        self.absorb(rhs.a1.iter().cloned().chain(rhs.a2.iter().cloned()))
+    }
+}
+
 unsafe impl<F> Send for OnlineExactSum<F>
     where F: Send
 {}
@@ -1128,18 +1191,6 @@ impl<I, F> DotWithAccumulator<F> for I
     }
 }
 
-impl<F> Add for OnlineExactSum<F>
-    where F: Float + Ieee754Ext,
-          F::Significand: PrimInt,
-          F::RawExponent: PrimInt
-{
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        self.absorb(rhs.a1.iter().cloned().chain(rhs.a2.iter().cloned()))
-    }
-}
-
 #[cfg(feature = "unstable")]
 use std::ops::AddAssign;
 
@@ -1203,75 +1254,123 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
     }
 }
 
+/// Reduce two parallel results using `Add`
 #[cfg(feature = "parallel")]
-impl<F> Folder<F> for OnlineExactSum<F>
-    where F: Float + Ieee754Ext,
-          F::Significand: PrimInt,
-          F::RawExponent: PrimInt
+pub struct AddReducer;
+
+#[cfg(feature = "parallel")]
+impl<Acc> Reducer<Acc> for AddReducer
+    where Acc: Add<Acc, Output = Acc>
 {
-    type Result = Self;
-
-    fn consume(self, item: F) -> Self {
-        self + item
-    }
-
-    fn complete(self) -> Self::Result {
-        self
-    }
-}
-
-/// Reduce two parallel `OnlineExactSum` computations into one
-#[cfg(feature = "parallel")]
-pub struct OnlineExactSumReducer;
-
-#[cfg(feature = "parallel")]
-impl<F> Reducer<OnlineExactSum<F>> for OnlineExactSumReducer
-    where F: Float + Ieee754Ext,
-          F::Significand: PrimInt,
-          F::RawExponent: PrimInt
-{
-    fn reduce(self, left: OnlineExactSum<F>, right: OnlineExactSum<F>) -> OnlineExactSum<F> {
+    #[inline]
+    fn reduce(self, left: Acc, right: Acc) -> Acc {
         left + right
     }
 }
 
+/// Adapts a `SumAccumulator` into a `Folder`
 #[cfg(feature = "parallel")]
-impl<F> Consumer<F> for OnlineExactSum<F>
-    where F: Float + Ieee754Ext + Send,
-          F::Significand: PrimInt,
-          F::RawExponent: PrimInt
-{
-    type Folder = OnlineExactSum<F>;
-    type Reducer = OnlineExactSumReducer;
-    type Result = OnlineExactSum<F>;
+#[derive(Copy, Clone)]
+pub struct SumFolder<Acc>(Acc);
 
+#[cfg(feature = "parallel")]
+impl<Acc, F> Folder<F> for SumFolder<Acc>
+    where Acc: SumAccumulator<F>
+{
+    type Result = Acc;
+
+    #[inline]
+    fn consume(self, item: F) -> Self {
+        SumFolder(self.0 + item)
+    }
+
+    #[inline]
+    fn complete(self) -> Self::Result {
+        self.0
+    }
+}
+
+/// Adapts a `ParallelSumAccumulator` into a `Consumer`
+pub struct SumConsumer<Acc>(Acc);
+
+#[cfg(feature = "parallel")]
+impl<Acc, F> Consumer<F> for SumConsumer<Acc>
+    where Acc: ParallelSumAccumulator<F>,
+          F: Zero + Send
+{
+    type Folder = SumFolder<Acc>;
+    type Reducer = AddReducer;
+    type Result = Acc;
+
+    #[inline]
     fn cost(&mut self, producer_cost: f64) -> f64 {
         producer_cost
     }
 
+    #[inline]
     fn split_at(self, _index: usize) -> (Self, Self, Self::Reducer) {
-        (self, OnlineExactSum::zero(), OnlineExactSumReducer)
+        (self, Acc::zero().into_consumer(), AddReducer)
     }
 
+    #[inline]
     fn into_folder(self) -> Self::Folder {
-        self
+        SumFolder(self.0)
     }
 }
 
 #[cfg(feature = "parallel")]
-impl<F> UnindexedConsumer<F> for OnlineExactSum<F>
+impl<Acc, F> UnindexedConsumer<F> for SumConsumer<Acc>
+    where Acc: ParallelSumAccumulator<F>,
+          F: Zero + Send
+{
+    #[inline]
+    fn split_off(&self) -> Self {
+        Acc::zero().into_consumer()
+    }
+
+    #[inline]
+    fn to_reducer(&self) -> Self::Reducer {
+        AddReducer
+    }
+}
+
+#[cfg(feature = "parallel")]
+/// A `SumAccumulator` that can be used in parallel computations
+pub trait ParallelSumAccumulator<F>:
+    SumAccumulator<F>
+    + Add<Self, Output = Self>
+    + Send
+    + Sized
+{
+    /// Turns an accumulator into a consumer
+    fn into_consumer(self) -> SumConsumer<Self> {
+        SumConsumer(self)
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<F> ParallelSumAccumulator<F> for Naive<F>
+    where F: Float + Send
+{ }
+
+#[cfg(feature = "parallel")]
+impl<F> ParallelSumAccumulator<F> for Sum2<F>
+    where F: Float + Send
+{ }
+
+
+#[cfg(feature = "parallel")]
+impl<F, C> ParallelSumAccumulator<F> for SumK<F, C>
+    where C: ParallelSumAccumulator<F>,
+          F: Float + Send
+{ }
+
+#[cfg(feature = "parallel")]
+impl<F> ParallelSumAccumulator<F> for OnlineExactSum<F>
     where F: Float + Ieee754Ext + Send,
           F::Significand: PrimInt,
           F::RawExponent: PrimInt
-{
-    fn split_off(&self) -> Self {
-        OnlineExactSum::zero()
-    }
-
-    fn to_reducer(&self) -> Self::Reducer {
-        OnlineExactSumReducer
-    }
-}
+{ }
 
 /// Sums the items of an iterator, possibly in parallel
 ///
@@ -1295,17 +1394,17 @@ pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
     where F: Send
 {
     /// Sums the items of an iterator, possibly in parallel
+    #[inline]
     fn parallel_sum_with_accumulator<Acc>(self) -> F
-        where Acc: SumAccumulator<F> + UnindexedConsumer<F, Result = Acc>,
-              Acc::Reducer: Reducer<Acc>,
+        where Acc: ParallelSumAccumulator<F>,
               F: Zero
     {
-        self.drive_unindexed(Acc::zero()).sum()
+        self.drive_unindexed(Acc::zero().into_consumer()).sum()
     }
 }
 
 #[cfg(feature = "parallel")]
 impl<T, F> ParallelSumWithAccumulator<F> for T
     where T: ParallelIterator<Item = F>,
-          F: Send
+          F: Zero + Send
 {}
