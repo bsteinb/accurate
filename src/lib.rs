@@ -20,6 +20,8 @@
 #![cfg_attr(feature="clippy", warn(unicode_not_nfc))]
 #![cfg_attr(feature="clippy", warn(wrong_pub_self_convention))]
 
+#[macro_use]
+extern crate cfg_if;
 extern crate ieee754;
 extern crate num;
 
@@ -448,37 +450,112 @@ pub type Sum8<F> = SumK<F, Sum7<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum9<F> = SumK<F, Sum8<F>>;
 
-/// Product transformation
-pub trait TwoProduct: Float { }
+cfg_if! {
+    if #[cfg(feature = "fma")] {
+        /// Product transformation
+        pub trait TwoProduct: Float { }
 
-impl<F> TwoProduct for F where F: Float { }
+        impl<F> TwoProduct for F where F: Float { }
 
-/// Product transformation
-///
-/// Transforms a product `a * b` into the pair `(x, y)` so that
-///
-/// ```not_rust
-/// x = fl(a * b)
-/// ```
-///
-/// is the product of `a` and `b` with floating point rounding applied and
-///
-/// ```not_rust
-/// y = a * b - x
-/// ```
-///
-/// is the remainder of the product.
-///
-/// # References
-///
-/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[inline]
-pub fn two_product<F>(a: F, b: F) -> (F, F)
-    where F: TwoProduct
-{
-    let x = a * b;
-    let y = a.mul_add(b, -x);
-    (x, y)
+        /// Product transformation
+        ///
+        /// Transforms a product `a * b` into the pair `(x, y)` so that
+        ///
+        /// ```not_rust
+        /// x = fl(a * b)
+        /// ```
+        ///
+        /// is the product of `a` and `b` with floating point rounding applied and
+        ///
+        /// ```not_rust
+        /// y = a * b - x
+        /// ```
+        ///
+        /// is the remainder of the product.
+        ///
+        /// # References
+        ///
+        /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+        #[inline]
+        pub fn two_product<F>(a: F, b: F) -> (F, F)
+            where F: TwoProduct
+        {
+            let x = a * b;
+            let y = a.mul_add(b, -x);
+            (x, y)
+        }
+    } else {
+        /// Split a floating-point number
+        pub trait Split: Float {
+            /// Split factor used in the algorithm
+            fn split_factor() -> Self;
+
+            /// Split a floating-point number
+            ///
+            /// Splits a number `x` into two parts:
+            ///
+            /// ```not_rust
+            /// x = h + t
+            /// ```
+            ///
+            /// with `h` and `t` nonoverlapping and `t.abs() <= h.abs()`
+            ///
+            /// # References
+            ///
+            /// Due to Veltkamp, published in [Dekker 71](http://dx.doi.org/10.1007/BF01397083)
+            #[inline]
+            fn split(self) -> (Self, Self) {
+                let x = self;
+                let c = Self::split_factor() * x;
+                let h = c - (c - x);
+                let t = x - h;
+                (h, t)
+            }
+        }
+
+        impl Split for f32 {
+            #[inline] fn split_factor() -> Self { 4097.0 }
+        }
+
+        impl Split for f64 {
+            #[inline] fn split_factor() -> Self { 134217729.0 }
+        }
+
+        /// Product transformation
+        pub trait TwoProduct: Float + Split { }
+
+        impl<F> TwoProduct for F where F: Float + Split { }
+
+        /// Product transformation
+        ///
+        /// Transforms a product `a * b` into the pair `(x, y)` so that
+        ///
+        /// ```not_rust
+        /// x = fl(a * b)
+        /// ```
+        ///
+        /// is the product of `a` and `b` with floating point rounding applied and
+        ///
+        /// ```not_rust
+        /// y = a * b - x
+        /// ```
+        ///
+        /// is the remainder of the product.
+        ///
+        /// # References
+        ///
+        /// Based on [Dekker 71](http://dx.doi.org/10.1007/BF01397083)
+        #[inline]
+        pub fn two_product<F>(x: F, y: F) -> (F, F)
+            where F: TwoProduct
+        {
+            let a = x * y;
+            let (x1, x2) = x.split();
+            let (y1, y2) = y.split();
+            let b = x2 * y2 - (((a - x1 * y1) - x2 * y1) - x1 * y2);
+            (a, b)
+        }
+    }
 }
 
 /// DotK with two cascaded accumulators
