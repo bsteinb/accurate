@@ -228,7 +228,7 @@ impl<F> Add<F> for Sum2<F>
     #[inline]
     fn add(self, rhs: F) -> Self::Output {
         let (x, y) = two_sum(self.s, rhs);
-        Sum2 { s: x, c: self.c + y, _dummy: self._dummy }
+        Sum2 { s: x, c: self.c + y, .. self }
     }
 }
 
@@ -248,7 +248,7 @@ impl<F> Add for Sum2<F>
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (s, c) = two_sum(self.s, rhs.s);
-        Sum2 { s: s, c: (self.c + c) + rhs.c, _dummy: self._dummy }
+        Sum2 { s: s, c: (self.c + c) + rhs.c, .. self }
     }
 }
 
@@ -517,7 +517,7 @@ impl<F> Add<(F, F)> for Dot2<F>
     fn add(self, (a, b): (F, F)) -> Self {
         let (h, r1) = two_product_fma(a, b);
         let (p, r2) = two_sum(self.p, h);
-        Dot2 { p: p, r: (self.r + r1) + r2, _dummy: self._dummy }
+        Dot2 { p: p, r: (self.r + r1) + r2, .. self }
     }
 }
 
