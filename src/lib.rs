@@ -1205,6 +1205,18 @@ impl<F> AddAssign<F> for Naive<F>
 }
 
 #[cfg(feature = "unstable")]
+impl<F> AddAssign<F> for Sum2<F>
+    where F: Float + AddAssign<F>
+{
+    #[inline]
+    fn add_assign(&mut self, rhs: F) {
+        let (x, y) = two_sum(self.s, rhs);
+        self.s = x;
+        self.c += y;
+    }
+}
+
+#[cfg(feature = "unstable")]
 impl<F, C> AddAssign<F> for SumK<F, C>
     where F: Float,
           C: SumAccumulator<F> + AddAssign<F>
