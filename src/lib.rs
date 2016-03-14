@@ -1575,8 +1575,8 @@ impl<Acc, F> UnindexedConsumer<F> for SumConsumer<Acc>
     }
 }
 
-#[cfg(feature = "parallel")]
 /// A `SumAccumulator` that can be used in parallel computations
+#[cfg(feature = "parallel")]
 pub trait ParallelSumAccumulator<F>:
     SumAccumulator<F>
     + Add<Self, Output = Self>
@@ -1600,17 +1600,17 @@ impl<Acc, F> ParallelSumAccumulator<F> for Acc
 /// # Examples
 ///
 /// ```
-/// extern crate accurate;
-/// extern crate rayon;
+/// # extern crate accurate;
+/// # extern crate rayon;
 ///
 /// use rayon::prelude::*;
 /// use accurate::*;
 ///
-/// fn main() {
-///     let s = vec![1.0, 2.0, 3.0].par_iter().map(|&x| x)
-///         .parallel_sum_with_accumulator::<OnlineExactSum<_>>();
-///     assert_eq!(6.0f64, s);
-/// }
+/// # fn main() {
+/// let s = vec![1.0, 2.0, 3.0].par_iter().map(|&x| x)
+///     .parallel_sum_with_accumulator::<OnlineExactSum<_>>();
+/// assert_eq!(6.0f64, s);
+/// # }
 /// ```
 #[cfg(feature = "parallel")]
 pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
