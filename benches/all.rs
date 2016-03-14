@@ -264,3 +264,67 @@ fn parallel_sum_with<Acc, F>(b: &mut Bencher)
 #[bench] fn parallel_sum_with_oes_f32(b: &mut Bencher) { parallel_sum_with::<OnlineExactSum<_>, f32>(b); }
 #[cfg(feature = "parallel")]
 #[bench] fn parallel_sum_with_oes_f64(b: &mut Bencher) { parallel_sum_with::<OnlineExactSum<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+fn parallel_dot_with<Acc, F>(b: &mut Bencher)
+    where F: Float + Rand + Copy + Send + Sync,
+          Acc: ParallelDotAccumulator<F>
+{
+    // let xs = mk_vec::<F>(N);
+    // let ys = mk_vec::<F>(N);
+    // let zs = xs.into_iter().zip(ys.into_iter()).collect::<Vec<_>>();
+    let zs = mk_vec::<(F, F)>(N);
+    b.iter(|| {
+        let d = zs.par_iter().map(|&x| x).parallel_dot_with_accumulator::<Acc>();
+        test::black_box(d);
+    });
+}
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_naive_f32(b: &mut Bencher) { parallel_dot_with::<NaiveDot<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_naive_f64(b: &mut Bencher) { parallel_dot_with::<NaiveDot<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot2_f32(b: &mut Bencher) { parallel_dot_with::<Dot2<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot2_f64(b: &mut Bencher) { parallel_dot_with::<Dot2<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot3_f32(b: &mut Bencher) { parallel_dot_with::<Dot3<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot3_f64(b: &mut Bencher) { parallel_dot_with::<Dot3<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot4_f32(b: &mut Bencher) { parallel_dot_with::<Dot4<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot4_f64(b: &mut Bencher) { parallel_dot_with::<Dot4<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot5_f32(b: &mut Bencher) { parallel_dot_with::<Dot5<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot5_f64(b: &mut Bencher) { parallel_dot_with::<Dot5<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot6_f32(b: &mut Bencher) { parallel_dot_with::<Dot6<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot6_f64(b: &mut Bencher) { parallel_dot_with::<Dot6<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot7_f32(b: &mut Bencher) { parallel_dot_with::<Dot7<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot7_f64(b: &mut Bencher) { parallel_dot_with::<Dot7<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot8_f32(b: &mut Bencher) { parallel_dot_with::<Dot8<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot8_f64(b: &mut Bencher) { parallel_dot_with::<Dot8<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot9_f32(b: &mut Bencher) { parallel_dot_with::<Dot9<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_dot9_f64(b: &mut Bencher) { parallel_dot_with::<Dot9<_>, f64>(b); }
+
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_oes_f32(b: &mut Bencher) { parallel_dot_with::<OnlineExactDot<_>, f32>(b); }
+#[cfg(feature = "parallel")]
+#[bench] fn parallel_dot_with_oes_f64(b: &mut Bencher) { parallel_dot_with::<OnlineExactDot<_>, f64>(b); }

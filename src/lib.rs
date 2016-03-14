@@ -1615,3 +1615,127 @@ impl<T, F> ParallelSumWithAccumulator<F> for T
     where T: ParallelIterator<Item = F>,
           F: Zero + Send
 { }
+
+/// Adapts a `DotAccumulator` into a `Folder`
+#[cfg(feature = "parallel")]
+#[derive(Copy, Clone, Debug)]
+pub struct DotFolder<Acc>(Acc);
+
+#[cfg(feature = "parallel")]
+impl<Acc, F> Folder<(F, F)> for DotFolder<Acc>
+    where Acc: DotAccumulator<F>
+{
+    type Result = Acc;
+
+    #[inline]
+    fn consume(self, item: (F, F)) -> Self {
+        DotFolder(self.0 + item)
+    }
+
+    #[inline]
+    fn complete(self) -> Self::Result {
+        self.0
+    }
+}
+
+/// Adapts a `ParallelDotAccumulator` into a `Consumer`
+#[derive(Copy, Clone, Debug)]
+pub struct DotConsumer<Acc>(Acc);
+
+#[cfg(feature = "parallel")]
+impl<Acc, F> Consumer<(F, F)> for DotConsumer<Acc>
+    where Acc: ParallelDotAccumulator<F>,
+          F: Zero + Send
+{
+    type Folder = DotFolder<Acc>;
+    type Reducer = AddReducer;
+    type Result = Acc;
+
+    #[inline]
+    fn cost(&mut self, producer_cost: f64) -> f64 {
+        producer_cost
+    }
+
+    #[inline]
+    fn split_at(self, _index: usize) -> (Self, Self, Self::Reducer) {
+        (self, Acc::zero().into_consumer(), AddReducer)
+    }
+
+    #[inline]
+    fn into_folder(self) -> Self::Folder {
+        DotFolder(self.0)
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<Acc, F> UnindexedConsumer<(F, F)> for DotConsumer<Acc>
+    where Acc: ParallelDotAccumulator<F>,
+          F: Zero + Send
+{
+    #[inline]
+    fn split_off(&self) -> Self {
+        Acc::zero().into_consumer()
+    }
+
+    #[inline]
+    fn to_reducer(&self) -> Self::Reducer {
+        AddReducer
+    }
+}
+
+/// A `DotAccumulator` that can be used in parallel computations
+#[cfg(feature = "parallel")]
+pub trait ParallelDotAccumulator<F>:
+    DotAccumulator<F>
+    + Add<Self, Output = Self>
+    + Send
+    + Sized
+{
+    /// Turns an accumulator into a consumer
+    #[inline]
+    fn into_consumer(self) -> DotConsumer<Self> {
+        DotConsumer(self)
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<Acc, F> ParallelDotAccumulator<F> for Acc
+    where Acc: DotAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized
+{ }
+
+/// Calculates the dot product of an iterator, possibly in parallel
+///
+/// # Examples
+///
+/// ```
+/// # extern crate accurate;
+/// # extern crate rayon;
+///
+/// use rayon::prelude::*;
+/// use accurate::*;
+///
+/// # fn main() {
+/// let d = vec![(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
+///     .par_iter().map(|&x| x)
+///     .parallel_dot_with_accumulator::<OnlineExactDot<_>>();
+/// assert_eq!(14.0f64, d);
+/// # }
+/// ```
+#[cfg(feature = "parallel")]
+pub trait ParallelDotWithAccumulator<F>: ParallelIterator<Item = (F, F)>
+    where F: Send
+{
+    /// Calculate the dot product of an iterator, possibly in parallel
+    fn parallel_dot_with_accumulator<Acc>(self) -> F
+        where Acc: ParallelDotAccumulator<F>,
+              F: Zero
+    {
+        self.drive_unindexed(Acc::zero().into_consumer()).dot()
+    }
+}
+
+#[cfg(feature = "parallel")]
+impl<T, F> ParallelDotWithAccumulator<F> for T
+    where T: ParallelIterator<Item = (F, F)>,
+          F: Zero + Send
+{ }
