@@ -611,6 +611,22 @@ impl<F> From<F> for Dot2<F>
     }
 }
 
+impl<F> Add for Dot2<F>
+    where F: Float + TwoSum
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        let (r, p) = two_sum(self.p, rhs.p);
+        Dot2 { r: r, p: (self.p + p) + rhs.p, .. self }
+    }
+}
+
+unsafe impl<F> Send for Dot2<F>
+    where F: Send
+{}
+
 /// Calculates a dot product using both product transformation and cascaded accumulators
 ///
 /// See also `Dot2`... `Dot9`.
@@ -658,6 +674,25 @@ impl<F, R> From<F> for DotK<F, R>
         DotK { p: x, r: R::zero() }
     }
 }
+
+impl<F, R> Add for DotK<F, R>
+    where F: Float + TwoSum,
+          R: SumAccumulator<F>,
+          R::Output: Add<R, Output = R>
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        let (p, r) = two_sum(self.p, rhs.p);
+        DotK { p: p, r: (self.r + r) + rhs.r }
+    }
+}
+
+unsafe impl<F, R> Send for DotK<F, R>
+    where F: Send,
+          R: Send
+{}
 
 /// DotK with three cascaded accumulators
 ///
@@ -1239,6 +1274,19 @@ impl<F> From<F> for OnlineExactDot<F>
         OnlineExactDot { s: OnlineExactSum::from(x) }
     }
 }
+
+impl<F> Add for OnlineExactDot<F>
+    where OnlineExactSum<F>: Add<Output = OnlineExactSum<F>>
+{
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        OnlineExactDot { s: self.s + rhs.s }
+    }
+}
+
+unsafe impl<F> Send for OnlineExactDot<F> where F: Send { }
 
 /// Sums the items of an iterator
 ///
