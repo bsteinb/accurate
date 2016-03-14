@@ -174,6 +174,9 @@ fn dot_with<Acc, F>(b: &mut Bencher)
         test::black_box(d);
     });
 }
+#[bench] fn dot_with_naive_f32(b: &mut Bencher) { dot_with::<NaiveDot<_>, f32>(b); }
+#[bench] fn dot_with_naive_f64(b: &mut Bencher) { dot_with::<NaiveDot<_>, f64>(b); }
+
 #[bench] fn dot_with_dot2_f32(b: &mut Bencher) { dot_with::<Dot2<_>, f32>(b); }
 #[bench] fn dot_with_dot2_f64(b: &mut Bencher) { dot_with::<Dot2<_>, f64>(b); }
 

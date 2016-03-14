@@ -121,6 +121,8 @@ fn main() {
     let f = File::open(fname_dots).unwrap();
     let (xs, ys, ds, cs) = read_dots(f);
 
+    dot!(NaiveDot<_>, &xs, &ys, &ds, &cs);
+
     dot!(Dot2<_>, &xs, &ys, &ds, &cs);
     dot!(Dot3<_>, &xs, &ys, &ds, &cs);
     dot!(Dot4<_>, &xs, &ys, &ds, &cs);
