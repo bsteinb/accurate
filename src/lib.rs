@@ -1061,6 +1061,7 @@ pub struct OnlineExactSum<F> {
 impl<F> OnlineExactSum<F>
     where F: TwoSum + FloatFormat + RawExponent
 {
+    #[cfg_attr(feature = "clippy", allow(new_without_default))]
     fn new() -> Self {
         // Steps 1, 2, 3
         OnlineExactSum {
