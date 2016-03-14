@@ -2,6 +2,18 @@
 
 #![deny(missing_docs)]
 
+#![warn(missing_copy_implementations)]
+#![warn(missing_debug_implementations)]
+#![warn(trivial_casts)]
+#![warn(trivial_numeric_casts)]
+// This has false positives on #[macro_use],
+// see https://github.com/rust-lang/rust/issues/30849
+// #![warn(unused_extern_crates)]
+#![warn(unused_import_braces)]
+#![warn(unused_qualifications)]
+#![warn(unused_results)]
+#![deny(warnings)]
+
 #![cfg_attr(feature="clippy", feature(plugin))]
 #![cfg_attr(feature="clippy", plugin(clippy))]
 #![cfg_attr(feature="clippy", warn(cast_possible_truncation))]
@@ -35,7 +47,7 @@ use ieee754::Ieee754;
 use num::traits::{Float, PrimInt, Zero, One, ToPrimitive};
 
 #[cfg(feature = "parallel")]
-use rayon::par_iter::{ParallelIterator};
+use rayon::par_iter::ParallelIterator;
 
 #[cfg(feature = "parallel")]
 use rayon::par_iter::internal::{Consumer, Folder, Reducer, UnindexedConsumer};
@@ -146,7 +158,7 @@ pub fn two_sum<F>(a: F, b: F) -> (F, F) where F: TwoSum {
 /// let s = NaiveSum::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct NaiveSum<F>(F);
 
 impl<F> SumAccumulator<F> for NaiveSum<F>
@@ -208,7 +220,7 @@ unsafe impl<F> Send for NaiveSum<F>
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Sum2<F> {
     s: F,
     c: F,
@@ -267,7 +279,7 @@ unsafe impl<F> Send for Sum2<F> where F: Send { }
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SumK<F, C> {
     s: F,
     c: C
@@ -632,7 +644,7 @@ unsafe impl<F> Send for NaiveDot<F>
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Dot2<F> {
     p: F,
     r: F,
@@ -694,7 +706,7 @@ unsafe impl<F> Send for Dot2<F>
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct DotK<F, R> {
     p: F,
     r: R
@@ -1144,7 +1156,7 @@ impl<F> RawExponent for F
 /// # References
 ///
 /// Based on [Zhu and Hayes 10](http://dx.doi.org/10.1145/1824801.1824815)
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct OnlineExactSum<F> {
     i: usize,
     a1: Box<[F]>,
@@ -1293,6 +1305,7 @@ unsafe impl<F> Send for OnlineExactSum<F> where F: Send { }
 /// let d = OnlineExactDot::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
+#[derive(Clone, Debug)]
 pub struct OnlineExactDot<F> {
     s: OnlineExactSum<F>
 }
@@ -1482,6 +1495,7 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
 
 /// Reduce two parallel results using `Add`
 #[cfg(feature = "parallel")]
+#[derive(Copy, Clone, Debug)]
 pub struct AddReducer;
 
 #[cfg(feature = "parallel")]
@@ -1496,7 +1510,7 @@ impl<Acc> Reducer<Acc> for AddReducer
 
 /// Adapts a `SumAccumulator` into a `Folder`
 #[cfg(feature = "parallel")]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct SumFolder<Acc>(Acc);
 
 #[cfg(feature = "parallel")]
@@ -1517,6 +1531,7 @@ impl<Acc, F> Folder<F> for SumFolder<Acc>
 }
 
 /// Adapts a `ParallelSumAccumulator` into a `Consumer`
+#[derive(Copy, Clone, Debug)]
 pub struct SumConsumer<Acc>(Acc);
 
 #[cfg(feature = "parallel")]
