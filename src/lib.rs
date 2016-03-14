@@ -136,20 +136,20 @@ pub fn two_sum<F>(a: F, b: F) -> (F, F) where F: TwoSum {
 
 /// Naive floating point summation
 ///
-/// ![](https://rockshrub.de/accurate/Naive.svg)
+/// ![](https://rockshrub.de/accurate/NaiveSum.svg)
 ///
 /// # Examples
 ///
 /// ```
 /// use accurate::*;
 ///
-/// let s = Naive::zero() + 1.0 + 2.0 + 3.0;
+/// let s = NaiveSum::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
 #[derive(Copy, Clone)]
-pub struct Naive<F>(F);
+pub struct NaiveSum<F>(F);
 
-impl<F> SumAccumulator<F> for Naive<F>
+impl<F> SumAccumulator<F> for NaiveSum<F>
     where F: Float
 {
     #[inline]
@@ -158,37 +158,37 @@ impl<F> SumAccumulator<F> for Naive<F>
     }
 }
 
-impl<F> Add<F> for Naive<F>
+impl<F> Add<F> for NaiveSum<F>
     where F: Float
 {
     type Output = Self;
 
     #[inline]
     fn add(self, rhs: F) -> Self::Output {
-        Naive(self.0 + rhs)
+        NaiveSum(self.0 + rhs)
     }
 }
 
-impl<F> From<F> for Naive<F>
+impl<F> From<F> for NaiveSum<F>
     where F: Float
 {
     fn from(x: F) -> Self {
-        Naive(x)
+        NaiveSum(x)
     }
 }
 
-impl<F> Add for Naive<F>
+impl<F> Add for NaiveSum<F>
     where F: Float
 {
     type Output = Self;
 
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
-        Naive(self.0 + rhs.0)
+        NaiveSum(self.0 + rhs.0)
     }
 }
 
-unsafe impl<F> Send for Naive<F>
+unsafe impl<F> Send for NaiveSum<F>
     where F: Send
 {}
 

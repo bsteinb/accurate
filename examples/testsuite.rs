@@ -135,7 +135,7 @@ fn main() {
     let f = File::open(fname_sums).unwrap();
     let (zs, ds, cs) = read_sums(f);
 
-    sum!(Naive<_>, &zs, &ds, &cs);
+    sum!(NaiveSum<_>, &zs, &ds, &cs);
 
     sum!(Sum2<_>, &zs, &ds, &cs);
     sum!(Sum3<_>, &zs, &ds, &cs);

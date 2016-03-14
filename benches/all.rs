@@ -85,8 +85,8 @@ fn sum_with<Acc, F>(b: &mut Bencher)
         test::black_box(s);
     });
 }
-#[bench] fn sum_with_naive_f32(b: &mut Bencher) { sum_with::<Naive<_>, f32>(b); }
-#[bench] fn sum_with_naive_f64(b: &mut Bencher) { sum_with::<Naive<_>, f64>(b); }
+#[bench] fn sum_with_naive_f32(b: &mut Bencher) { sum_with::<NaiveSum<_>, f32>(b); }
+#[bench] fn sum_with_naive_f64(b: &mut Bencher) { sum_with::<NaiveSum<_>, f64>(b); }
 
 #[bench] fn sum_with_sum2_f32(b: &mut Bencher) { sum_with::<Sum2<_>, f32>(b); }
 #[bench] fn sum_with_sum2_f64(b: &mut Bencher) { sum_with::<Sum2<_>, f64>(b); }
@@ -213,9 +213,9 @@ fn parallel_sum_with<Acc, F>(b: &mut Bencher)
     });
 }
 #[cfg(feature = "parallel")]
-#[bench] fn parallel_sum_with_naive_f32(b: &mut Bencher) { parallel_sum_with::<Naive<_>, f32>(b); }
+#[bench] fn parallel_sum_with_naive_f32(b: &mut Bencher) { parallel_sum_with::<NaiveSum<_>, f32>(b); }
 #[cfg(feature = "parallel")]
-#[bench] fn parallel_sum_with_naive_f64(b: &mut Bencher) { parallel_sum_with::<Naive<_>, f64>(b); }
+#[bench] fn parallel_sum_with_naive_f64(b: &mut Bencher) { parallel_sum_with::<NaiveSum<_>, f64>(b); }
 
 #[cfg(feature = "parallel")]
 #[bench] fn parallel_sum_with_sum2_f32(b: &mut Bencher) { parallel_sum_with::<Sum2<_>, f32>(b); }
