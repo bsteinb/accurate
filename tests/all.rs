@@ -9,7 +9,8 @@ use rand::{Rand, Rng};
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
-use accurate::*;
+use accurate::traits::*;
+use accurate::sum::OnlineExactSum;
 
 fn mk_vec<T>(n: usize) -> Vec<T>
     where T: Rand

@@ -30,7 +30,8 @@ Then use it in your program like this:
 ```rust
 extern crate accurate;
 
-use accurate::*;
+use accurate::traits::*;
+use accurate::sum::Sum2;
 
 fn main() {
   let x = vec![1.0, 2.0, 3.0];

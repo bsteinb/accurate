@@ -22,7 +22,9 @@ use rand::{Rand, Rng};
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
-use accurate::*;
+use accurate::traits::*;
+use accurate::dot::{NaiveDot, Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, OnlineExactDot};
+use accurate::sum::{NaiveSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9, OnlineExactSum};
 
 const N: usize = 100_000;
 
