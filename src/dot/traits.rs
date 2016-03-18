@@ -11,8 +11,7 @@ use rayon::par_iter::ParallelIterator;
 use super::DotConsumer;
 
 /// Accumulates terms of a dot product
-pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F>
-{
+pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Clone {
     /// Initial value for an accumulator
     fn zero() -> Self
         where F: Zero

@@ -13,7 +13,7 @@ pub use sum::ifastsum::IFastSum;
 use sum::SumConsumer;
 
 /// Accumulates terms of a sum
-pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> {
+pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> + Clone {
     /// Initial value for an accumulator
     fn zero() -> Self
         where F: Zero
