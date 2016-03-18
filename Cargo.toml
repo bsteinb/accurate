@@ -16,11 +16,9 @@ default = [ "parallel" ]
 fma = []
 parallel = [ "rayon" ]
 unstable = []
-lint = [ "clippy" ]
 
 [dependencies]
 cfg-if = "0.1"
-clippy = { version = "*", optional = true }
 num = "0.1"
 ieee754 = "0.2"
 rayon = { version = "0.3", optional = true }
