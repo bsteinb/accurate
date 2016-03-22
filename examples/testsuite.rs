@@ -185,12 +185,12 @@ fn beautify(name: &str) -> &str {
 }
 
 macro_rules! dot {
-    ($acct:path, $xs:expr, $ys:expr, $ds:expr, $cs:expr) => {
-        _dot::<$acct>(beautify(stringify!($acct)), $xs, $ys, $ds, $cs);
+    (($xs:expr, $ys:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        $(dot_::<$acct>(beautify(stringify!($acct)), $xs, $ys, $ds, $cs);)*
     }
 }
 
-fn _dot<Acc>(name: &str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
+fn dot_<Acc>(name: &str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: DotAccumulator<F>
 {
     print!("Testing dot product with `{}`...", name);
@@ -204,13 +204,34 @@ fn _dot<Acc>(name: &str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
     println!(" done.");
 }
 
-macro_rules! sum {
-    ($acct:path, $zs:expr, $ds:expr, $cs:expr) => {
-        _sum::<$acct>(beautify(stringify!($acct)), $zs, $ds, $cs);
+macro_rules! parallel_dot {
+    (($xs:expr, $ys:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        $(parallel_dot_::<$acct>(beautify(stringify!($acct)), $xs, $ys, $ds, $cs);)*
     }
 }
 
-fn _sum<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
+fn parallel_dot_<Acc>(name: &str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
+    where Acc: ParallelDotAccumulator<F>
+{
+    print!("Testing parallel dot with `{}`...", name);
+    let mut f = OpenOptions::new().write(true).truncate(true).create(true)
+        .open(format!("Parallel{}.csv", name)).unwrap();
+    for i in 0..xs.len() {
+        let d = xs[i].par_iter().zip(ys[i].par_iter()).map(|(&x, &y)| (x, y))
+            .parallel_dot_with_accumulator::<Acc>();
+        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
+        writeln!(&mut f, "{}, {}", cs[i], e).unwrap();
+    }
+    println!(" done.");
+}
+
+macro_rules! sum {
+    (($zs:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        $(sum_::<$acct>(beautify(stringify!($acct)), $zs, $ds, $cs);)*
+    }
+}
+
+fn sum_<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: SumAccumulator<F>
 {
     print!("Testing sum with `{}`...", name);
@@ -225,12 +246,12 @@ fn _sum<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
 }
 
 macro_rules! parallel_sum {
-    ($acct:path, $zs:expr, $ds:expr, $cs:expr) => {
-        _parallel_sum::<$acct>(beautify(stringify!($acct)), $zs, $ds, $cs);
+    (($zs:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        $(parallel_sum_::<$acct>(beautify(stringify!($acct)), $zs, $ds, $cs);)*
     }
 }
 
-fn _parallel_sum<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
+fn parallel_sum_<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: ParallelSumAccumulator<F>
 {
     print!("Testing parallel sum with `{}`...", name);
@@ -247,44 +268,33 @@ fn _parallel_sum<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
 fn main() {
     let (xs, ys, ds, cs) = gen_dots();
 
-    dot!(NaiveDot<_>, &xs, &ys, &ds, &cs);
+    dot! {
+        (&xs, &ys, &ds, &cs),
+        NaiveDot<_>,
+        Dot2<_>, Dot3<_>, Dot4<_>, Dot5<_>, Dot6<_>, Dot7<_>, Dot8<_>, Dot9<_>,
+        OnlineExactDot<_>
+    };
 
-    dot!(Dot2<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot3<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot4<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot5<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot6<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot7<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot8<_>, &xs, &ys, &ds, &cs);
-    dot!(Dot9<_>, &xs, &ys, &ds, &cs);
-
-    dot!(OnlineExactDot<_>, &xs, &ys, &ds, &cs);
+    parallel_dot! {
+        (&xs, &ys, &ds, &cs),
+        NaiveDot<_>,
+        Dot2<_>, Dot3<_>, Dot4<_>, Dot5<_>, Dot6<_>, Dot7<_>, Dot8<_>, Dot9<_>,
+        OnlineExactDot<_>
+    };
 
     let (zs, ds, cs) = gen_sums();
 
-    sum!(NaiveSum<_>, &zs, &ds, &cs);
+    sum! {
+        (&zs, &ds, &cs),
+        NaiveSum<_>,
+        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>,
+        OnlineExactSum<_>
+    };
 
-    sum!(Sum2<_>, &zs, &ds, &cs);
-    sum!(Sum3<_>, &zs, &ds, &cs);
-    sum!(Sum4<_>, &zs, &ds, &cs);
-    sum!(Sum5<_>, &zs, &ds, &cs);
-    sum!(Sum6<_>, &zs, &ds, &cs);
-    sum!(Sum7<_>, &zs, &ds, &cs);
-    sum!(Sum8<_>, &zs, &ds, &cs);
-    sum!(Sum9<_>, &zs, &ds, &cs);
-
-    sum!(OnlineExactSum<_>, &zs, &ds, &cs);
-
-    parallel_sum!(NaiveSum<_>, &zs, &ds, &cs);
-
-    parallel_sum!(Sum2<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum3<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum4<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum5<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum6<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum7<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum8<_>, &zs, &ds, &cs);
-    parallel_sum!(Sum9<_>, &zs, &ds, &cs);
-
-    parallel_sum!(OnlineExactSum<_>, &zs, &ds, &cs);
+    parallel_sum! {
+        (&zs, &ds, &cs),
+        NaiveSum<_>,
+        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>,
+        OnlineExactSum<_>
+    };
 }
