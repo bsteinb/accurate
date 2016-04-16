@@ -42,14 +42,14 @@ impl<F> SumAccumulator<F> for Sum2<F>
 }
 
 impl<F> Add<F> for Sum2<F>
-    where F: Float + TwoSum
+    where Sum2<F>: AddAssign<F>
 {
     type Output = Self;
 
     #[inline]
-    fn add(self, rhs: F) -> Self::Output {
-        let (x, y) = two_sum(self.s, rhs);
-        Sum2 { s: x, c: self.c + y, .. self }
+    fn add(mut self, rhs: F) -> Self::Output {
+        self += rhs;
+        self
     }
 }
 
@@ -76,7 +76,7 @@ impl<F> Add for Sum2<F>
 unsafe impl<F> Send for Sum2<F> where F: Send { }
 
 impl<F> AddAssign<F> for Sum2<F>
-    where F: Float + TwoSum + AddAssign<F>
+    where F: Float + TwoSum + AddAssign
 {
     #[inline]
     fn add_assign(&mut self, rhs: F) {
@@ -112,15 +112,14 @@ impl<F, C> SumAccumulator<F> for SumK<F, C>
 }
 
 impl<F, C> Add<F> for SumK<F, C>
-    where F: Float + TwoSum,
-          C: SumAccumulator<F>
+    where SumK<F,C>: AddAssign<F>
 {
     type Output = Self;
 
     #[inline]
-    fn add(self, rhs: F) -> Self::Output {
-        let (x, y) = two_sum(self.s, rhs);
-        SumK { s: x, c: self.c + y }
+    fn add(mut self, rhs: F) -> Self::Output {
+        self += rhs;
+        self
     }
 }
 
@@ -154,7 +153,7 @@ unsafe impl<F, C> Send for SumK<F, C>
 
 impl<F, C> AddAssign<F> for SumK<F, C>
     where F: Float + TwoSum,
-          C: SumAccumulator<F> + AddAssign<F>
+          C: SumAccumulator<F>
 {
     #[inline]
     fn add_assign(&mut self, rhs: F) {

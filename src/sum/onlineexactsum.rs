@@ -101,43 +101,13 @@ impl<F> SumAccumulator<F> for OnlineExactSum<F>
 }
 
 impl<F> Add<F> for OnlineExactSum<F>
-    where F: TwoSum + FloatFormat + RawExponent
+    where OnlineExactSum<F>: AddAssign<F>
 {
     type Output = Self;
 
     #[inline]
     fn add(mut self, rhs: F) -> Self::Output {
-        // Step 4(2)
-        {
-            let j = rhs.raw_exponent();
-            // These accesses are guaranteed to be within bounds, because:
-            debug_assert_eq!(self.a1.len(), F::base_pow_exponent_digits());
-            debug_assert_eq!(self.a2.len(), F::base_pow_exponent_digits());
-            debug_assert!(j < F::base_pow_exponent_digits());
-            let a1 = unsafe { self.a1.get_unchecked_mut(j) };
-            let a2 = unsafe { self.a2.get_unchecked_mut(j) };
-
-            // Step 4(3)
-            let (a, e) = two_sum(*a1, rhs);
-            *a1 = a;
-
-            // Step 4(4)
-            *a2 = *a2 + e;
-        }
-
-        // Step 4(5)
-        // This addition is guaranteed not to overflow because the next step ascertains that (at
-        // this point):
-        debug_assert!(self.i < F::base_pow_significand_digits_half());
-        // and (for `f32` and `f64`) we have:
-        debug_assert!(F::base_pow_significand_digits_half() < usize::max_value());
-        // thus we can assume:
-        debug_assert!(self.i.checked_add(1).is_some());
-        self.i += 1;
-
-        // Step 4(6)
-        if self.i >= F::base_pow_significand_digits_half() { self.compact(); }
-
+        self += rhs;
         self
     }
 }

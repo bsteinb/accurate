@@ -32,13 +32,14 @@ impl<F> SumAccumulator<F> for NaiveSum<F>
 }
 
 impl<F> Add<F> for NaiveSum<F>
-    where F: Float
+    where NaiveSum<F>: AddAssign<F>
 {
     type Output = Self;
 
     #[inline]
-    fn add(self, rhs: F) -> Self::Output {
-        NaiveSum(self.0 + rhs)
+    fn add(mut self, rhs: F) -> Self::Output {
+        self += rhs;
+        self
     }
 }
 
