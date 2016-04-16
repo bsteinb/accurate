@@ -5,7 +5,7 @@
 This crate provides several algorithms that implement highly accurate or even guaranteed correct
 sum and dot product for floating-point numbers without resorting to arbitrary precision arithmetic.
 
-[travis-shield]: https://img.shields.io/travis/bsteinb/accurate.svg?style=flat-square
+[travis-shield]: https://img.shields.io/travis/bsteinb/accurate/master.svg?style=flat-square
 [travis]: https://travis-ci.org/bsteinb/accurate
 [doc-shield]: https://img.shields.io/badge/documentation-hosted-blue.svg?style=flat-square
 [doc]: http://bsteinb.github.io/accurate/
