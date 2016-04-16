@@ -1,6 +1,6 @@
 //! Naive floating point summation
 
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
 
 use num::Float;
 
@@ -65,8 +65,7 @@ unsafe impl<F> Send for NaiveSum<F>
     where F: Send
 {}
 
-#[cfg(feature = "unstable")]
-impl<F> AddAssign<F> for Naive<F>
+impl<F> AddAssign<F> for NaiveSum<F>
     where F: Float
 {
     #[inline]

@@ -1,6 +1,6 @@
 //! The SumK algorithm
 
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
 
 use num::Float;
 
@@ -33,7 +33,7 @@ pub struct Sum2<F> {
 }
 
 impl<F> SumAccumulator<F> for Sum2<F>
-    where F: Float + TwoSum
+    where F: Float + TwoSum + AddAssign
 {
     #[inline]
     fn sum(self) -> F {
@@ -75,7 +75,6 @@ impl<F> Add for Sum2<F>
 
 unsafe impl<F> Send for Sum2<F> where F: Send { }
 
-#[cfg(feature = "unstable")]
 impl<F> AddAssign<F> for Sum2<F>
     where F: Float + TwoSum + AddAssign<F>
 {
@@ -153,7 +152,6 @@ unsafe impl<F, C> Send for SumK<F, C>
           C: Send
 { }
 
-#[cfg(feature = "unstable")]
 impl<F, C> AddAssign<F> for SumK<F, C>
     where F: Float + TwoSum,
           C: SumAccumulator<F> + AddAssign<F>

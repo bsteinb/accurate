@@ -15,7 +15,6 @@ build = "build.rs"
 default = [ "parallel" ]
 fma = []
 parallel = [ "rayon" ]
-unstable = []
 
 [dependencies]
 cfg-if = "0.1"

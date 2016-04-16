@@ -1,6 +1,6 @@
 //! The OnlineExactSum algorithm
 
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
 
 use num::traits::Float;
 
@@ -163,7 +163,6 @@ impl<F> Add for OnlineExactSum<F>
 
 unsafe impl<F> Send for OnlineExactSum<F> where F: Send { }
 
-#[cfg(feature = "unstable")]
 impl<F> AddAssign<F> for OnlineExactSum<F>
     where F: TwoSum + FloatFormat + RawExponent
 {

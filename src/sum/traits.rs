@@ -1,6 +1,6 @@
 //! Summation traits
 
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
 
 use num::traits::Zero;
 
@@ -13,7 +13,7 @@ pub use sum::ifastsum::IFastSum;
 use sum::SumConsumer;
 
 /// Accumulates terms of a sum
-pub trait SumAccumulator<F>: Add<F, Output = Self> + From<F> + Clone {
+pub trait SumAccumulator<F>: Add<F, Output = Self> + AddAssign<F> + From<F> + Clone {
     /// Initial value for an accumulator
     fn zero() -> Self
         where F: Zero
