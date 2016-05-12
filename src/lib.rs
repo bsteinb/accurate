@@ -160,8 +160,6 @@ assert_eq!(100_000.0, s);
 #![warn(unused_results)]
 #![deny(warnings)]
 
-#![cfg_attr(clippy, feature(plugin))]
-#![cfg_attr(clippy, plugin(clippy))]
 #![cfg_attr(clippy, warn(cast_possible_truncation))]
 #![cfg_attr(clippy, warn(cast_possible_wrap))]
 #![cfg_attr(clippy, warn(cast_precision_loss))]

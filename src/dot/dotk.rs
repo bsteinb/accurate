@@ -1,4 +1,4 @@
-//! The DotK algorithm
+//! The `DotK` algorithm
 
 use std::ops::Add;
 
@@ -10,7 +10,7 @@ use sum::traits::SumAccumulator;
 use util::{two_sum, two_product};
 use util::traits::{TwoSum, TwoProduct};
 
-/// DotK with two cascaded accumulators
+/// `DotK` with two cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -147,7 +147,7 @@ unsafe impl<F, R> Send for DotK<F, R>
           R: Send
 {}
 
-/// DotK with three cascaded accumulators
+/// `DotK` with three cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -166,7 +166,7 @@ unsafe impl<F, R> Send for DotK<F, R>
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Dot3<F> = DotK<F, Sum2<F>>;
 
-/// DotK with four cascaded accumulators
+/// `DotK` with four cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -185,7 +185,7 @@ pub type Dot3<F> = DotK<F, Sum2<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Dot4<F> = DotK<F, Sum3<F>>;
 
-/// DotK with five cascaded accumulators
+/// `DotK` with five cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -204,7 +204,7 @@ pub type Dot4<F> = DotK<F, Sum3<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Dot5<F> = DotK<F, Sum4<F>>;
 
-/// DotK with six cascaded accumulators
+/// `DotK` with six cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -223,7 +223,7 @@ pub type Dot5<F> = DotK<F, Sum4<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Dot6<F> = DotK<F, Sum5<F>>;
 
-/// DotK with seven cascaded accumulators
+/// `DotK` with seven cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -242,7 +242,7 @@ pub type Dot6<F> = DotK<F, Sum5<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Dot7<F> = DotK<F, Sum6<F>>;
 
-/// DotK with eight cascaded accumulators
+/// `DotK` with eight cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///
@@ -261,7 +261,7 @@ pub type Dot7<F> = DotK<F, Sum6<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Dot8<F> = DotK<F, Sum7<F>>;
 
-/// DotK with nine cascaded accumulators
+/// `DotK` with nine cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/DotK.svg)
 ///

@@ -1,4 +1,4 @@
-//! The SumK algorithm
+//! The `SumK` algorithm
 
 use std::ops::{Add, AddAssign};
 
@@ -8,7 +8,7 @@ use super::traits::SumAccumulator;
 use util::two_sum;
 use util::traits::TwoSum;
 
-/// SumK with two cascaded accumulators
+/// `SumK` with two cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -163,7 +163,7 @@ impl<F, C> AddAssign<F> for SumK<F, C>
     }
 }
 
-/// SumK with three cascaded accumulators
+/// `SumK` with three cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -182,7 +182,7 @@ impl<F, C> AddAssign<F> for SumK<F, C>
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum3<F> = SumK<F, Sum2<F>>;
 
-/// SumK with four cascaded accumulators
+/// `SumK` with four cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -201,7 +201,7 @@ pub type Sum3<F> = SumK<F, Sum2<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum4<F> = SumK<F, Sum3<F>>;
 
-/// SumK with five cascaded accumulators
+/// `SumK` with five cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -220,7 +220,7 @@ pub type Sum4<F> = SumK<F, Sum3<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum5<F> = SumK<F, Sum4<F>>;
 
-/// SumK with six cascaded accumulators
+/// `SumK` with six cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -239,7 +239,7 @@ pub type Sum5<F> = SumK<F, Sum4<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum6<F> = SumK<F, Sum5<F>>;
 
-/// SumK with seven cascaded accumulators
+/// `SumK` with seven cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -258,7 +258,7 @@ pub type Sum6<F> = SumK<F, Sum5<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum7<F> = SumK<F, Sum6<F>>;
 
-/// SumK with eight cascaded accumulators
+/// `SumK` with eight cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///
@@ -277,7 +277,7 @@ pub type Sum7<F> = SumK<F, Sum6<F>>;
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
 pub type Sum8<F> = SumK<F, Sum7<F>>;
 
-/// SumK with nine cascaded accumulators
+/// `SumK` with nine cascaded accumulators
 ///
 /// ![](https://rockshrub.de/accurate/SumK.svg)
 ///

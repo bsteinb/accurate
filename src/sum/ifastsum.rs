@@ -1,4 +1,4 @@
-//! The iFastSum algorithm
+//! The `iFastSum` algorithm
 
 use util::{two_sum, round3};
 use util::traits::{TwoSum, HalfUlp, Round3};
@@ -23,7 +23,6 @@ pub fn i_fast_sum_in_place<F>(xs: &mut [F]) -> F
     i_fast_sum_in_place_aux(xs, &mut n, true)
 }
 
-#[cfg_attr(feature="clippy", allow(cyclomatic_complexity))]
 fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
     where F: IFastSum
 {

@@ -1,4 +1,4 @@
-//! OnlineExactSum for dot product
+//! `OnlineExactSum` for dot product
 
 use std::ops::Add;
 

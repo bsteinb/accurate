@@ -3,10 +3,6 @@
 #[cfg(feature = "parallel")]
 use std::ops::Add;
 
-use ieee754::Ieee754;
-
-use num::traits::Float;
-
 #[cfg(feature = "parallel")]
 use rayon::par_iter::internal::Reducer;
 
@@ -14,6 +10,7 @@ pub mod traits;
 
 use self::traits::{TwoSum, TwoProduct, Round3};
 
+#[cfg_attr(feature = "clippy", allow(doc_markdown))]
 /// Sum transformation
 ///
 /// Transforms a sum `a + b` into the pair `(x, y)` where

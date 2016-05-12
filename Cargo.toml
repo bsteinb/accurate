@@ -15,6 +15,8 @@ build = "build.rs"
 default = [ "parallel" ]
 fma = []
 parallel = [ "rayon" ]
+clippy = []
+lint = [ "clippy" ]
 
 [dependencies]
 cfg-if = "0.1"
