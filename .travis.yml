@@ -12,6 +12,10 @@ env:
     # CRATES_IO_TOKEN=...
     - secure: "PNJ5i9pFNaG9VwZNQtjOxAU+Mh2URiFGVqxWuiXI+vhBJf1+vyOInKFgVuEQ8Wp2E68RkrflpVIiKuHGz3aVNnmvdgHKGOydQbvvcXCc17MgE2vhKN+t1wO4M17zTcLP4DAB2LjbUiqWMZ1UU0OHcywOfHEZBbbiVcqk/8FARVyBSnLU5B8nSN5NUul6/qJr8b8ETfFE4ExNxHt3+wKLkKwVBNf85jzGzXB6O/loMLbte9c2QNG225kf93KUSTNeCpeFOyunzqk7c6bhiaHPtbwFpjJgeCjMEz8ci/VdriEXW9FfWVantG0iJypzvSgyU7cMXQOEx4nPVxAvZ66rrJ6Uv4dY08NLZGmJh37X9LEESwwx/xlUap4bCE8PSdfPStVMxrdIdsYWT7QAaCzwEk1eej6T11E2XsmDkCV4cWYonTegtHYg8NL20EnIKUGGH+f476pefs2HLy4gFMWgIP6Js9ugo9JmmJBoShVXgA8WUN1kkceZ2oVSAINpGuT7RJguocvTp6aSTd84EaGn9/fS+GvrpCUQi2Vv7DwFnuz0wa4xzgI//lfnqyhLqfP/+/gz9WhQua2uPKyMvxnWCS9peZStVKjgE+1d0M1iv5agdMuaVQ9x99LmCLW7KLAtQzJW/kHxo1Ny+rSRabt0CJCTpAyRckvZ76qoHRUkiNE="
 
+matrix:
+  allow_failures:
+    - rust: nightly
+
 install:
   - pip install 'ghp-import' --user
 
