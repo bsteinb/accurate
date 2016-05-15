@@ -64,7 +64,7 @@ fn i_fast_sum_in_place_aux<F>(xs: &mut [F], n: &mut usize, recurse: bool) -> F
                 debug_assert!(count < usize::max_value());
                 // and thus:
                 debug_assert!(count.checked_add(1).is_some());
-                count = count + 1;
+                count += 1;
 
                 // Step 3(2)(b)(ii)
                 sm = sm.max(st.abs());

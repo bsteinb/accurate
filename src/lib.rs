@@ -164,6 +164,7 @@ assert_eq!(100_000.0, s);
 #![cfg_attr(feature = "clippy", warn(cast_possible_wrap))]
 #![cfg_attr(feature = "clippy", warn(cast_precision_loss))]
 #![cfg_attr(feature = "clippy", warn(cast_sign_loss))]
+#![cfg_attr(feature = "clippy", allow(many_single_char_names))]
 #![cfg_attr(feature = "clippy", warn(mut_mut))]
 #![cfg_attr(feature = "clippy", warn(mutex_integer))]
 #![cfg_attr(feature = "clippy", warn(non_ascii_literal))]
