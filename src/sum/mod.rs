@@ -16,7 +16,7 @@ pub use self::onlineexactsum::OnlineExactSum;
 use num::traits::Zero;
 
 #[cfg(feature = "parallel")]
-use rayon::par_iter::internal::{Folder, Consumer, UnindexedConsumer};
+use rayon::iter::plumbing::{Folder, Consumer, UnindexedConsumer};
 
 #[cfg(feature = "parallel")]
 use self::traits::SumAccumulator;
@@ -45,6 +45,11 @@ impl<Acc, F> Folder<F> for SumFolder<Acc>
     fn complete(self) -> Self::Result {
         self.0
     }
+
+    #[inline]
+    fn full(&self) -> bool {
+        false
+    }
 }
 
 /// Adapts a `ParallelSumAccumulator` into a `Consumer`
@@ -62,11 +67,6 @@ impl<Acc, F> Consumer<F> for SumConsumer<Acc>
     type Result = Acc;
 
     #[inline]
-    fn cost(&mut self, producer_cost: f64) -> f64 {
-        producer_cost
-    }
-
-    #[inline]
     fn split_at(self, _index: usize) -> (Self, Self, Self::Reducer) {
         (self, Acc::zero().into_consumer(), AddReducer)
     }
@@ -74,6 +74,11 @@ impl<Acc, F> Consumer<F> for SumConsumer<Acc>
     #[inline]
     fn into_folder(self) -> Self::Folder {
         SumFolder(self.0)
+    }
+
+    #[inline]
+    fn full(&self) -> bool {
+        false
     }
 }
 
@@ -83,7 +88,7 @@ impl<Acc, F> UnindexedConsumer<F> for SumConsumer<Acc>
           F: Zero + Send
 {
     #[inline]
-    fn split_off(&self) -> Self {
+    fn split_off_left(&self) -> Self {
         Acc::zero().into_consumer()
     }
 

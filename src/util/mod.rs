@@ -4,7 +4,7 @@
 use std::ops::Add;
 
 #[cfg(feature = "parallel")]
-use rayon::par_iter::internal::Reducer;
+use rayon::iter::plumbing::Reducer;
 
 pub mod traits;
 

@@ -14,7 +14,7 @@ pub use self::onlineexactdot::OnlineExactDot;
 use num::traits::Zero;
 
 #[cfg(feature = "parallel")]
-use rayon::par_iter::internal::{Folder, Consumer, UnindexedConsumer};
+use rayon::iter::plumbing::{Folder, Consumer, UnindexedConsumer};
 
 #[cfg(feature = "parallel")]
 use self::traits::DotAccumulator;
@@ -43,6 +43,11 @@ impl<Acc, F> Folder<(F, F)> for DotFolder<Acc>
     fn complete(self) -> Self::Result {
         self.0
     }
+
+    #[inline]
+    fn full(&self) -> bool {
+        false
+    }
 }
 
 /// Adapts a `ParallelDotAccumulator` into a `Consumer`
@@ -60,11 +65,6 @@ impl<Acc, F> Consumer<(F, F)> for DotConsumer<Acc>
     type Result = Acc;
 
     #[inline]
-    fn cost(&mut self, producer_cost: f64) -> f64 {
-        producer_cost
-    }
-
-    #[inline]
     fn split_at(self, _index: usize) -> (Self, Self, Self::Reducer) {
         (self, Acc::zero().into_consumer(), AddReducer)
     }
@@ -72,6 +72,11 @@ impl<Acc, F> Consumer<(F, F)> for DotConsumer<Acc>
     #[inline]
     fn into_folder(self) -> Self::Folder {
         DotFolder(self.0)
+    }
+
+    #[inline]
+    fn full(&self) -> bool {
+        false
     }
 }
 
@@ -81,7 +86,7 @@ impl<Acc, F> UnindexedConsumer<(F, F)> for DotConsumer<Acc>
           F: Zero + Send
 {
     #[inline]
-    fn split_off(&self) -> Self {
+    fn split_off_left(&self) -> Self {
         Acc::zero().into_consumer()
     }
 

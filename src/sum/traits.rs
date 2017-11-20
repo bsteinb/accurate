@@ -5,7 +5,7 @@ use std::ops::{Add, AddAssign};
 use num::traits::Zero;
 
 #[cfg(feature = "parallel")]
-use rayon::par_iter::ParallelIterator;
+use rayon::iter::ParallelIterator;
 
 pub use sum::ifastsum::IFastSum;
 
