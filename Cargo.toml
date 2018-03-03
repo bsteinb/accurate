@@ -22,7 +22,7 @@ lint = [ "clippy" ]
 cfg-if = "0.1"
 num = "0.1"
 ieee754 = "0.2"
-rayon = { version = "0.9", optional = true }
+rayon = { version = "1", optional = true }
 
 [build-dependencies]
 skeptic = "0.13"
