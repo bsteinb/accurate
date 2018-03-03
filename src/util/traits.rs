@@ -146,7 +146,7 @@ impl FloatFormat for f64 {
     fn base_pow_exponent_digits() -> usize { 2048 }
 
     #[inline]
-    fn base_pow_significand_digits_half() -> usize { 67108864 }
+    fn base_pow_significand_digits_half() -> usize { 67_108_864 }
 }
 
 /// Extract the raw exponent of a floating-point number

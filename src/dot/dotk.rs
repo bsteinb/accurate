@@ -52,7 +52,7 @@ impl<F> Add<(F, F)> for Dot2<F>
     fn add(self, (a, b): (F, F)) -> Self {
         let (h, r1) = two_product(a, b);
         let (p, r2) = two_sum(self.p, h);
-        Dot2 { p: p, r: (self.r + r1) + r2, .. self }
+        Dot2 { p, r: (self.r + r1) + r2, .. self }
     }
 }
 
@@ -72,7 +72,7 @@ impl<F> Add for Dot2<F>
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (r, p) = two_sum(self.p, rhs.p);
-        Dot2 { r: r, p: (self.p + p) + rhs.p, .. self }
+        Dot2 { r, p: (self.p + p) + rhs.p, .. self }
     }
 }
 
@@ -115,7 +115,7 @@ impl<F, R> Add<(F, F)> for DotK<F, R>
     fn add(self, (a, b): (F, F)) -> Self {
         let (h, r1) = two_product(a, b);
         let (p, r2) = two_sum(self.p, h);
-        DotK { p: p, r: (self.r + r1) + r2 }
+        DotK { p, r: (self.r + r1) + r2 }
     }
 }
 
@@ -138,7 +138,7 @@ impl<F, R> Add for DotK<F, R>
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (p, r) = two_sum(self.p, rhs.p);
-        DotK { p: p, r: (self.r + r) + rhs.r }
+        DotK { p, r: (self.r + r) + rhs.r }
     }
 }
 

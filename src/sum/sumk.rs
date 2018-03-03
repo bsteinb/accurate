@@ -69,7 +69,7 @@ impl<F> Add for Sum2<F>
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (s, c) = two_sum(self.s, rhs.s);
-        Sum2 { s: s, c: (self.c + c) + rhs.c, .. self }
+        Sum2 { s, c: (self.c + c) + rhs.c, .. self }
     }
 }
 
@@ -142,7 +142,7 @@ impl<F, C> Add for SumK<F, C>
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (s, c) = two_sum(self.s, rhs.s);
-        SumK { s: s, c: (self.c + c) + rhs.c }
+        SumK { s, c: (self.c + c) + rhs.c }
     }
 }
 
