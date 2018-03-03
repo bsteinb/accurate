@@ -28,5 +28,5 @@ rayon = { version = "1", optional = true }
 skeptic = "0.13"
 
 [dev-dependencies]
-rand = "0.3"
+rand = "0.4"
 skeptic = "0.13"
