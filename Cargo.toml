@@ -28,5 +28,10 @@ rayon = { version = "1", optional = true }
 skeptic = "0.13"
 
 [dev-dependencies]
+criterion = "0.2"
 rand = "0.4"
 skeptic = "0.13"
+
+[[bench]]
+name = "criterion"
+harness = false
