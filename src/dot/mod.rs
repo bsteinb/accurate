@@ -14,7 +14,7 @@ pub use self::onlineexactdot::OnlineExactDot;
 use num::traits::Zero;
 
 #[cfg(feature = "parallel")]
-use rayon::iter::plumbing::{Folder, Consumer, UnindexedConsumer};
+use rayon::iter::plumbing::{Consumer, Folder, UnindexedConsumer};
 
 #[cfg(feature = "parallel")]
 use self::traits::DotAccumulator;
@@ -30,7 +30,8 @@ pub struct DotFolder<Acc>(Acc);
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> Folder<(F, F)> for DotFolder<Acc>
-    where Acc: DotAccumulator<F>
+where
+    Acc: DotAccumulator<F>,
 {
     type Result = Acc;
 
@@ -57,8 +58,9 @@ pub struct DotConsumer<Acc>(Acc);
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> Consumer<(F, F)> for DotConsumer<Acc>
-    where Acc: ParallelDotAccumulator<F>,
-          F: Zero + Send
+where
+    Acc: ParallelDotAccumulator<F>,
+    F: Zero + Send,
 {
     type Folder = DotFolder<Acc>;
     type Reducer = AddReducer;
@@ -82,8 +84,9 @@ impl<Acc, F> Consumer<(F, F)> for DotConsumer<Acc>
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> UnindexedConsumer<(F, F)> for DotConsumer<Acc>
-    where Acc: ParallelDotAccumulator<F>,
-          F: Zero + Send
+where
+    Acc: ParallelDotAccumulator<F>,
+    F: Zero + Send,
 {
     #[inline]
     fn split_off_left(&self) -> Self {

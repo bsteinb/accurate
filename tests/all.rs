@@ -13,7 +13,8 @@ use accurate::traits::*;
 use accurate::sum::OnlineExactSum;
 
 fn mk_vec<T>(n: usize) -> Vec<T>
-    where T: Rand
+where
+    T: Rand,
 {
     let mut rng = rand::thread_rng();
     rng.gen_iter::<T>().take(n).collect()
@@ -28,11 +29,9 @@ fn oes_add() {
         .absorb(xs.iter().cloned())
         .absorb(ys.iter().cloned());
 
-    let s1 = OnlineExactSum::zero()
-        .absorb(xs.iter().cloned());
+    let s1 = OnlineExactSum::zero().absorb(xs.iter().cloned());
 
-    let s2 = OnlineExactSum::zero()
-        .absorb(ys.iter().cloned());
+    let s2 = OnlineExactSum::zero().absorb(ys.iter().cloned());
 
     assert_eq!(s.sum(), (s1 + s2).sum());
 }
@@ -42,8 +41,12 @@ fn oes_add() {
 fn parallel_sum_oes() {
     let xs = mk_vec::<f64>(100_000);
 
-    let s1 = xs.par_iter().map(|&x| x).parallel_sum_with_accumulator::<OnlineExactSum<_>>();
-    let s2 = xs.iter().cloned().sum_with_accumulator::<OnlineExactSum<_>>();
+    let s1 = xs.par_iter()
+        .map(|&x| x)
+        .parallel_sum_with_accumulator::<OnlineExactSum<_>>();
+    let s2 = xs.iter()
+        .cloned()
+        .sum_with_accumulator::<OnlineExactSum<_>>();
 
     assert_eq!(s1, s2);
 }

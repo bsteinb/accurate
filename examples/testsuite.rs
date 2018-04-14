@@ -21,14 +21,15 @@ use rand::Rng;
 use rayon::prelude::*;
 
 use accurate::traits::*;
-use accurate::dot::{NaiveDot, Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, OnlineExactDot};
-use accurate::sum::{NaiveSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9, OnlineExactSum};
+use accurate::dot::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, NaiveDot, OnlineExactDot};
+use accurate::sum::{NaiveSum, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
 use accurate::util::two_product;
 
 type F = f64;
 
 fn dot_exact<Iter>(iter: Iter) -> F
-    where Iter: Iterator<Item = (F, F)>
+where
+    Iter: Iterator<Item = (F, F)>,
 {
     let mut acc = BigFloat::new(2048);
 
@@ -43,7 +44,8 @@ fn dot_exact<Iter>(iter: Iter) -> F
 }
 
 fn sum_exact<Iter>(iter: Iter) -> F
-    where Iter: Iterator<Item = F>
+where
+    Iter: Iterator<Item = F>,
 {
     let mut acc = BigFloat::new(2048);
 
@@ -64,10 +66,12 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
     let mut y;
 
     if n.mod_floor(&2) == 0 {
-        let c = (1..m - 1).map(|i| {
-            let r = if l > 0 { i.mod_floor(&l) } else { 1 };
-            rng.gen_range(0.0, 1.0) * eps.powi(r)
-        }).collect::<Vec<_>>();
+        let c = (1..m - 1)
+            .map(|i| {
+                let r = if l > 0 { i.mod_floor(&l) } else { 1 };
+                rng.gen_range(0.0, 1.0) * eps.powi(r)
+            })
+            .collect::<Vec<_>>();
 
         x = vec![1.0];
         x.extend_from_slice(&c);
@@ -76,9 +80,9 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         x.extend(c.into_iter().map(|x| -x));
         x.push(0.5 / cnd);
 
-        let b = (1..m - 1).map(|_| {
-            rng.gen_range(0.0, 1.0)
-        }).collect::<Vec<_>>();
+        let b = (1..m - 1)
+            .map(|_| rng.gen_range(0.0, 1.0))
+            .collect::<Vec<_>>();
 
         y = vec![1.0];
         y.extend_from_slice(&b);
@@ -87,10 +91,12 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         y.extend_from_slice(&b);
         y.push(1.0);
     } else {
-        let c = (1..m).map(|i| {
-            let r = i.mod_floor(&l);
-            rng.gen_range(0.0, 1.0) * eps.powi(r)
-        }).collect::<Vec<_>>();
+        let c = (1..m)
+            .map(|i| {
+                let r = i.mod_floor(&l);
+                rng.gen_range(0.0, 1.0) * eps.powi(r)
+            })
+            .collect::<Vec<_>>();
 
         x = vec![1.0];
         x.extend_from_slice(&c);
@@ -98,9 +104,7 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         x.push(-1.0);
         x.extend(c.into_iter().map(|x| -x));
 
-        let b = (1..m).map(|_| {
-            rng.gen_range(0.0, 1.0)
-        }).collect::<Vec<_>>();
+        let b = (1..m).map(|_| rng.gen_range(0.0, 1.0)).collect::<Vec<_>>();
 
         y = vec![1.0];
         y.extend_from_slice(&b);
@@ -114,9 +118,11 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
 
     let d = dot_exact(x.iter().cloned().zip(y.iter().cloned()));
     let absd = dot_exact(
-        x.iter().cloned().map(|x| x.abs()).zip(
-            y.iter().cloned().map(|x| x.abs()))
-        );
+        x.iter()
+            .cloned()
+            .map(|x| x.abs())
+            .zip(y.iter().cloned().map(|x| x.abs())),
+    );
     let c = 2.0 * absd / d.abs();
 
     (x, y, d, c)
@@ -143,9 +149,9 @@ fn gen_dots() -> (Vec<Vec<F>>, Vec<Vec<F>>, Vec<F>, Vec<F>) {
     let mut cs = vec![];
 
     let emax = 300;
-    for e in 0 .. emax + 1 {
+    for e in 0..emax + 1 {
         print!("Working on exponent {} of {}", e, emax);
-        for _ in 0 .. 10 {
+        for _ in 0..10 {
             print!(".");
             io::stdout().flush().unwrap();
             let (x, y, d, c) = gendot2(1000, 10.0.powi(e));
@@ -167,9 +173,9 @@ fn gen_sums() -> (Vec<Vec<F>>, Vec<F>, Vec<F>) {
     let mut cs = vec![];
 
     let emax = 280;
-    for e in 0 .. emax + 1 {
+    for e in 0..emax + 1 {
         print!("Working on exponent {} of {}", e, emax);
-        for _ in 0 .. 10 {
+        for _ in 0..10 {
             print!(".");
             io::stdout().flush().unwrap();
             let (z, s, c) = gensum(2000, 10.0.powi(e));
@@ -189,30 +195,33 @@ fn beautify(name: &str) -> &str {
 
 fn make_figure(filename: &'static str, title: &'static str) -> Figure {
     let mut f = Figure::new();
-    f
-        .set(Title(title))
+    f.set(Title(title))
         .set(Output(Path::new(filename)))
-        .configure(Axis::BottomX, |a| a
-            .set(Label("condition number"))
-            .set(Scale::Logarithmic))
-        .configure(Axis::LeftY, |a| a
-            .set(Label("relative error"))
-            .set(Scale::Logarithmic)
-            .set(Range::Limits(1.0e-17, 10.0)))
-        .configure(Key, |k| k
-            .set(Position::Inside(Vertical::Center, Horizontal::Right))
-            .set(Title("")));
+        .configure(Axis::BottomX, |a| {
+            a.set(Label("condition number")).set(Scale::Logarithmic)
+        })
+        .configure(Axis::LeftY, |a| {
+            a.set(Label("relative error"))
+                .set(Scale::Logarithmic)
+                .set(Range::Limits(1.0e-17, 10.0))
+        })
+        .configure(Key, |k| {
+            k.set(Position::Inside(Vertical::Center, Horizontal::Right))
+                .set(Title(""))
+        });
     f
 }
 
 fn draw_figure(mut figure: Figure) {
     assert!(
         figure
-        .draw()
-        .expect("could not execute gnuplot")
-        .wait_with_output()
-        .expect("could not wait on gnuplot")
-        .status.success());
+            .draw()
+            .expect("could not execute gnuplot")
+            .wait_with_output()
+            .expect("could not wait on gnuplot")
+            .status
+            .success()
+    );
 }
 
 fn make_color() -> Color {
@@ -222,12 +231,16 @@ fn make_color() -> Color {
 
 fn plot(figure: &mut Figure, label: &'static str, xs: &[F], ys: &[F]) {
     figure.plot(
-        Points { x: &xs[..], y: &ys[..] },
-        |l| l
-            .set(Label(label))
-            .set(PointType::FilledCircle)
-            .set(PointSize(0.2))
-            .set(make_color())
+        Points {
+            x: &xs[..],
+            y: &ys[..],
+        },
+        |l| {
+            l.set(Label(label))
+                .set(PointType::FilledCircle)
+                .set(PointSize(0.2))
+                .set(make_color())
+        },
     );
 }
 
@@ -239,13 +252,24 @@ macro_rules! dot {
     }
 }
 
-fn dot_<Acc>(figure: &mut Figure, name: &'static str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
-    where Acc: DotAccumulator<F>
+fn dot_<Acc>(
+    figure: &mut Figure,
+    name: &'static str,
+    xs: &[Vec<F>],
+    ys: &[Vec<F>],
+    ds: &[F],
+    cs: &[F],
+) where
+    Acc: DotAccumulator<F>,
 {
     print!("Testing dot product with `{}`...", name);
     let mut es = vec![];
     for i in 0..xs.len() {
-        let d = xs[i].iter().cloned().zip(ys[i].iter().cloned()).dot_with_accumulator::<Acc>();
+        let d = xs[i]
+            .iter()
+            .cloned()
+            .zip(ys[i].iter().cloned())
+            .dot_with_accumulator::<Acc>();
         es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
     plot(figure, name, &cs[..], &es[..]);
@@ -260,13 +284,23 @@ macro_rules! parallel_dot {
     }
 }
 
-fn parallel_dot_<Acc>(figure: &mut Figure, name: &'static str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
-    where Acc: ParallelDotAccumulator<F>
+fn parallel_dot_<Acc>(
+    figure: &mut Figure,
+    name: &'static str,
+    xs: &[Vec<F>],
+    ys: &[Vec<F>],
+    ds: &[F],
+    cs: &[F],
+) where
+    Acc: ParallelDotAccumulator<F>,
 {
     print!("Testing parallel dot with `{}`...", name);
     let mut es = vec![];
     for i in 0..xs.len() {
-        let d = xs[i].par_iter().zip(ys[i].par_iter()).map(|(&x, &y)| (x, y))
+        let d = xs[i]
+            .par_iter()
+            .zip(ys[i].par_iter())
+            .map(|(&x, &y)| (x, y))
             .parallel_dot_with_accumulator::<Acc>();
         es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
@@ -283,7 +317,8 @@ macro_rules! sum {
 }
 
 fn sum_<Acc>(figure: &mut Figure, name: &'static str, zs: &[Vec<F>], ds: &[F], cs: &[F])
-    where Acc: SumAccumulator<F>
+where
+    Acc: SumAccumulator<F>,
 {
     print!("Testing sum with `{}`...", name);
     let mut es = vec![];
@@ -304,12 +339,16 @@ macro_rules! parallel_sum {
 }
 
 fn parallel_sum_<Acc>(figure: &mut Figure, name: &'static str, zs: &[Vec<F>], ds: &[F], cs: &[F])
-    where Acc: ParallelSumAccumulator<F>
+where
+    Acc: ParallelSumAccumulator<F>,
 {
     print!("Testing parallel sum with `{}`...", name);
     let mut es = vec![];
     for i in 0..zs.len() {
-        let d = zs[i].par_iter().map(|&x| x).parallel_sum_with_accumulator::<Acc>();
+        let d = zs[i]
+            .par_iter()
+            .map(|&x| x)
+            .parallel_sum_with_accumulator::<Acc>();
         es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
     plot(figure, name, &cs[..], &es[..]);

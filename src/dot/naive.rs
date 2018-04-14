@@ -23,7 +23,8 @@ use super::traits::DotAccumulator;
 pub struct NaiveDot<F>(F);
 
 impl<F> DotAccumulator<F> for NaiveDot<F>
-    where F: Float
+where
+    F: Float,
 {
     #[inline]
     fn dot(self) -> F {
@@ -32,7 +33,8 @@ impl<F> DotAccumulator<F> for NaiveDot<F>
 }
 
 impl<F> Add<(F, F)> for NaiveDot<F>
-    where F: Float
+where
+    F: Float,
 {
     type Output = Self;
 
@@ -43,7 +45,8 @@ impl<F> Add<(F, F)> for NaiveDot<F>
 }
 
 impl<F> From<F> for NaiveDot<F>
-    where F: Float
+where
+    F: Float,
 {
     fn from(x: F) -> Self {
         NaiveDot(x)
@@ -51,7 +54,8 @@ impl<F> From<F> for NaiveDot<F>
 }
 
 impl<F> Add for NaiveDot<F>
-    where F: Float
+where
+    F: Float,
 {
     type Output = Self;
 
@@ -62,5 +66,7 @@ impl<F> Add for NaiveDot<F>
 }
 
 unsafe impl<F> Send for NaiveDot<F>
-    where F: Send
-{}
+where
+    F: Send,
+{
+}

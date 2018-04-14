@@ -5,9 +5,9 @@ use std::ops::{Add, AddAssign};
 use num::traits::Float;
 
 use super::i_fast_sum_in_place;
-use super::traits::{SumAccumulator, IFastSum};
+use super::traits::{IFastSum, SumAccumulator};
 use util::two_sum;
-use util::traits::{TwoSum, FloatFormat, RawExponent};
+use util::traits::{FloatFormat, RawExponent, TwoSum};
 
 /// Calculates a sum using separate accumulators for each possible exponent
 ///
@@ -30,18 +30,19 @@ use util::traits::{TwoSum, FloatFormat, RawExponent};
 pub struct OnlineExactSum<F> {
     i: usize,
     a1: Box<[F]>,
-    a2: Box<[F]>
+    a2: Box<[F]>,
 }
 
 impl<F> OnlineExactSum<F>
-    where F: TwoSum + FloatFormat + RawExponent
+where
+    F: TwoSum + FloatFormat + RawExponent,
 {
     fn new() -> Self {
         // Steps 1, 2, 3
         OnlineExactSum {
             i: 0,
             a1: vec![F::zero(); F::base_pow_exponent_digits()].into_boxed_slice(),
-            a2: vec![F::zero(); F::base_pow_exponent_digits()].into_boxed_slice()
+            a2: vec![F::zero(); F::base_pow_exponent_digits()].into_boxed_slice(),
         }
     }
 
@@ -80,7 +81,8 @@ impl<F> OnlineExactSum<F>
 }
 
 impl<F> SumAccumulator<F> for OnlineExactSum<F>
-    where F: Float + TwoSum + IFastSum + FloatFormat + RawExponent
+where
+    F: Float + TwoSum + IFastSum + FloatFormat + RawExponent,
 {
     fn zero() -> Self {
         Self::new()
@@ -100,7 +102,8 @@ impl<F> SumAccumulator<F> for OnlineExactSum<F>
 }
 
 impl<F> Add<F> for OnlineExactSum<F>
-    where OnlineExactSum<F>: AddAssign<F>
+where
+    OnlineExactSum<F>: AddAssign<F>,
 {
     type Output = Self;
 
@@ -112,7 +115,8 @@ impl<F> Add<F> for OnlineExactSum<F>
 }
 
 impl<F> From<F> for OnlineExactSum<F>
-    where F: TwoSum + FloatFormat + RawExponent
+where
+    F: TwoSum + FloatFormat + RawExponent,
 {
     fn from(x: F) -> Self {
         Self::new() + x
@@ -120,7 +124,8 @@ impl<F> From<F> for OnlineExactSum<F>
 }
 
 impl<F> Add for OnlineExactSum<F>
-    where F: Float + TwoSum + IFastSum + FloatFormat + RawExponent
+where
+    F: Float + TwoSum + IFastSum + FloatFormat + RawExponent,
 {
     type Output = Self;
 
@@ -130,10 +135,15 @@ impl<F> Add for OnlineExactSum<F>
     }
 }
 
-unsafe impl<F> Send for OnlineExactSum<F> where F: Send { }
+unsafe impl<F> Send for OnlineExactSum<F>
+where
+    F: Send,
+{
+}
 
 impl<F> AddAssign<F> for OnlineExactSum<F>
-    where F: TwoSum + FloatFormat + RawExponent
+where
+    F: TwoSum + FloatFormat + RawExponent,
 {
     #[inline]
     fn add_assign(&mut self, rhs: F) {
@@ -166,6 +176,8 @@ impl<F> AddAssign<F> for OnlineExactSum<F>
         self.i += 1;
 
         // Step 4(6)
-        if self.i >= F::base_pow_significand_digits_half() { self.compact(); }
+        if self.i >= F::base_pow_significand_digits_half() {
+            self.compact();
+        }
     }
 }

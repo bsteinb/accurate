@@ -2,12 +2,16 @@
 
 use ieee754::Ieee754;
 
-use num::traits::{Float, Zero, PrimInt, ToPrimitive};
+use num::traits::{Float, PrimInt, ToPrimitive, Zero};
 
 /// Sum transformation
-pub trait TwoSum: Float { }
+pub trait TwoSum: Float {}
 
-impl<F> TwoSum for F where F: Float { }
+impl<F> TwoSum for F
+where
+    F: Float,
+{
+}
 
 /// Split a floating-point number
 pub trait Split: Float {
@@ -38,11 +42,17 @@ pub trait Split: Float {
 }
 
 impl Split for f32 {
-    #[inline] fn split_factor() -> Self { 4097.0 }
+    #[inline]
+    fn split_factor() -> Self {
+        4097.0
+    }
 }
 
 impl Split for f64 {
-    #[inline] fn split_factor() -> Self { 134217729.0 }
+    #[inline]
+    fn split_factor() -> Self {
+        134217729.0
+    }
 }
 
 cfg_if! {
@@ -69,8 +79,9 @@ pub trait HalfUlp {
 }
 
 impl<F> HalfUlp for F
-    where F: Float + Ieee754,
-          F::Significand: Zero + Eq
+where
+    F: Float + Ieee754,
+    F::Significand: Zero + Eq,
 {
     #[inline]
     fn has_half_ulp_form(self) -> bool {
@@ -85,9 +96,13 @@ impl<F> HalfUlp for F
 }
 
 /// Correctly rounded sum of three non-overlapping numbers
-pub trait Round3: Float + Ieee754 + HalfUlp { }
+pub trait Round3: Float + Ieee754 + HalfUlp {}
 
-impl<F> Round3 for F where F: Float + Ieee754 + HalfUlp { }
+impl<F> Round3 for F
+where
+    F: Float + Ieee754 + HalfUlp,
+{
+}
 
 /// Describes the layout of a floating-point number
 pub trait FloatFormat {
@@ -103,50 +118,74 @@ pub trait FloatFormat {
     /// The base raised to the power of the exponent`s length
     #[inline]
     fn base_pow_exponent_digits() -> usize {
-        Self::base().to_usize().expect("floating-point base cannot be converted to usize")
+        Self::base()
+            .to_usize()
+            .expect("floating-point base cannot be converted to usize")
             .pow(Self::exponent_digits())
     }
 
     /// The base raised to the power of half the mantissa`s length
     #[inline]
     fn base_pow_significand_digits_half() -> usize {
-        Self::base().to_usize().expect("floating-point base cannot be converted to usize")
+        Self::base()
+            .to_usize()
+            .expect("floating-point base cannot be converted to usize")
             .pow(Self::significand_digits() / 2)
     }
 }
 
 impl FloatFormat for f32 {
     #[inline]
-    fn base() -> u32 { 2 }
+    fn base() -> u32 {
+        2
+    }
 
     #[inline]
-    fn significand_digits() -> u32 { 24 }
+    fn significand_digits() -> u32 {
+        24
+    }
 
     #[inline]
-    fn exponent_digits() -> u32 { 8 }
+    fn exponent_digits() -> u32 {
+        8
+    }
 
     #[inline]
-    fn base_pow_exponent_digits() -> usize { 256 }
+    fn base_pow_exponent_digits() -> usize {
+        256
+    }
 
     #[inline]
-    fn base_pow_significand_digits_half() -> usize { 4096 }
+    fn base_pow_significand_digits_half() -> usize {
+        4096
+    }
 }
 
 impl FloatFormat for f64 {
     #[inline]
-    fn base() -> u32 { 2 }
+    fn base() -> u32 {
+        2
+    }
 
     #[inline]
-    fn significand_digits() -> u32 { 53 }
+    fn significand_digits() -> u32 {
+        53
+    }
 
     #[inline]
-    fn exponent_digits() -> u32 { 11 }
+    fn exponent_digits() -> u32 {
+        11
+    }
 
     #[inline]
-    fn base_pow_exponent_digits() -> usize { 2048 }
+    fn base_pow_exponent_digits() -> usize {
+        2048
+    }
 
     #[inline]
-    fn base_pow_significand_digits_half() -> usize { 67_108_864 }
+    fn base_pow_significand_digits_half() -> usize {
+        67_108_864
+    }
 }
 
 /// Extract the raw exponent of a floating-point number
@@ -156,11 +195,15 @@ pub trait RawExponent {
 }
 
 impl<F> RawExponent for F
-    where F: Ieee754,
-          F::RawExponent: PrimInt
+where
+    F: Ieee754,
+    F::RawExponent: PrimInt,
 {
     #[inline]
     fn raw_exponent(self) -> usize {
-        self.decompose_raw().1.to_usize().expect("exponent does not fit in a usize.")
+        self.decompose_raw()
+            .1
+            .to_usize()
+            .expect("exponent does not fit in a usize.")
     }
 }

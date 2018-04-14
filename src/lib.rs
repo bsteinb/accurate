@@ -122,7 +122,8 @@
 //!     .dot_with_accumulator::<Dot2<_>>());
 //! ```
 //!
-#![cfg_attr(feature = "parallel", doc = "
+#![cfg_attr(feature = "parallel",
+            doc = "
 # Parallel computation
 
 If compiled with the `parallel` feature enabled (which is the default) the `rayon` parallel
@@ -145,9 +146,7 @@ assert_eq!(100_000.0, s);
 # }
 ```
 ")]
-
 #![deny(missing_docs)]
-
 #![warn(missing_copy_implementations)]
 #![warn(missing_debug_implementations)]
 #![warn(trivial_casts)]
@@ -159,7 +158,6 @@ assert_eq!(100_000.0, s);
 #![warn(unused_qualifications)]
 #![warn(unused_results)]
 #![deny(warnings)]
-
 #![cfg_attr(feature = "cargo-clippy", warn(cast_possible_truncation))]
 #![cfg_attr(feature = "cargo-clippy", warn(cast_possible_wrap))]
 #![cfg_attr(feature = "cargo-clippy", warn(cast_precision_loss))]

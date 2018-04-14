@@ -16,7 +16,7 @@ pub use self::onlineexactsum::OnlineExactSum;
 use num::traits::Zero;
 
 #[cfg(feature = "parallel")]
-use rayon::iter::plumbing::{Folder, Consumer, UnindexedConsumer};
+use rayon::iter::plumbing::{Consumer, Folder, UnindexedConsumer};
 
 #[cfg(feature = "parallel")]
 use self::traits::SumAccumulator;
@@ -32,7 +32,8 @@ pub struct SumFolder<Acc>(Acc);
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> Folder<F> for SumFolder<Acc>
-    where Acc: SumAccumulator<F>
+where
+    Acc: SumAccumulator<F>,
 {
     type Result = Acc;
 
@@ -59,8 +60,9 @@ pub struct SumConsumer<Acc>(Acc);
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> Consumer<F> for SumConsumer<Acc>
-    where Acc: ParallelSumAccumulator<F>,
-          F: Zero + Send
+where
+    Acc: ParallelSumAccumulator<F>,
+    F: Zero + Send,
 {
     type Folder = SumFolder<Acc>;
     type Reducer = AddReducer;
@@ -84,8 +86,9 @@ impl<Acc, F> Consumer<F> for SumConsumer<Acc>
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> UnindexedConsumer<F> for SumConsumer<Acc>
-    where Acc: ParallelSumAccumulator<F>,
-          F: Zero + Send
+where
+    Acc: ParallelSumAccumulator<F>,
+    F: Zero + Send,
 {
     #[inline]
     fn split_off_left(&self) -> Self {

@@ -14,7 +14,8 @@ use super::DotConsumer;
 pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Clone {
     /// Initial value for an accumulator
     fn zero() -> Self
-        where F: Zero
+    where
+        F: Zero,
     {
         Self::from(F::zero())
     }
@@ -37,7 +38,8 @@ pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Clone {
     /// assert_eq!(14.0f64, d.dot())
     /// ```
     fn absorb<I>(self, it: I) -> Self
-        where I: IntoIterator<Item = (F, F)>
+    where
+        I: IntoIterator<Item = (F, F)>,
     {
         it.into_iter().fold(self, |acc, x| acc + x)
     }
@@ -58,16 +60,19 @@ pub trait DotAccumulator<F>: Add<(F, F), Output = Self> + From<F> + Clone {
 pub trait DotWithAccumulator<F> {
     /// Calculates the dot product of the items of an iterator
     fn dot_with_accumulator<Acc>(self) -> F
-        where Acc: DotAccumulator<F>,
-              F: Zero;
+    where
+        Acc: DotAccumulator<F>,
+        F: Zero;
 }
 
 impl<I, F> DotWithAccumulator<F> for I
-    where I: IntoIterator<Item = (F, F)>
+where
+    I: IntoIterator<Item = (F, F)>,
 {
     fn dot_with_accumulator<Acc>(self) -> F
-        where Acc: DotAccumulator<F>,
-              F: Zero
+    where
+        Acc: DotAccumulator<F>,
+        F: Zero,
     {
         Acc::zero().absorb(self).dot()
     }
@@ -75,12 +80,8 @@ impl<I, F> DotWithAccumulator<F> for I
 
 /// A `DotAccumulator` that can be used in parallel computations
 #[cfg(feature = "parallel")]
-pub trait ParallelDotAccumulator<F>:
-    DotAccumulator<F>
-    + Add<Self, Output = Self>
-    + Send
-    + Sized
-{
+pub trait ParallelDotAccumulator<F>
+    : DotAccumulator<F> + Add<Self, Output = Self> + Send + Sized {
     /// Turns an accumulator into a consumer
     #[inline]
     fn into_consumer(self) -> DotConsumer<Self> {
@@ -90,8 +91,10 @@ pub trait ParallelDotAccumulator<F>:
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> ParallelDotAccumulator<F> for Acc
-    where Acc: DotAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized
-{ }
+where
+    Acc: DotAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized,
+{
+}
 
 /// Calculates the dot product of an iterator, possibly in parallel
 ///
@@ -115,12 +118,14 @@ impl<Acc, F> ParallelDotAccumulator<F> for Acc
 /// ```
 #[cfg(feature = "parallel")]
 pub trait ParallelDotWithAccumulator<F>: ParallelIterator<Item = (F, F)>
-    where F: Send
+where
+    F: Send,
 {
     /// Calculate the dot product of an iterator, possibly in parallel
     fn parallel_dot_with_accumulator<Acc>(self) -> F
-        where Acc: ParallelDotAccumulator<F>,
-              F: Zero
+    where
+        Acc: ParallelDotAccumulator<F>,
+        F: Zero,
     {
         self.drive_unindexed(Acc::zero().into_consumer()).dot()
     }
@@ -128,6 +133,8 @@ pub trait ParallelDotWithAccumulator<F>: ParallelIterator<Item = (F, F)>
 
 #[cfg(feature = "parallel")]
 impl<T, F> ParallelDotWithAccumulator<F> for T
-    where T: ParallelIterator<Item = (F, F)>,
-          F: Zero + Send
-{ }
+where
+    T: ParallelIterator<Item = (F, F)>,
+    F: Zero + Send,
+{
+}

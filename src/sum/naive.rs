@@ -23,7 +23,8 @@ use super::traits::SumAccumulator;
 pub struct NaiveSum<F>(F);
 
 impl<F> SumAccumulator<F> for NaiveSum<F>
-    where F: Float
+where
+    F: Float,
 {
     #[inline]
     fn sum(self) -> F {
@@ -32,7 +33,8 @@ impl<F> SumAccumulator<F> for NaiveSum<F>
 }
 
 impl<F> Add<F> for NaiveSum<F>
-    where NaiveSum<F>: AddAssign<F>
+where
+    NaiveSum<F>: AddAssign<F>,
 {
     type Output = Self;
 
@@ -44,7 +46,8 @@ impl<F> Add<F> for NaiveSum<F>
 }
 
 impl<F> From<F> for NaiveSum<F>
-    where F: Float
+where
+    F: Float,
 {
     fn from(x: F) -> Self {
         NaiveSum(x)
@@ -52,7 +55,8 @@ impl<F> From<F> for NaiveSum<F>
 }
 
 impl<F> Add for NaiveSum<F>
-    where F: Float
+where
+    F: Float,
 {
     type Output = Self;
 
@@ -63,11 +67,14 @@ impl<F> Add for NaiveSum<F>
 }
 
 unsafe impl<F> Send for NaiveSum<F>
-    where F: Send
-{}
+where
+    F: Send,
+{
+}
 
 impl<F> AddAssign<F> for NaiveSum<F>
-    where F: Float
+where
+    F: Float,
 {
     #[inline]
     fn add_assign(&mut self, rhs: F) {

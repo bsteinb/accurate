@@ -7,8 +7,8 @@ use num::Float;
 use super::traits::DotAccumulator;
 use sum::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
 use sum::traits::SumAccumulator;
-use util::{two_sum, two_product};
-use util::traits::{TwoSum, TwoProduct};
+use util::{two_product, two_sum};
+use util::traits::{TwoProduct, TwoSum};
 
 /// `DotK` with two cascaded accumulators
 ///
@@ -34,7 +34,8 @@ pub struct Dot2<F> {
 }
 
 impl<F> DotAccumulator<F> for Dot2<F>
-    where F: Float + TwoProduct + TwoSum
+where
+    F: Float + TwoProduct + TwoSum,
 {
     #[inline]
     fn dot(self) -> F {
@@ -43,7 +44,8 @@ impl<F> DotAccumulator<F> for Dot2<F>
 }
 
 impl<F> Add<(F, F)> for Dot2<F>
-    where F: Float + TwoProduct + TwoSum
+where
+    F: Float + TwoProduct + TwoSum,
 {
     type Output = Self;
 
@@ -51,12 +53,17 @@ impl<F> Add<(F, F)> for Dot2<F>
     fn add(self, (a, b): (F, F)) -> Self {
         let (h, r1) = two_product(a, b);
         let (p, r2) = two_sum(self.p, h);
-        Dot2 { p, r: (self.r + r1) + r2, .. self }
+        Dot2 {
+            p,
+            r: (self.r + r1) + r2,
+            ..self
+        }
     }
 }
 
 impl<F> From<F> for Dot2<F>
-    where F: Float
+where
+    F: Float,
 {
     fn from(x: F) -> Self {
         Dot2 { p: x, r: F::zero() }
@@ -64,20 +71,27 @@ impl<F> From<F> for Dot2<F>
 }
 
 impl<F> Add for Dot2<F>
-    where F: Float + TwoSum
+where
+    F: Float + TwoSum,
 {
     type Output = Self;
 
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (r, p) = two_sum(self.p, rhs.p);
-        Dot2 { r, p: (self.p + p) + rhs.p, .. self }
+        Dot2 {
+            r,
+            p: (self.p + p) + rhs.p,
+            ..self
+        }
     }
 }
 
 unsafe impl<F> Send for Dot2<F>
-    where F: Send
-{}
+where
+    F: Send,
+{
+}
 
 /// Calculates a dot product using both product transformation and cascaded accumulators
 ///
@@ -91,12 +105,13 @@ unsafe impl<F> Send for Dot2<F>
 #[derive(Copy, Clone, Debug)]
 pub struct DotK<F, R> {
     p: F,
-    r: R
+    r: R,
 }
 
 impl<F, R> DotAccumulator<F> for DotK<F, R>
-    where F: Float + TwoProduct + TwoSum,
-          R: SumAccumulator<F>
+where
+    F: Float + TwoProduct + TwoSum,
+    R: SumAccumulator<F>,
 {
     #[inline]
     fn dot(self) -> F {
@@ -105,8 +120,9 @@ impl<F, R> DotAccumulator<F> for DotK<F, R>
 }
 
 impl<F, R> Add<(F, F)> for DotK<F, R>
-    where F: TwoProduct + TwoSum,
-          R: SumAccumulator<F>
+where
+    F: TwoProduct + TwoSum,
+    R: SumAccumulator<F>,
 {
     type Output = Self;
 
@@ -114,13 +130,17 @@ impl<F, R> Add<(F, F)> for DotK<F, R>
     fn add(self, (a, b): (F, F)) -> Self {
         let (h, r1) = two_product(a, b);
         let (p, r2) = two_sum(self.p, h);
-        DotK { p, r: (self.r + r1) + r2 }
+        DotK {
+            p,
+            r: (self.r + r1) + r2,
+        }
     }
 }
 
 impl<F, R> From<F> for DotK<F, R>
-    where F: Float,
-          R: SumAccumulator<F>
+where
+    F: Float,
+    R: SumAccumulator<F>,
 {
     fn from(x: F) -> Self {
         DotK { p: x, r: R::zero() }
@@ -128,23 +148,29 @@ impl<F, R> From<F> for DotK<F, R>
 }
 
 impl<F, R> Add for DotK<F, R>
-    where F: Float + TwoSum,
-          R: SumAccumulator<F>,
-          R::Output: Add<R, Output = R>
+where
+    F: Float + TwoSum,
+    R: SumAccumulator<F>,
+    R::Output: Add<R, Output = R>,
 {
     type Output = Self;
 
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         let (p, r) = two_sum(self.p, rhs.p);
-        DotK { p, r: (self.r + r) + rhs.r }
+        DotK {
+            p,
+            r: (self.r + r) + rhs.r,
+        }
     }
 }
 
 unsafe impl<F, R> Send for DotK<F, R>
-    where F: Send,
-          R: Send
-{}
+where
+    F: Send,
+    R: Send,
+{
+}
 
 /// `DotK` with three cascaded accumulators
 ///

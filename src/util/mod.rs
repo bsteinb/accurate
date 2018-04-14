@@ -8,7 +8,7 @@ use rayon::iter::plumbing::Reducer;
 
 pub mod traits;
 
-use self::traits::{TwoSum, TwoProduct, Round3};
+use self::traits::{Round3, TwoProduct, TwoSum};
 
 #[cfg_attr(feature = "clippy", allow(doc_markdown))]
 /// Sum transformation
@@ -31,11 +31,14 @@ use self::traits::{TwoSum, TwoProduct, Round3};
 ///
 /// From Knuth's AoCP, Volume 2: Seminumerical Algorithms
 #[inline]
-pub fn two_sum<F>(a: F, b: F) -> (F, F) where F: TwoSum {
+pub fn two_sum<F>(a: F, b: F) -> (F, F)
+where
+    F: TwoSum,
+{
     let x = a + b;
     let z = x - a;
     let y = (a - (x - z)) + (b - z);
-    (x , y)
+    (x, y)
 }
 
 cfg_if! {
@@ -115,7 +118,10 @@ cfg_if! {
 ///
 /// Based on [Zhu and Hayes 09](http://dx.doi.org/10.1137/070710020)
 #[inline]
-pub fn round3<F>(s0: F, s1: F, s2: F) -> F where F: Round3 {
+pub fn round3<F>(s0: F, s1: F, s2: F) -> F
+where
+    F: Round3,
+{
     debug_assert!(s0 == s0 + s1);
     debug_assert!(s1 == s1 + s2);
     if s1.has_half_ulp_form() && s1.signum() == s2.signum() {
@@ -132,7 +138,8 @@ pub struct AddReducer;
 
 #[cfg(feature = "parallel")]
 impl<Acc> Reducer<Acc> for AddReducer
-    where Acc: Add<Acc, Output = Acc>
+where
+    Acc: Add<Acc, Output = Acc>,
 {
     #[inline]
     fn reduce(self, left: Acc, right: Acc) -> Acc {

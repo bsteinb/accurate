@@ -23,12 +23,13 @@ use util::traits::TwoProduct;
 /// ```
 #[derive(Clone, Debug)]
 pub struct OnlineExactDot<F> {
-    s: OnlineExactSum<F>
+    s: OnlineExactSum<F>,
 }
 
 impl<F> DotAccumulator<F> for OnlineExactDot<F>
-    where F: TwoProduct,
-          OnlineExactSum<F>: SumAccumulator<F>
+where
+    F: TwoProduct,
+    OnlineExactSum<F>: SumAccumulator<F>,
 {
     fn zero() -> Self {
         OnlineExactDot::from(F::zero())
@@ -41,8 +42,9 @@ impl<F> DotAccumulator<F> for OnlineExactDot<F>
 }
 
 impl<F> Add<(F, F)> for OnlineExactDot<F>
-    where F: TwoProduct,
-          OnlineExactSum<F>: SumAccumulator<F>
+where
+    F: TwoProduct,
+    OnlineExactSum<F>: SumAccumulator<F>,
 {
     type Output = Self;
 
@@ -55,15 +57,19 @@ impl<F> Add<(F, F)> for OnlineExactDot<F>
 }
 
 impl<F> From<F> for OnlineExactDot<F>
-    where OnlineExactSum<F>: SumAccumulator<F>
+where
+    OnlineExactSum<F>: SumAccumulator<F>,
 {
     fn from(x: F) -> Self {
-        OnlineExactDot { s: OnlineExactSum::from(x) }
+        OnlineExactDot {
+            s: OnlineExactSum::from(x),
+        }
     }
 }
 
 impl<F> Add for OnlineExactDot<F>
-    where OnlineExactSum<F>: Add<Output = OnlineExactSum<F>>
+where
+    OnlineExactSum<F>: Add<Output = OnlineExactSum<F>>,
 {
     type Output = Self;
 
@@ -73,4 +79,8 @@ impl<F> Add for OnlineExactDot<F>
     }
 }
 
-unsafe impl<F> Send for OnlineExactDot<F> where F: Send { }
+unsafe impl<F> Send for OnlineExactDot<F>
+where
+    F: Send,
+{
+}

@@ -13,10 +13,12 @@ pub use sum::ifastsum::IFastSum;
 use sum::SumConsumer;
 
 /// Accumulates terms of a sum
-pub trait SumAccumulator<F>: Add<F, Output = Self> + AddAssign<F> + From<F> + Clone {
+pub trait SumAccumulator<F>
+    : Add<F, Output = Self> + AddAssign<F> + From<F> + Clone {
     /// Initial value for an accumulator
     fn zero() -> Self
-        where F: Zero
+    where
+        F: Zero,
     {
         Self::from(F::zero())
     }
@@ -36,7 +38,8 @@ pub trait SumAccumulator<F>: Add<F, Output = Self> + AddAssign<F> + From<F> + Cl
     /// assert_eq!(6.0f64, s.sum())
     /// ```
     fn absorb<I>(self, it: I) -> Self
-        where I: IntoIterator<Item = F>
+    where
+        I: IntoIterator<Item = F>,
     {
         it.into_iter().fold(self, |acc, x| acc + x)
     }
@@ -56,16 +59,19 @@ pub trait SumAccumulator<F>: Add<F, Output = Self> + AddAssign<F> + From<F> + Cl
 pub trait SumWithAccumulator<F> {
     /// Sums the items of an iterator
     fn sum_with_accumulator<Acc>(self) -> F
-        where Acc: SumAccumulator<F>,
-              F: Zero;
+    where
+        Acc: SumAccumulator<F>,
+        F: Zero;
 }
 
 impl<I, F> SumWithAccumulator<F> for I
-    where I: IntoIterator<Item = F>
+where
+    I: IntoIterator<Item = F>,
 {
     fn sum_with_accumulator<Acc>(self) -> F
-        where Acc: SumAccumulator<F>,
-              F: Zero
+    where
+        Acc: SumAccumulator<F>,
+        F: Zero,
     {
         Acc::zero().absorb(self).sum()
     }
@@ -73,12 +79,8 @@ impl<I, F> SumWithAccumulator<F> for I
 
 /// A `SumAccumulator` that can be used in parallel computations
 #[cfg(feature = "parallel")]
-pub trait ParallelSumAccumulator<F>:
-    SumAccumulator<F>
-    + Add<Self, Output = Self>
-    + Send
-    + Sized
-{
+pub trait ParallelSumAccumulator<F>
+    : SumAccumulator<F> + Add<Self, Output = Self> + Send + Sized {
     /// Turns an accumulator into a consumer
     #[inline]
     fn into_consumer(self) -> SumConsumer<Self> {
@@ -88,8 +90,10 @@ pub trait ParallelSumAccumulator<F>:
 
 #[cfg(feature = "parallel")]
 impl<Acc, F> ParallelSumAccumulator<F> for Acc
-    where Acc: SumAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized
-{ }
+where
+    Acc: SumAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized,
+{
+}
 
 /// Sums the items of an iterator, possibly in parallel
 ///
@@ -112,12 +116,14 @@ impl<Acc, F> ParallelSumAccumulator<F> for Acc
 /// ```
 #[cfg(feature = "parallel")]
 pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
-    where F: Send
+where
+    F: Send,
 {
     /// Sums the items of an iterator, possibly in parallel
     fn parallel_sum_with_accumulator<Acc>(self) -> F
-        where Acc: ParallelSumAccumulator<F>,
-              F: Zero
+    where
+        Acc: ParallelSumAccumulator<F>,
+        F: Zero,
     {
         self.drive_unindexed(Acc::zero().into_consumer()).sum()
     }
@@ -125,6 +131,8 @@ pub trait ParallelSumWithAccumulator<F>: ParallelIterator<Item = F>
 
 #[cfg(feature = "parallel")]
 impl<T, F> ParallelSumWithAccumulator<F> for T
-    where T: ParallelIterator<Item = F>,
-          F: Zero + Send
-{ }
+where
+    T: ParallelIterator<Item = F>,
+    F: Zero + Send,
+{
+}
