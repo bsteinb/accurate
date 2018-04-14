@@ -1,3 +1,4 @@
+extern crate criterion_plot;
 extern crate num;
 extern crate rand;
 extern crate rayon;
@@ -7,7 +8,9 @@ extern crate accurate;
 
 use std::io;
 use std::io::prelude::*;
-use std::fs::OpenOptions;
+use std::path::Path;
+
+use criterion_plot::prelude::*;
 
 use rug::Float as BigFloat;
 
@@ -184,84 +187,132 @@ fn beautify(name: &str) -> &str {
     name.trim_matches(|c: char| !c.is_alphanumeric())
 }
 
+fn make_figure(filename: &'static str, title: &'static str) -> Figure {
+    let mut f = Figure::new();
+    f
+        .set(Title(title))
+        .set(Output(Path::new(filename)))
+        .configure(Axis::BottomX, |a| a
+            .set(Label("condition number"))
+            .set(Scale::Logarithmic))
+        .configure(Axis::LeftY, |a| a
+            .set(Label("relative error"))
+            .set(Scale::Logarithmic)
+            .set(Range::Limits(1.0e-17, 10.0)))
+        .configure(Key, |k| k
+            .set(Position::Inside(Vertical::Center, Horizontal::Right))
+            .set(Title("")));
+    f
+}
+
+fn draw_figure(mut figure: Figure) {
+    assert!(
+        figure
+        .draw()
+        .expect("could not execute gnuplot")
+        .wait_with_output()
+        .expect("could not wait on gnuplot")
+        .status.success());
+}
+
+fn make_color() -> Color {
+    let mut rng = rand::thread_rng();
+    Color::Rgb(rng.gen(), rng.gen(), rng.gen())
+}
+
+fn plot(figure: &mut Figure, label: &'static str, xs: &[F], ys: &[F]) {
+    figure.plot(
+        Points { x: &xs[..], y: &ys[..] },
+        |l| l
+            .set(Label(label))
+            .set(PointType::FilledCircle)
+            .set(PointSize(0.2))
+            .set(make_color())
+    );
+}
+
 macro_rules! dot {
-    (($xs:expr, $ys:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
-        $(dot_::<$acct>(beautify(stringify!($acct)), $xs, $ys, $ds, $cs);)*
+    ($filename:expr, $title:expr, ($xs:expr, $ys:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        let mut figure = make_figure($filename, $title);
+        $(dot_::<$acct>(&mut figure, beautify(stringify!($acct)), $xs, $ys, $ds, $cs);)*
+        draw_figure(figure);
     }
 }
 
-fn dot_<Acc>(name: &str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
+fn dot_<Acc>(figure: &mut Figure, name: &'static str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: DotAccumulator<F>
 {
     print!("Testing dot product with `{}`...", name);
-    let mut f = OpenOptions::new().write(true).truncate(true).create(true)
-        .open(format!("{}.csv", name)).unwrap();
+    let mut es = vec![];
     for i in 0..xs.len() {
         let d = xs[i].iter().cloned().zip(ys[i].iter().cloned()).dot_with_accumulator::<Acc>();
-        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
-        writeln!(&mut f, "{}, {}", cs[i], e).unwrap();
+        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
+    plot(figure, name, &cs[..], &es[..]);
     println!(" done.");
 }
 
 macro_rules! parallel_dot {
-    (($xs:expr, $ys:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
-        $(parallel_dot_::<$acct>(beautify(stringify!($acct)), $xs, $ys, $ds, $cs);)*
+    ($filename:expr, $title:expr, ($xs:expr, $ys:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        let mut figure = make_figure($filename, $title);
+        $(parallel_dot_::<$acct>(&mut figure, beautify(stringify!($acct)), $xs, $ys, $ds, $cs);)*
+        draw_figure(figure);
     }
 }
 
-fn parallel_dot_<Acc>(name: &str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
+fn parallel_dot_<Acc>(figure: &mut Figure, name: &'static str, xs: &[Vec<F>], ys: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: ParallelDotAccumulator<F>
 {
     print!("Testing parallel dot with `{}`...", name);
-    let mut f = OpenOptions::new().write(true).truncate(true).create(true)
-        .open(format!("Parallel{}.csv", name)).unwrap();
+    let mut es = vec![];
     for i in 0..xs.len() {
         let d = xs[i].par_iter().zip(ys[i].par_iter()).map(|(&x, &y)| (x, y))
             .parallel_dot_with_accumulator::<Acc>();
-        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
-        writeln!(&mut f, "{}, {}", cs[i], e).unwrap();
+        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
+    plot(figure, name, &cs[..], &es[..]);
     println!(" done.");
 }
 
 macro_rules! sum {
-    (($zs:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
-        $(sum_::<$acct>(beautify(stringify!($acct)), $zs, $ds, $cs);)*
+    ($filename:expr, $title:expr, ($zs:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        let mut figure = make_figure($filename, $title);
+        $(sum_::<$acct>(&mut figure, beautify(stringify!($acct)), $zs, $ds, $cs);)*
+        draw_figure(figure);
     }
 }
 
-fn sum_<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
+fn sum_<Acc>(figure: &mut Figure, name: &'static str, zs: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: SumAccumulator<F>
 {
     print!("Testing sum with `{}`...", name);
-    let mut f = OpenOptions::new().write(true).truncate(true).create(true)
-        .open(format!("{}.csv", name)).unwrap();
+    let mut es = vec![];
     for i in 0..zs.len() {
         let d = zs[i].iter().cloned().sum_with_accumulator::<Acc>();
-        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
-        writeln!(&mut f, "{}, {}", cs[i], e).unwrap();
+        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
+    plot(figure, name, &cs[..], &es[..]);
     println!(" done.");
 }
 
 macro_rules! parallel_sum {
-    (($zs:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
-        $(parallel_sum_::<$acct>(beautify(stringify!($acct)), $zs, $ds, $cs);)*
+    ($filename:expr, $title:expr, ($zs:expr, $ds:expr, $cs:expr), $($acct:path),*) => {
+        let mut figure = make_figure($filename, $title);
+        $(parallel_sum_::<$acct>(&mut figure, beautify(stringify!($acct)), $zs, $ds, $cs);)*
+        draw_figure(figure);
     }
 }
 
-fn parallel_sum_<Acc>(name: &str, zs: &[Vec<F>], ds: &[F], cs: &[F])
+fn parallel_sum_<Acc>(figure: &mut Figure, name: &'static str, zs: &[Vec<F>], ds: &[F], cs: &[F])
     where Acc: ParallelSumAccumulator<F>
 {
     print!("Testing parallel sum with `{}`...", name);
-    let mut f = OpenOptions::new().write(true).truncate(true).create(true)
-        .open(format!("Parallel{}.csv", name)).unwrap();
+    let mut es = vec![];
     for i in 0..zs.len() {
         let d = zs[i].par_iter().map(|&x| x).parallel_sum_with_accumulator::<Acc>();
-        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
-        writeln!(&mut f, "{}, {}", cs[i], e).unwrap();
+        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
     }
+    plot(figure, name, &cs[..], &es[..]);
     println!(" done.");
 }
 
@@ -269,32 +320,80 @@ fn main() {
     let (xs, ys, ds, cs) = gen_dots();
 
     dot! {
+        "NaiveDot.svg",
+        "NaiveDot, double precision",
         (&xs, &ys, &ds, &cs),
-        NaiveDot<_>,
-        Dot2<_>, Dot3<_>, Dot4<_>, Dot5<_>, Dot6<_>, Dot7<_>, Dot8<_>, Dot9<_>,
+        NaiveDot<_>
+    }
+    dot! {
+        "DotK.svg",
+        "DotK for K = 2...9, double precision",
+        (&xs, &ys, &ds, &cs),
+        Dot2<_>, Dot3<_>, Dot4<_>, Dot5<_>, Dot6<_>, Dot7<_>, Dot8<_>, Dot9<_>
+    }
+    dot! {
+        "OnlineExactDot.svg",
+        "OnlineExactDot, double precision",
+        (&xs, &ys, &ds, &cs),
         OnlineExactDot<_>
     };
 
     parallel_dot! {
+        "ParallelNaiveDot.svg",
+        "Parallel NaiveDot, double precision",
         (&xs, &ys, &ds, &cs),
-        NaiveDot<_>,
-        Dot2<_>, Dot3<_>, Dot4<_>, Dot5<_>, Dot6<_>, Dot7<_>, Dot8<_>, Dot9<_>,
+        NaiveDot<_>
+    };
+    parallel_dot! {
+        "ParallelDotK.svg",
+        "Parallel DotK for K = 2...9, double precision",
+        (&xs, &ys, &ds, &cs),
+        Dot2<_>, Dot3<_>, Dot4<_>, Dot5<_>, Dot6<_>, Dot7<_>, Dot8<_>, Dot9<_>
+    };
+    parallel_dot! {
+        "ParallelOnlineExactDot.svg",
+        "Parallel OnlineExactDot, double precision",
+        (&xs, &ys, &ds, &cs),
         OnlineExactDot<_>
     };
 
     let (zs, ds, cs) = gen_sums();
 
     sum! {
+        "NaiveSum.svg",
+        "NaiveSum, double precision",
         (&zs, &ds, &cs),
-        NaiveSum<_>,
-        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>,
+        NaiveSum<_>
+    };
+    sum! {
+        "SumK.svg",
+        "SumK for K = 2...9, double precision",
+        (&zs, &ds, &cs),
+        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>
+    };
+    sum! {
+        "OnlineExactSum.svg",
+        "OnlineExactSum, double precision",
+        (&zs, &ds, &cs),
         OnlineExactSum<_>
     };
 
     parallel_sum! {
+        "ParallelNaiveSum.svg",
+        "Parallel NaiveSum, double precision",
         (&zs, &ds, &cs),
-        NaiveSum<_>,
-        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>,
+        NaiveSum<_>
+    };
+    parallel_sum! {
+        "ParallelSumK.svg",
+        "Parallel SumK for K = 2...9, double precision",
+        (&zs, &ds, &cs),
+        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>
+    };
+    parallel_sum! {
+        "ParallelOnlineExactSum.svg",
+        "Parallel OnlineExactSum, double precision",
+        (&zs, &ds, &cs),
         OnlineExactSum<_>
     };
 }
