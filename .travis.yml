@@ -9,6 +9,8 @@ rust:
 
 env:
   global:
+    # GH_TOKEN=...
+    - secure: "rAr9SWHyM+4Yz8nAK3hK0NE17RmD3ujlLne1NspAFcfTfuVw/pLRoEOgTicGTiPCIDrqf5NQ/m8BraYN3YV2K0ZlPkmjueGlVKfMGMtkoyWGEsXdSrUN09MUKf61GX4Kq5vt21Cw4Fk0UcfbL7hvkf2YBVffjs6/R12BROLO+kAtOImeKrOKSvMBDUdqH67mrnHGHTwMi3EblDG9jVQ3NM73Tx7ojOyAoC1sd9AYJycYgMtBNHg3/RJHeVhryFg5lMynMVa/kWcMWPs89Drs9RPOgJE8IedO8eviPCcZAy/vdBL1/ByfEhWGc3mOyzWTwWa3wGE7wmKOXAdsZaU3Eay+lfudAg/WFIAogapO2qvmBHvxAhJ2IPnsqPKHDhFZDQpmtoEiOsl19jBjYo894OGhIzEuPHecP9Y8nGucp5K0NvbCP9pwl/MTRWpBWzSMOmQijMOB2u7g+qtHu70QC+N4EW8D6GpA9XW6p4mQYvO3k6NISbsw1qt+SnezPIjcF8xRcFUOYgRPLNxePvuLvGgtqay9H+qfImwNzzzlqHVuYueIoendI5vwHxPZkiZxAR/tCG01rNTguQFwgtOfOiVvcCgiBG8nNyTNMx9aRY8/ke0may+kDgqfRBICXJRCHClNX5jWVJR90gnJmJkbom800MO+RG6UvPSUvCU32aU="
     # CRATES_IO_TOKEN=...
     - secure: "PNJ5i9pFNaG9VwZNQtjOxAU+Mh2URiFGVqxWuiXI+vhBJf1+vyOInKFgVuEQ8Wp2E68RkrflpVIiKuHGz3aVNnmvdgHKGOydQbvvcXCc17MgE2vhKN+t1wO4M17zTcLP4DAB2LjbUiqWMZ1UU0OHcywOfHEZBbbiVcqk/8FARVyBSnLU5B8nSN5NUul6/qJr8b8ETfFE4ExNxHt3+wKLkKwVBNf85jzGzXB6O/loMLbte9c2QNG225kf93KUSTNeCpeFOyunzqk7c6bhiaHPtbwFpjJgeCjMEz8ci/VdriEXW9FfWVantG0iJypzvSgyU7cMXQOEx4nPVxAvZ66rrJ6Uv4dY08NLZGmJh37X9LEESwwx/xlUap4bCE8PSdfPStVMxrdIdsYWT7QAaCzwEk1eej6T11E2XsmDkCV4cWYonTegtHYg8NL20EnIKUGGH+f476pefs2HLy4gFMWgIP6Js9ugo9JmmJBoShVXgA8WUN1kkceZ2oVSAINpGuT7RJguocvTp6aSTd84EaGn9/fS+GvrpCUQi2Vv7DwFnuz0wa4xzgI//lfnqyhLqfP/+/gz9WhQua2uPKyMvxnWCS9peZStVKjgE+1d0M1iv5agdMuaVQ9x99LmCLW7KLAtQzJW/kHxo1Ny+rSRabt0CJCTpAyRckvZ76qoHRUkiNE="
 
@@ -17,35 +19,32 @@ matrix:
     - rust: nightly
 
 install:
-  - pip install 'ghp-import' --user
   - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-      cargo install clippy;
+      cargo install --force clippy;
     fi
 
 script:
-  - cargo build -v && cargo test -v
+  - cargo build -v --no-default-features
+  - cargo build -v
+  - cargo test -v
   - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-      cargo clippy -v --features "clippy";
+      cargo clippy -v;
     fi
 
 before_deploy:
-  # Set up credentials for deploying
-  # Decrypt GitHub deploy SSH key
-  - mkdir -p ${HOME}/.ssh && touch ${HOME}/.ssh/deploy_key && chmod 0600 ${HOME}/.ssh/deploy_key
-  - openssl aes-256-cbc -K $encrypted_47ef09588713_key -iv $encrypted_47ef09588713_iv -in ci/deploy_key.enc -out ${HOME}/.ssh/deploy_key -d
-  # Make SSH aware of key
-  - echo -e "Host github.com\n  IdentityFile ${HOME}/.ssh/deploy_key" >> ${HOME}/.ssh/config
-  # Make git push via SSH
-  - git remote set-url origin git@github.com:bsteinb/accurate.git
   # Login to cates.io
   - cargo login -v "${CRATES_IO_TOKEN}"
   # Build crate
   - cargo package -v
+  # Build docs
+  - cargo doc -v
+  - echo "<meta http-equiv=refresh content=0;url=accurate/index.html>" >> target/doc/index.html
 
 deploy:
   # Build and upload documentation to GitHub pages
-  - provider: script
-    script: ci/deploy-docs.sh
+  - provider: pages
+    github_token: $GH_TOKEN
+    local_dir: target/doc
     skip_cleanup: true
     on:
       tags: true
@@ -59,11 +58,9 @@ deploy:
       condition: "${TRAVIS_RUST_VERSION} = stable"
   # Deploy crate to GitHub releases
   - provider: releases
-    api_key:
-      secure: W1xFNaabWUDugVZIVVlfsw5XX9z+eDt3TI43OkQwftlOd1aZLBRa2Bb3WB6hrfSS+aRaRkzOLybYWJSR7e9yXwe2ClKB78Kfs2IhbxXtfw7f73dBBGRJKpF4vLgQ3hbzw0Zoq2VlQB1BgZNGAb3IxC9YHeEooLzhxFmfmqB68DPtSsgCW664X1EK7cmKrz6q/FqY9roPrfDjwXHuYROtXSB7axSoZFGPkS3kNSGKj04+/ZEKxrUdG+aAL03aHuxcWXu5RBnpREwYMoNbTcBdxv/hIVM9nxBAw1SUEXldJ6v3JuPDdutTy3NNV6zBdZR9yfpBrEbdDtvfpyStTso/0CDiHawpotKKpfEWChuz0rxsiGPVGKWICPHn5YcIMLD4DnfLjXE7cyyKS8ca9sfJbUb+2BvCdF87yiQ5PflaLgvMx5hb+tu2joCrzvVFE8T2xmipi9ka/n348mF1Vvlkz6gMnBX4ZznJpK5KJIPSPfcr2tQp+yFEUVJnnfBYWr8wT+Z76Z1Qd0XddDwKCr/2jJmj52SO/JeqNB8nbmsu1csyCRvda8+TDSMEOzKq96ajQ6jgTvXPb3S8k/2yTjyNBgL7mwvTXBcrVL0lfzmcMTZdC4a9evtPCZytziww2aA08SLWae8OTrtitn4xiiLUNeShpj6D2M23NdL6BB6CUQA=
-    file: target/package/accurate-${TRAVIS_TAG}.crate
+    api_key: $GH_TOKEN
+    file: "target/package/accurate-${TRAVIS_TAG}.crate"
     skip_cleanup: true
     on:
-      repo: bsteinb/accurate
       tags: true
       condition: "${TRAVIS_RUST_VERSION} = stable"
