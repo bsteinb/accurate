@@ -31,7 +31,6 @@ use util::traits::{TwoSum, TwoProduct};
 pub struct Dot2<F> {
     p: F,
     r: F,
-    _dummy: F // don't put me in a single register
 }
 
 impl<F> DotAccumulator<F> for Dot2<F>
@@ -60,7 +59,7 @@ impl<F> From<F> for Dot2<F>
     where F: Float
 {
     fn from(x: F) -> Self {
-        Dot2 { p: x, r: F::zero(), _dummy: F::zero() }
+        Dot2 { p: x, r: F::zero() }
     }
 }
 

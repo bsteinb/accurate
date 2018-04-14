@@ -29,7 +29,6 @@ use util::traits::TwoSum;
 pub struct Sum2<F> {
     s: F,
     c: F,
-    _dummy: F // don't put me in a single register
 }
 
 impl<F> SumAccumulator<F> for Sum2<F>
@@ -57,7 +56,7 @@ impl<F> From<F> for Sum2<F>
     where F: Float
 {
     fn from(x: F) -> Self {
-        Sum2 { s: x, c: F::zero(), _dummy: F::zero() }
+        Sum2 { s: x, c: F::zero() }
     }
 }
 
