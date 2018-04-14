@@ -29,6 +29,7 @@ skeptic = "0.13"
 
 [dev-dependencies]
 criterion = "0.2"
+float = { git = "https://github.com/huonw/float" }
 rand = "0.4"
 skeptic = "0.13"
 
