@@ -66,7 +66,7 @@ oplot(x, y, "g.")
 x, y = read_results("Sum9.csv")
 oplot(x, y, "b.")
 
-legend(Any["Sum2", "Sum3", "Sum4", "Sum5", "Sum6", "Sum7", "Sum8", "Sum9"])
+#legend(["Sum2", "Sum3", "Sum4", "Sum5", "Sum6", "Sum7", "Sum8", "Sum9"])
 
 savefig("SumK.svg")
 savefig("SumK.pdf")
@@ -102,7 +102,7 @@ oplot(x, y, "g.")
 x, y = read_results("ParallelSum9.csv")
 oplot(x, y, "b.")
 
-legend(Any["Sum2", "Sum3", "Sum4", "Sum5", "Sum6", "Sum7", "Sum8", "Sum9"])
+#legend(["Sum2", "Sum3", "Sum4", "Sum5", "Sum6", "Sum7", "Sum8", "Sum9"])
 
 savefig("ParallelSumK.svg")
 savefig("ParallelSumK.pdf")
@@ -190,7 +190,7 @@ oplot(x, y, "g.")
 x, y = read_results("Dot9.csv")
 oplot(x, y, "b.")
 
-legend(Any["Dot2", "Dot3", "Dot4", "Dot5", "Dot6", "Dot7", "Dot8", "Dot9"])
+#legend(["Dot2", "Dot3", "Dot4", "Dot5", "Dot6", "Dot7", "Dot8", "Dot9"])
 
 savefig("DotK.svg")
 savefig("DotK.pdf")
@@ -226,7 +226,7 @@ oplot(x, y, "g.")
 x, y = read_results("ParallelDot9.csv")
 oplot(x, y, "b.")
 
-legend(Any["Dot2", "Dot3", "Dot4", "Dot5", "Dot6", "Dot7", "Dot8", "Dot9"])
+#legend(["Dot2", "Dot3", "Dot4", "Dot5", "Dot6", "Dot7", "Dot8", "Dot9"])
 
 savefig("ParallelDotK.svg")
 savefig("ParallelDotK.pdf")

@@ -1,7 +1,7 @@
-extern crate float;
 extern crate num;
 extern crate rand;
 extern crate rayon;
+extern crate rug;
 
 extern crate accurate;
 
@@ -9,9 +9,9 @@ use std::io;
 use std::io::prelude::*;
 use std::fs::OpenOptions;
 
-use float::Float as BigFloat;
+use rug::Float as BigFloat;
 
-use num::{Float, Integer, ToPrimitive, Zero};
+use num::{Float, Integer, ToPrimitive};
 
 use rand::Rng;
 
@@ -27,28 +27,28 @@ type F = f64;
 fn dot_exact<Iter>(iter: Iter) -> F
     where Iter: Iterator<Item = (F, F)>
 {
-    let mut acc = BigFloat::zero(2048);
+    let mut acc = BigFloat::new(2048);
 
     for (x, y) in iter {
-        let a = BigFloat::from(x).with_precision(2048);
-        let b = BigFloat::from(y).with_precision(2048);
+        let a = BigFloat::with_val(2048, x);
+        let b = BigFloat::with_val(2048, y);
         let c = a * b;
         acc = acc + c;
     }
 
-    F::from(acc)
+    F::from(acc.to_f64())
 }
 
 fn sum_exact<Iter>(iter: Iter) -> F
     where Iter: Iterator<Item = F>
 {
-    let mut acc = BigFloat::zero(2048);
+    let mut acc = BigFloat::new(2048);
 
     for x in iter {
-        acc = acc + BigFloat::from(x).with_precision(2048);
+        acc = acc + BigFloat::with_val(2048, x);
     }
 
-    F::from(acc)
+    F::from(acc.to_f64())
 }
 
 fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
