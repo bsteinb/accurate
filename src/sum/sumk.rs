@@ -75,7 +75,6 @@ where
         Sum2 {
             s,
             c: (self.c + c) + rhs.c,
-            ..self
         }
     }
 }

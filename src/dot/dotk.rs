@@ -56,7 +56,6 @@ where
         Dot2 {
             p,
             r: (self.r + r1) + r2,
-            ..self
         }
     }
 }
@@ -82,7 +81,6 @@ where
         Dot2 {
             r,
             p: (self.p + p) + rhs.p,
-            ..self
         }
     }
 }
