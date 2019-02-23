@@ -4,7 +4,8 @@ extern crate rand;
 #[cfg(feature = "parallel")]
 extern crate rayon;
 
-use rand::{Rand, Rng};
+use rand::prelude::*;
+use rand::distributions::Standard;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -14,10 +15,10 @@ use accurate::sum::OnlineExactSum;
 
 fn mk_vec<T>(n: usize) -> Vec<T>
 where
-    T: Rand,
+    Standard: Distribution<T>
 {
     let mut rng = rand::thread_rng();
-    rng.gen_iter::<T>().take(n).collect()
+    rng.sample_iter::<T, _>(&Standard).take(n).collect()
 }
 
 #[test]

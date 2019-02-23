@@ -14,7 +14,8 @@ use criterion::{Bencher, Criterion};
 
 use num::Float;
 
-use rand::{Rand, Rng};
+use rand::distributions::Standard;
+use rand::prelude::*;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -25,15 +26,16 @@ use accurate::sum::{NaiveSum, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7
 
 fn mk_vec<T>(n: usize) -> Vec<T>
 where
-    T: Rand,
+    Standard: Distribution<T>,
 {
     let mut rng = rand::thread_rng();
-    rng.gen_iter::<T>().take(n).collect()
+    rng.sample_iter::<T, _>(&Standard).take(n).collect()
 }
 
 fn regular_add<F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand,
+    F: Float,
+    Standard: Distribution<F>,
 {
     let d = mk_vec::<F>(*n);
     b.iter(|| {
@@ -47,7 +49,8 @@ where
 
 fn regular_add_assign<F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand + AddAssign,
+    F: Float + AddAssign,
+    Standard: Distribution<F>,
 {
     let d = mk_vec::<F>(*n);
     b.iter(|| {
@@ -61,7 +64,8 @@ where
 
 fn fold<F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand,
+    F: Float,
+    Standard: Distribution<F>,
 {
     let d = mk_vec::<F>(*n);
     b.iter(|| {
@@ -72,8 +76,9 @@ where
 
 fn sum_with<Acc, F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand,
+    F: Float,
     Acc: SumAccumulator<F>,
+    Standard: Distribution<F>,
 {
     let d = mk_vec::<F>(*n);
     b.iter(|| {
@@ -84,7 +89,8 @@ where
 
 fn regular_dot<F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand,
+    F: Float,
+    Standard: Distribution<F>,
 {
     let xs = mk_vec::<F>(*n);
     let ys = mk_vec::<F>(*n);
@@ -100,7 +106,8 @@ where
 
 fn regular_dot_assign<F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand + AddAssign,
+    F: Float + AddAssign,
+    Standard: Distribution<F>,
 {
     let xs = mk_vec::<F>(*n);
     let ys = mk_vec::<F>(*n);
@@ -116,7 +123,8 @@ where
 
 fn dot_fold<F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand,
+    F: Float,
+    Standard: Distribution<F>,
 {
     let xs = mk_vec::<F>(*n);
     let ys = mk_vec::<F>(*n);
@@ -131,8 +139,9 @@ where
 
 fn dot_with<Acc, F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand,
+    F: Float,
     Acc: DotAccumulator<F>,
+    Standard: Distribution<F>,
 {
     let xs = mk_vec::<F>(*n);
     let ys = mk_vec::<F>(*n);
@@ -149,8 +158,9 @@ where
 #[cfg(feature = "parallel")]
 fn parallel_sum_with<Acc, F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand + Copy + Send + Sync,
+    F: Float + Copy + Send + Sync,
     Acc: ParallelSumAccumulator<F>,
+    Standard: Distribution<F>,
 {
     let d = mk_vec::<F>(*n);
     b.iter(|| {
@@ -164,8 +174,9 @@ where
 #[cfg(feature = "parallel")]
 fn parallel_dot_with<Acc, F>(b: &mut Bencher, n: &usize)
 where
-    F: Float + Rand + Copy + Send + Sync,
+    F: Float + Copy + Send + Sync,
     Acc: ParallelDotAccumulator<F>,
+    Standard: Distribution<F>,
 {
     let xs = mk_vec::<F>(*n);
     let ys = mk_vec::<F>(*n);
