@@ -1,5 +1,7 @@
 //! The `iFastSum` algorithm
 
+use num::traits::Float;
+
 use util::{two_sum, round3};
 use util::traits::{HalfUlp, Round3, TwoSum};
 
@@ -75,7 +77,7 @@ where
                 count += 1;
 
                 // Step 3(2)(b)(ii)
-                sm = sm.max(st.abs());
+                sm = sm.max(Float::abs(st));
             }
         }
 
