@@ -13,8 +13,7 @@ pub use sum::ifastsum::IFastSum;
 use sum::SumConsumer;
 
 /// Accumulates terms of a sum
-pub trait SumAccumulator<F>
-    : Add<F, Output = Self> + AddAssign<F> + From<F> + Clone {
+pub trait SumAccumulator<F>: Add<F, Output = Self> + AddAssign<F> + From<F> + Clone {
     /// Initial value for an accumulator
     fn zero() -> Self
     where
@@ -79,8 +78,9 @@ where
 
 /// A `SumAccumulator` that can be used in parallel computations
 #[cfg(feature = "parallel")]
-pub trait ParallelSumAccumulator<F>
-    : SumAccumulator<F> + Add<Self, Output = Self> + Send + Sized {
+pub trait ParallelSumAccumulator<F>:
+    SumAccumulator<F> + Add<Self, Output = Self> + Send + Sized
+{
     /// Turns an accumulator into a consumer
     #[inline]
     fn into_consumer(self) -> SumConsumer<Self> {
@@ -89,9 +89,8 @@ pub trait ParallelSumAccumulator<F>
 }
 
 #[cfg(feature = "parallel")]
-impl<Acc, F> ParallelSumAccumulator<F> for Acc
-where
-    Acc: SumAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized,
+impl<Acc, F> ParallelSumAccumulator<F> for Acc where
+    Acc: SumAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized
 {
 }
 

@@ -20,9 +20,9 @@ use rand::prelude::*;
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
-use accurate::traits::*;
 use accurate::dot::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, NaiveDot, OnlineExactDot};
 use accurate::sum::{NaiveSum, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
+use accurate::traits::*;
 
 fn mk_vec<T>(n: usize) -> Vec<T>
 where
@@ -130,7 +130,8 @@ where
     let ys = mk_vec::<F>(*n);
 
     b.iter(|| {
-        let d = xs.iter()
+        let d = xs
+            .iter()
             .zip(ys.iter())
             .fold(F::zero(), |acc, (&x, &y)| acc + x * y);
         criterion::black_box(d);
@@ -147,7 +148,8 @@ where
     let ys = mk_vec::<F>(*n);
 
     b.iter(|| {
-        let d = xs.iter()
+        let d = xs
+            .iter()
             .cloned()
             .zip(ys.iter().cloned())
             .dot_with_accumulator::<Acc>();
@@ -164,7 +166,8 @@ where
 {
     let d = mk_vec::<F>(*n);
     b.iter(|| {
-        let s = d.par_iter()
+        let s = d
+            .par_iter()
             .map(|&x| x)
             .parallel_sum_with_accumulator::<Acc>();
         criterion::black_box(s);
@@ -182,7 +185,8 @@ where
     let ys = mk_vec::<F>(*n);
 
     b.iter(|| {
-        let d = xs.par_iter()
+        let d = xs
+            .par_iter()
             .zip(ys.par_iter())
             .map(|(&x, &y)| (x, y))
             .parallel_dot_with_accumulator::<Acc>();

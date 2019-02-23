@@ -65,8 +65,4 @@ where
     }
 }
 
-unsafe impl<F> Send for NaiveDot<F>
-where
-    F: Send,
-{
-}
+unsafe impl<F> Send for NaiveDot<F> where F: Send {}

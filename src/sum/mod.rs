@@ -2,15 +2,15 @@
 
 pub mod traits;
 
-mod naive;
-mod sumk;
 mod ifastsum;
+mod naive;
 mod onlineexactsum;
+mod sumk;
 
-pub use self::naive::NaiveSum;
-pub use self::sumk::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9, SumK};
 pub use self::ifastsum::i_fast_sum_in_place;
+pub use self::naive::NaiveSum;
 pub use self::onlineexactsum::OnlineExactSum;
+pub use self::sumk::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9, SumK};
 
 #[cfg(feature = "parallel")]
 use num_traits::Zero;
@@ -19,9 +19,9 @@ use num_traits::Zero;
 use rayon::iter::plumbing::{Consumer, Folder, UnindexedConsumer};
 
 #[cfg(feature = "parallel")]
-use self::traits::SumAccumulator;
-#[cfg(feature = "parallel")]
 use self::traits::ParallelSumAccumulator;
+#[cfg(feature = "parallel")]
+use self::traits::SumAccumulator;
 #[cfg(feature = "parallel")]
 use util::AddReducer;
 

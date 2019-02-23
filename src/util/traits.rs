@@ -7,11 +7,7 @@ use num_traits::{Float, PrimInt, ToPrimitive, Zero};
 /// Sum transformation
 pub trait TwoSum: Float {}
 
-impl<F> TwoSum for F
-where
-    F: Float,
-{
-}
+impl<F> TwoSum for F where F: Float {}
 
 /// Split a floating-point number
 pub trait Split: Float {
@@ -98,11 +94,7 @@ where
 /// Correctly rounded sum of three non-overlapping numbers
 pub trait Round3: Float + Ieee754 + HalfUlp {}
 
-impl<F> Round3 for F
-where
-    F: Float + Ieee754 + HalfUlp,
-{
-}
+impl<F> Round3 for F where F: Float + Ieee754 + HalfUlp {}
 
 /// Describes the layout of a floating-point number
 pub trait FloatFormat {

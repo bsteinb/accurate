@@ -80,8 +80,9 @@ where
 
 /// A `DotAccumulator` that can be used in parallel computations
 #[cfg(feature = "parallel")]
-pub trait ParallelDotAccumulator<F>
-    : DotAccumulator<F> + Add<Self, Output = Self> + Send + Sized {
+pub trait ParallelDotAccumulator<F>:
+    DotAccumulator<F> + Add<Self, Output = Self> + Send + Sized
+{
     /// Turns an accumulator into a consumer
     #[inline]
     fn into_consumer(self) -> DotConsumer<Self> {
@@ -90,9 +91,8 @@ pub trait ParallelDotAccumulator<F>
 }
 
 #[cfg(feature = "parallel")]
-impl<Acc, F> ParallelDotAccumulator<F> for Acc
-where
-    Acc: DotAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized,
+impl<Acc, F> ParallelDotAccumulator<F> for Acc where
+    Acc: DotAccumulator<F> + Add<Acc, Output = Acc> + Send + Sized
 {
 }
 

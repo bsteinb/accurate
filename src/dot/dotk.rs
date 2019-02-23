@@ -5,10 +5,10 @@ use std::ops::Add;
 use num_traits::Float;
 
 use super::traits::DotAccumulator;
-use sum::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
 use sum::traits::SumAccumulator;
-use util::{two_product, two_sum};
+use sum::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
 use util::traits::{TwoProduct, TwoSum};
+use util::{two_product, two_sum};
 
 /// `DotK` with two cascaded accumulators
 ///
@@ -85,11 +85,7 @@ where
     }
 }
 
-unsafe impl<F> Send for Dot2<F>
-where
-    F: Send,
-{
-}
+unsafe impl<F> Send for Dot2<F> where F: Send {}
 
 /// Calculates a dot product using both product transformation and cascaded accumulators
 ///

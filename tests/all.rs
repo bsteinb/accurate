@@ -4,18 +4,18 @@ extern crate rand;
 #[cfg(feature = "parallel")]
 extern crate rayon;
 
-use rand::prelude::*;
 use rand::distributions::Standard;
+use rand::prelude::*;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
-use accurate::traits::*;
 use accurate::sum::OnlineExactSum;
+use accurate::traits::*;
 
 fn mk_vec<T>(n: usize) -> Vec<T>
 where
-    Standard: Distribution<T>
+    Standard: Distribution<T>,
 {
     let mut rng = rand::thread_rng();
     rng.sample_iter::<T, _>(&Standard).take(n).collect()
@@ -42,10 +42,12 @@ fn oes_add() {
 fn parallel_sum_oes() {
     let xs = mk_vec::<f64>(100_000);
 
-    let s1 = xs.par_iter()
+    let s1 = xs
+        .par_iter()
         .map(|&x| x)
         .parallel_sum_with_accumulator::<OnlineExactSum<_>>();
-    let s2 = xs.iter()
+    let s2 = xs
+        .iter()
         .cloned()
         .sum_with_accumulator::<OnlineExactSum<_>>();
 

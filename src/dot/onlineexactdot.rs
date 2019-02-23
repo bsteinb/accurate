@@ -3,10 +3,10 @@
 use std::ops::Add;
 
 use super::traits::DotAccumulator;
-use sum::OnlineExactSum;
 use sum::traits::SumAccumulator;
-use util::two_product;
+use sum::OnlineExactSum;
 use util::traits::TwoProduct;
+use util::two_product;
 
 /// Calculates the dot product using product transformation and `OnlineExactSum`
 ///
@@ -79,8 +79,4 @@ where
     }
 }
 
-unsafe impl<F> Send for OnlineExactDot<F>
-where
-    F: Send,
-{
-}
+unsafe impl<F> Send for OnlineExactDot<F> where F: Send {}

@@ -20,9 +20,9 @@ use rand::Rng;
 
 use rayon::prelude::*;
 
-use accurate::traits::*;
 use accurate::dot::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, NaiveDot, OnlineExactDot};
 use accurate::sum::{NaiveSum, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
+use accurate::traits::*;
 use accurate::util::two_product;
 
 type F = f64;
@@ -213,15 +213,13 @@ fn make_figure(filename: &'static str, title: &'static str) -> Figure {
 }
 
 fn draw_figure(mut figure: Figure) {
-    assert!(
-        figure
-            .draw()
-            .expect("could not execute gnuplot")
-            .wait_with_output()
-            .expect("could not wait on gnuplot")
-            .status
-            .success()
-    );
+    assert!(figure
+        .draw()
+        .expect("could not execute gnuplot")
+        .wait_with_output()
+        .expect("could not wait on gnuplot")
+        .status
+        .success());
 }
 
 fn make_color() -> Color {

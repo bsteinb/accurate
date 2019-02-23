@@ -122,8 +122,9 @@
 //!     .dot_with_accumulator::<Dot2<_>>());
 //! ```
 //!
-#![cfg_attr(feature = "parallel",
-            doc = "
+#![cfg_attr(
+    feature = "parallel",
+    doc = "
 # Parallel computation
 
 If compiled with the `parallel` feature enabled (which is the default) the `rayon` parallel
@@ -145,7 +146,8 @@ let s = xs.par_iter().map(|&x| x).parallel_sum_with_accumulator::<Sum2<_>>();
 assert_eq!(100_000.0, s);
 # }
 ```
-")]
+"
+)]
 #![deny(missing_docs)]
 #![warn(missing_copy_implementations)]
 #![warn(missing_debug_implementations)]

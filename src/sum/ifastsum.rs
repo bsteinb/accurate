@@ -2,17 +2,13 @@
 
 use num_traits::Float;
 
-use util::{two_sum, round3};
 use util::traits::{HalfUlp, Round3, TwoSum};
+use util::{round3, two_sum};
 
 /// Calculates the correctly rounded sum of numbers in a slice
 pub trait IFastSum: TwoSum + HalfUlp + Round3 {}
 
-impl<F> IFastSum for F
-where
-    F: TwoSum + HalfUlp + Round3,
-{
-}
+impl<F> IFastSum for F where F: TwoSum + HalfUlp + Round3 {}
 
 /// Calculates the correctly rounded sum of numbers in a slice
 ///
@@ -113,7 +109,9 @@ where
             let (w2, e2) = two_sum(st, -em);
 
             // Step 3(5)(d)
-            if (w1 + s != s) || (w2 + s != s) || (round3(s, w1, e1) != s)
+            if (w1 + s != s)
+                || (w2 + s != s)
+                || (round3(s, w1, e1) != s)
                 || (round3(s, w2, e2) != s)
             {
                 // Step 3(5)(d)(i)

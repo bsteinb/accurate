@@ -66,11 +66,7 @@ where
     }
 }
 
-unsafe impl<F> Send for NaiveSum<F>
-where
-    F: Send,
-{
-}
+unsafe impl<F> Send for NaiveSum<F> where F: Send {}
 
 impl<F> AddAssign<F> for NaiveSum<F>
 where

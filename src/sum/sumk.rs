@@ -5,8 +5,8 @@ use std::ops::{Add, AddAssign};
 use num_traits::Float;
 
 use super::traits::SumAccumulator;
-use util::two_sum;
 use util::traits::TwoSum;
+use util::two_sum;
 
 /// `SumK` with two cascaded accumulators
 ///
@@ -79,11 +79,7 @@ where
     }
 }
 
-unsafe impl<F> Send for Sum2<F>
-where
-    F: Send,
-{
-}
+unsafe impl<F> Send for Sum2<F> where F: Send {}
 
 impl<F> AddAssign<F> for Sum2<F>
 where
