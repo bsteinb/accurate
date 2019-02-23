@@ -77,10 +77,10 @@ where
 
     #[inline]
     fn add(self, rhs: Self) -> Self::Output {
-        let (r, p) = two_sum(self.p, rhs.p);
+        let (p, r) = two_sum(self.p, rhs.p);
         Dot2 {
-            r,
-            p: (self.p + p) + rhs.p,
+            p,
+            r: (self.r + r) + rhs.r,
         }
     }
 }
