@@ -13,7 +13,7 @@ pub use self::ifastsum::i_fast_sum_in_place;
 pub use self::onlineexactsum::OnlineExactSum;
 
 #[cfg(feature = "parallel")]
-use num::traits::Zero;
+use num_traits::Zero;
 
 #[cfg(feature = "parallel")]
 use rayon::iter::plumbing::{Consumer, Folder, UnindexedConsumer};

@@ -2,7 +2,7 @@
 
 use std::ops::Add;
 
-use num::Float;
+use num_traits::Float;
 
 use super::traits::DotAccumulator;
 use sum::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};

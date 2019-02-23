@@ -180,7 +180,7 @@ assert_eq!(100_000.0, s);
 #[macro_use]
 extern crate cfg_if;
 extern crate ieee754;
-extern crate num;
+extern crate num_traits;
 
 #[cfg(feature = "parallel")]
 extern crate rayon;

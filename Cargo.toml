@@ -20,7 +20,7 @@ lint = [ "clippy" ]
 
 [dependencies]
 cfg-if = "0.1"
-num = "0.1"
+num-traits = "0.2"
 ieee754 = "0.2"
 rayon = { version = "1", optional = true }
 
@@ -30,6 +30,7 @@ skeptic = "0.13"
 [dev-dependencies]
 criterion = "0.2"
 criterion-plot = "0.2"
+num = "0.2"
 rand = "0.4"
 rug = "1.0"
 skeptic = "0.13"

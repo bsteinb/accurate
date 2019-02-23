@@ -2,7 +2,7 @@
 
 use ieee754::Ieee754;
 
-use num::traits::{Float, PrimInt, ToPrimitive, Zero};
+use num_traits::{Float, PrimInt, ToPrimitive, Zero};
 
 /// Sum transformation
 pub trait TwoSum: Float {}

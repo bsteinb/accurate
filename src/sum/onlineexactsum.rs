@@ -2,7 +2,7 @@
 
 use std::ops::{Add, AddAssign};
 
-use num::traits::Float;
+use num_traits::Float;
 
 use super::i_fast_sum_in_place;
 use super::traits::{IFastSum, SumAccumulator};

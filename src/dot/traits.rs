@@ -2,7 +2,7 @@
 
 use std::ops::Add;
 
-use num::traits::Zero;
+use num_traits::Zero;
 
 #[cfg(feature = "parallel")]
 use rayon::iter::ParallelIterator;

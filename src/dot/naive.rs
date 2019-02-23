@@ -2,7 +2,7 @@
 
 use std::ops::Add;
 
-use num::traits::Float;
+use num_traits::Float;
 
 use super::traits::DotAccumulator;
 

@@ -2,7 +2,7 @@
 
 use std::ops::{Add, AddAssign};
 
-use num::Float;
+use num_traits::Float;
 
 use super::traits::SumAccumulator;
 use util::two_sum;

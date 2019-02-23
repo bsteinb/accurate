@@ -11,7 +11,7 @@ pub use self::dotk::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, DotK};
 pub use self::onlineexactdot::OnlineExactDot;
 
 #[cfg(feature = "parallel")]
-use num::traits::Zero;
+use num_traits::Zero;
 
 #[cfg(feature = "parallel")]
 use rayon::iter::plumbing::{Consumer, Folder, UnindexedConsumer};
