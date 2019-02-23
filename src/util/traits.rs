@@ -51,7 +51,7 @@ impl Split for f32 {
 impl Split for f64 {
     #[inline]
     fn split_factor() -> Self {
-        134217729.0
+        134_217_729.0
     }
 }
 
