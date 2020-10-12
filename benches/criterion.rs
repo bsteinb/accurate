@@ -10,7 +10,7 @@ extern crate accurate;
 
 use std::ops::AddAssign;
 
-use criterion::{Bencher, Criterion};
+use criterion::{Bencher, BenchmarkId, Criterion, Throughput};
 
 use num::Float;
 
@@ -213,7 +213,14 @@ macro_rules! bench2_aux {
 }
 
 fn _bench(c: &mut Criterion, id: &str, f: fn(&mut Bencher, &usize)) {
-    c.bench_function_over_inputs(id, f, vec![1_000, 10_000, 100_000, 1_000_000]);
+    let mut group = c.benchmark_group("all");
+
+    for size in [1_000, 10_000, 100_000, 1_000_000].iter() {
+        group.throughput(Throughput::Elements(*size as u64));
+        group.bench_with_input(BenchmarkId::new(id, *size), size, f);
+    }
+
+    group.finish();
 }
 
 #[cfg(feature = "parallel")]
@@ -269,7 +276,7 @@ fn bench_serial(c: &mut Criterion) {
 
     bench2! {
         c,
-        "dot with",
+        "dot",
         dot_with,
         {
             NaiveDot<_>,

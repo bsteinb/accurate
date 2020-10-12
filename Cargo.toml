@@ -28,8 +28,8 @@ rayon = { version = "1", optional = true }
 skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 
 [dev-dependencies]
-criterion = "0.2"
-criterion-plot = "0.3"
+criterion = "0.3"
+criterion-plot = "0.4"
 num = "0.2"
 rand = "0.7"
 rug = "1.0"
