@@ -18,9 +18,9 @@ matrix:
   allow_failures:
     - rust: nightly
 
-install:
+before_install:
   - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-      cargo install --force clippy;
+      rustup component add clippy;
     fi
 
 script:
