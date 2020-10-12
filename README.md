@@ -7,8 +7,8 @@ sum and dot product for floating-point numbers without resorting to arbitrary pr
 
 [travis-shield]: https://img.shields.io/travis/bsteinb/accurate/master.svg?style=flat-square
 [travis]: https://travis-ci.org/bsteinb/accurate
-[doc-shield]: https://img.shields.io/badge/documentation-hosted-blue.svg?style=flat-square
-[doc]: http://bsteinb.github.io/accurate/
+[doc-shield]: https://img.shields.io/badge/documentation-docs.rs-blue.svg?style=flat-square
+[doc]: https://docs.rs/accurate/
 [license-shield]: https://img.shields.io/badge/license-Apache_License_2.0_or_MIT-blue.svg?style=flat-square
 [license]: https://github.com/bsteinb/accurate#license
 [release-shield]: https://img.shields.io/github/release/bsteinb/accurate.svg?style=flat-square
@@ -42,7 +42,7 @@ fn main() {
 
 ## Documentation
 
-Documentation for the latest version of the crate is [hosted on GitHub pages][doc].
+Documentation for the latest version of the crate is [on docs.rs][doc].
 
 ## License
 
