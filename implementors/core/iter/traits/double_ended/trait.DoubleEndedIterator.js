@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["either"] = [{"text":"impl&lt;L, R&gt; DoubleEndedIterator for Either&lt;L, R&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;L: DoubleEndedIterator,<br>&nbsp;&nbsp;&nbsp;&nbsp;R: DoubleEndedIterator&lt;Item = L::Item&gt;,&nbsp;</span>","synthetic":false,"types":[]}];
+implementors["ieee754"] = [{"text":"impl&lt;T:&nbsp;Ieee754&gt; DoubleEndedIterator for Iter&lt;T&gt;","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

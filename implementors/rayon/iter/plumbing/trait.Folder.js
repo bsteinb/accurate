@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["accurate"] = [{"text":"impl&lt;Acc, F&gt; Folder&lt;(F, F)&gt; for DotFolder&lt;Acc&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Acc: DotAccumulator&lt;F&gt;,&nbsp;</span>","synthetic":false,"types":[]},{"text":"impl&lt;Acc, F&gt; Folder&lt;F&gt; for SumFolder&lt;Acc&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Acc: SumAccumulator&lt;F&gt;,&nbsp;</span>","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["accurate"] = [{"text":"impl&lt;Acc&gt; Reducer&lt;Acc&gt; for AddReducer <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Acc: Add&lt;Acc, Output = Acc&gt;,&nbsp;</span>","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

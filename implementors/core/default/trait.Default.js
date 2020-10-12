@@ -1,0 +1,6 @@
+(function() {var implementors = {};
+implementors["crossbeam_channel"] = [{"text":"impl&lt;'a&gt; Default for Select&lt;'a&gt;","synthetic":false,"types":[]}];
+implementors["crossbeam_epoch"] = [{"text":"impl&lt;T&gt; Default for Atomic&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl&lt;'g, T&gt; Default for Shared&lt;'g, T&gt;","synthetic":false,"types":[]}];
+implementors["crossbeam_utils"] = [{"text":"impl&lt;T:&nbsp;Default&gt; Default for AtomicCell&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Default&gt; Default for CachePadded&lt;T&gt;","synthetic":false,"types":[]},{"text":"impl Default for Backoff","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Default&gt; Default for ShardedLock&lt;T&gt;","synthetic":false,"types":[]}];
+implementors["rayon_core"] = [{"text":"impl Default for ThreadPoolBuilder","synthetic":false,"types":[]},{"text":"impl Default for Configuration","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["IFastSum","Calculates the correctly rounded sum of numbers in a slice"],["ParallelSumAccumulator","A `SumAccumulator` that can be used in parallel computations"],["ParallelSumWithAccumulator","Sums the items of an iterator, possibly in parallel"],["SumAccumulator","Accumulates terms of a sum"],["SumWithAccumulator","Sums the items of an iterator"]]});

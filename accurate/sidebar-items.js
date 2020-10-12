@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["dot","Algorithms for dot product"],["sum","Algorithms for summation"],["traits","Includes all traits of this crate"],["util","Common infrastructure"]]});

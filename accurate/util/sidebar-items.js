@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["round3","Correctly rounded sum of three non-overlapping numbers"],["two_product","Product transformation"],["two_sum","Sum transformation"]],"mod":[["traits","Common traits"]],"struct":[["AddReducer","Reduce two parallel results using `Add`"]]});

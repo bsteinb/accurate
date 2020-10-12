@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["accurate"] = [{"text":"impl&lt;Acc, F&gt; Consumer&lt;(F, F)&gt; for DotConsumer&lt;Acc&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Acc: ParallelDotAccumulator&lt;F&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;F: Zero + Send,&nbsp;</span>","synthetic":false,"types":[]},{"text":"impl&lt;Acc, F&gt; Consumer&lt;F&gt; for SumConsumer&lt;Acc&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Acc: ParallelSumAccumulator&lt;F&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;F: Zero + Send,&nbsp;</span>","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

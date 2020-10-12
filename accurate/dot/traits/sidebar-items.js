@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["DotAccumulator","Accumulates terms of a dot product"],["DotWithAccumulator","Calculates the dot product of the items of an iterator"],["ParallelDotAccumulator","A `DotAccumulator` that can be used in parallel computations"],["ParallelDotWithAccumulator","Calculates the dot product of an iterator, possibly in parallel"]]});
