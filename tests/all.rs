@@ -17,7 +17,7 @@ fn mk_vec<T>(n: usize) -> Vec<T>
 where
     Standard: Distribution<T>,
 {
-    let mut rng = rand::thread_rng();
+    let rng = rand::thread_rng();
     rng.sample_iter::<T, _>(&Standard).take(n).collect()
 }
 

@@ -31,7 +31,7 @@ skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 criterion = "0.2"
 criterion-plot = "0.3"
 num = "0.2"
-rand = "0.6"
+rand = "0.7"
 rug = "1.0"
 skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 
