@@ -30,7 +30,7 @@ skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 [dev-dependencies]
 criterion = "0.3"
 criterion-plot = "0.4"
-num = "0.2"
+num = "0.3"
 rand = "0.7"
 rug = "1.0"
 skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
