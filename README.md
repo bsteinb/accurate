@@ -4,6 +4,10 @@
 
 This crate provides several algorithms that implement highly accurate or even guaranteed correct
 sum and dot product for floating-point numbers without resorting to arbitrary precision arithmetic.
+These algorithms are available:
+
+- Accurate sum and dot product, based on [Ogita, Rump, and Oishi 05](http://dx.doi.org/10.1137/030601818)
+- Online exact summation, based on [Zhu and Hayes 10](http://dx.doi.org/10.1145/1824801.1824815)
 
 [travis-shield]: https://img.shields.io/travis/bsteinb/accurate/master.svg?style=flat-square
 [travis]: https://travis-ci.org/bsteinb/accurate
