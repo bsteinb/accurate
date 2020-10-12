@@ -180,11 +180,17 @@ assert_eq!(100_000.0, s);
 
 #[macro_use]
 extern crate cfg_if;
+#[cfg(doctest)]
+#[macro_use]
+extern crate doc_comment;
 extern crate ieee754;
 extern crate num_traits;
 
 #[cfg(feature = "parallel")]
 extern crate rayon;
+
+#[cfg(doctest)]
+doctest!("../README.md");
 
 pub mod dot;
 pub mod sum;

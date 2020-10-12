@@ -10,7 +10,6 @@ readme = "README.md"
 keywords = [ "floating-point", "accurate", "sum", "dot-product" ]
 categories = [ "algorithms", "mathematics" ]
 license = "MIT OR Apache-2.0"
-build = "build.rs"
 
 [features]
 default = [ "parallel" ]
@@ -21,20 +20,17 @@ lint = [ "clippy" ]
 
 [dependencies]
 cfg-if = "1"
-num-traits = "0.2"
 ieee754 = "0.2"
+num-traits = "0.2"
 rayon = { version = "1", optional = true }
-
-[build-dependencies]
-skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 
 [dev-dependencies]
 criterion = "0.3"
 criterion-plot = "0.4"
+doc-comment = "0.3"
 num = "0.3"
 rand = "0.7"
 rug = "1.0"
-skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 
 [[bench]]
 name = "criterion"
