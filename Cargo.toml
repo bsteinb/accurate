@@ -25,7 +25,7 @@ ieee754 = "0.2"
 rayon = { version = "1", optional = true }
 
 [build-dependencies]
-skeptic = "0.13"
+skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 
 [dev-dependencies]
 criterion = "0.2"
@@ -33,7 +33,7 @@ criterion-plot = "0.3"
 num = "0.2"
 rand = "0.6"
 rug = "1.0"
-skeptic = "0.13"
+skeptic = { git = 'https://github.com/andygauge/rust-skeptic' }
 
 [[bench]]
 name = "criterion"
