@@ -7,7 +7,8 @@ homepage = "https://github.com/bsteinb/accurate"
 repository = "https://github.com/bsteinb/accurate"
 documentation = "http://docs.rs/accurate/"
 readme = "README.md"
-keywords = [ "floating-point", "accurate" ]
+keywords = [ "floating-point", "accurate", "sum", "dot-product" ]
+categories = [ "algorithms", "mathematics" ]
 license = "MIT OR Apache-2.0"
 build = "build.rs"
 
