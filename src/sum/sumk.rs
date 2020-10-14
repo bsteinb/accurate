@@ -8,91 +8,6 @@ use super::traits::SumAccumulator;
 use util::traits::TwoSum;
 use util::two_sum;
 
-/// `SumK` with two cascaded accumulators
-///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
-///
-/// # Examples
-///
-/// ```
-/// use accurate::traits::*;
-/// use accurate::sum::Sum2;
-///
-/// let s = Sum2::zero() + 1.0 + 2.0 + 3.0;
-/// assert_eq!(6.0f64, s.sum());
-/// ```
-///
-/// # References
-///
-/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone, Debug)]
-pub struct Sum2<F> {
-    s: F,
-    c: F,
-}
-
-impl<F> SumAccumulator<F> for Sum2<F>
-where
-    F: Float + TwoSum + AddAssign,
-{
-    #[inline]
-    fn sum(self) -> F {
-        self.c + self.s
-    }
-}
-
-impl<F> Add<F> for Sum2<F>
-where
-    Sum2<F>: AddAssign<F>,
-{
-    type Output = Self;
-
-    #[inline]
-    fn add(mut self, rhs: F) -> Self::Output {
-        self += rhs;
-        self
-    }
-}
-
-impl<F> From<F> for Sum2<F>
-where
-    F: Float,
-{
-    fn from(x: F) -> Self {
-        Sum2 { s: x, c: F::zero() }
-    }
-}
-
-impl<F> Add for Sum2<F>
-where
-    F: Float + TwoSum,
-{
-    type Output = Self;
-
-    #[inline]
-    fn add(self, rhs: Self) -> Self::Output {
-        let (s, c) = two_sum(self.s, rhs.s);
-        Sum2 {
-            s,
-            c: (self.c + c) + rhs.c,
-        }
-    }
-}
-
-unsafe impl<F> Send for Sum2<F> where F: Send {}
-
-impl<F> AddAssign<F> for Sum2<F>
-where
-    F: Float + TwoSum + AddAssign,
-{
-    #[inline]
-    fn add_assign(&mut self, rhs: F) {
-        let (x, y) = two_sum(self.s, rhs);
-        self.s = x;
-        self.c += y;
-    }
-}
-
 /// Calculates a sum using cascaded accumulators for the remainder terms
 ///
 /// See also `Sum2`... `Sum9`.
@@ -179,6 +94,25 @@ where
         self.c += y;
     }
 }
+
+/// `SumK` with two cascaded accumulators
+///
+/// ![](https://rockshrub.de/accurate/SumK.svg)
+///
+/// # Examples
+///
+/// ```
+/// use accurate::traits::*;
+/// use accurate::sum::Sum2;
+///
+/// let s = Sum2::zero() + 1.0 + 2.0 + 3.0;
+/// assert_eq!(6.0f64, s.sum());
+/// ```
+///
+/// # References
+///
+/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+pub type Sum2<F> = SumK<F, NaiveSum<F>>;
 
 /// `SumK` with three cascaded accumulators
 ///

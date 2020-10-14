@@ -6,86 +6,9 @@ use num_traits::Float;
 
 use super::traits::DotAccumulator;
 use sum::traits::SumAccumulator;
-use sum::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
+use sum::{NaiveSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
 use util::traits::{TwoProduct, TwoSum};
 use util::{two_product, two_sum};
-
-/// `DotK` with two cascaded accumulators
-///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
-///
-/// # Examples
-///
-/// ```
-/// use accurate::traits::*;
-/// use accurate::dot::Dot2;
-///
-/// let d = Dot2::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
-/// assert_eq!(14.0f64, d.dot());
-/// ```
-///
-/// # References
-///
-/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone, Debug)]
-pub struct Dot2<F> {
-    p: F,
-    r: F,
-}
-
-impl<F> DotAccumulator<F> for Dot2<F>
-where
-    F: Float + TwoProduct + TwoSum,
-{
-    #[inline]
-    fn dot(self) -> F {
-        self.r + self.p
-    }
-}
-
-impl<F> Add<(F, F)> for Dot2<F>
-where
-    F: Float + TwoProduct + TwoSum,
-{
-    type Output = Self;
-
-    #[inline]
-    fn add(self, (a, b): (F, F)) -> Self {
-        let (h, r1) = two_product(a, b);
-        let (p, r2) = two_sum(self.p, h);
-        Dot2 {
-            p,
-            r: (self.r + r1) + r2,
-        }
-    }
-}
-
-impl<F> From<F> for Dot2<F>
-where
-    F: Float,
-{
-    fn from(x: F) -> Self {
-        Dot2 { p: x, r: F::zero() }
-    }
-}
-
-impl<F> Add for Dot2<F>
-where
-    F: Float + TwoSum,
-{
-    type Output = Self;
-
-    #[inline]
-    fn add(self, rhs: Self) -> Self::Output {
-        let (p, r) = two_sum(self.p, rhs.p);
-        Dot2 {
-            p,
-            r: (self.r + r) + rhs.r,
-        }
-    }
-}
-
-unsafe impl<F> Send for Dot2<F> where F: Send {}
 
 /// Calculates a dot product using both product transformation and cascaded accumulators
 ///
@@ -165,6 +88,25 @@ where
     R: Send,
 {
 }
+
+/// `DotK` with two cascaded accumulators
+///
+/// ![](https://rockshrub.de/accurate/DotK.svg)
+///
+/// # Examples
+///
+/// ```
+/// use accurate::traits::*;
+/// use accurate::dot::Dot2;
+///
+/// let d = Dot2::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
+/// assert_eq!(14.0f64, d.dot());
+/// ```
+///
+/// # References
+///
+/// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+pub type Dot2<F> = DotK<F, NaiveSum<F>>;
 
 /// `DotK` with three cascaded accumulators
 ///
