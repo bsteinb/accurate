@@ -28,8 +28,8 @@ rayon = { version = "1", optional = true }
 criterion = "0.3"
 criterion-plot = "0.4"
 doc-comment = "0.3"
-num = "0.3"
-rand = "0.7"
+num = "0.4"
+rand = "0.8"
 rug = "1.0"
 
 [[bench]]

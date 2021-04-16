@@ -69,7 +69,7 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         let c = (1..m - 1)
             .map(|i| {
                 let r = if l > 0 { i.mod_floor(&l) } else { 1 };
-                rng.gen_range(0.0, 1.0) * eps.powi(r)
+                rng.gen::<F>() * eps.powi(r)
             })
             .collect::<Vec<_>>();
 
@@ -81,7 +81,7 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         x.push(0.5 / cnd);
 
         let b = (1..m - 1)
-            .map(|_| rng.gen_range(0.0, 1.0))
+            .map(|_| rng.gen())
             .collect::<Vec<_>>();
 
         y = vec![1.0];
@@ -94,7 +94,7 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         let c = (1..m)
             .map(|i| {
                 let r = i.mod_floor(&l);
-                rng.gen_range(0.0, 1.0) * eps.powi(r)
+                rng.gen::<F>() * eps.powi(r)
             })
             .collect::<Vec<_>>();
 
@@ -104,7 +104,7 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         x.push(-1.0);
         x.extend(c.into_iter().map(|x| -x));
 
-        let b = (1..m).map(|_| rng.gen_range(0.0, 1.0)).collect::<Vec<_>>();
+        let b = (1..m).map(|_| rng.gen()).collect::<Vec<_>>();
 
         y = vec![1.0];
         y.extend_from_slice(&b);
