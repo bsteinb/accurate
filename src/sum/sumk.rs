@@ -1,12 +1,8 @@
 //! The `SumK` algorithm
 
-use std::ops::{Add, AddAssign};
-
-use num_traits::Float;
-
-use super::traits::SumAccumulator;
-use util::traits::TwoSum;
-use util::two_sum;
+use sum::NaiveSum;
+use sum::cascaded::Cascaded;
+use util::Knuth;
 
 /// Calculates a sum using cascaded accumulators for the remainder terms
 ///
@@ -17,83 +13,7 @@ use util::two_sum;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
-#[derive(Copy, Clone, Debug)]
-pub struct SumK<F, C> {
-    s: F,
-    c: C,
-}
-
-impl<F, C> SumAccumulator<F> for SumK<F, C>
-where
-    F: Float + TwoSum,
-    C: SumAccumulator<F>,
-{
-    #[inline]
-    fn sum(self) -> F {
-        (self.c + self.s).sum()
-    }
-}
-
-impl<F, C> Add<F> for SumK<F, C>
-where
-    SumK<F, C>: AddAssign<F>,
-{
-    type Output = Self;
-
-    #[inline]
-    fn add(mut self, rhs: F) -> Self::Output {
-        self += rhs;
-        self
-    }
-}
-
-impl<F, C> From<F> for SumK<F, C>
-where
-    F: Float,
-    C: SumAccumulator<F>,
-{
-    fn from(x: F) -> Self {
-        SumK { s: x, c: C::zero() }
-    }
-}
-
-impl<F, C> Add for SumK<F, C>
-where
-    F: Float + TwoSum,
-    C: SumAccumulator<F>,
-    C::Output: Add<C, Output = C>,
-{
-    type Output = Self;
-
-    #[inline]
-    fn add(self, rhs: Self) -> Self::Output {
-        let (s, c) = two_sum(self.s, rhs.s);
-        SumK {
-            s,
-            c: (self.c + c) + rhs.c,
-        }
-    }
-}
-
-unsafe impl<F, C> Send for SumK<F, C>
-where
-    F: Send,
-    C: Send,
-{
-}
-
-impl<F, C> AddAssign<F> for SumK<F, C>
-where
-    F: Float + TwoSum,
-    C: SumAccumulator<F>,
-{
-    #[inline]
-    fn add_assign(&mut self, rhs: F) {
-        let (x, y) = two_sum(self.s, rhs);
-        self.s = x;
-        self.c += y;
-    }
-}
+pub type SumK<F, C> = Cascaded<F, C, Knuth>;
 
 /// `SumK` with two cascaded accumulators
 ///

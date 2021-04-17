@@ -7,7 +7,7 @@ use num_traits::Float;
 use super::traits::DotAccumulator;
 use sum::traits::SumAccumulator;
 use sum::{NaiveSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
-use util::traits::{TwoProduct, TwoSum};
+use util::traits::TwoProduct;
 use util::{two_product, two_sum};
 
 /// Calculates a dot product using both product transformation and cascaded accumulators
@@ -27,7 +27,7 @@ pub struct DotK<F, R> {
 
 impl<F, R> DotAccumulator<F> for DotK<F, R>
 where
-    F: Float + TwoProduct + TwoSum,
+    F: Float + TwoProduct,
     R: SumAccumulator<F>,
 {
     #[inline]
@@ -38,7 +38,7 @@ where
 
 impl<F, R> Add<(F, F)> for DotK<F, R>
 where
-    F: TwoProduct + TwoSum,
+    F: TwoProduct,
     R: SumAccumulator<F>,
 {
     type Output = Self;
@@ -66,7 +66,7 @@ where
 
 impl<F, R> Add for DotK<F, R>
 where
-    F: Float + TwoSum,
+    F: Float,
     R: SumAccumulator<F>,
     R::Output: Add<R, Output = R>,
 {

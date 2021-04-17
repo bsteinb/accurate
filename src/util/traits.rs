@@ -4,10 +4,25 @@ use ieee754::Ieee754;
 
 use num_traits::{Float, PrimInt, ToPrimitive, Zero};
 
-/// Sum transformation
-pub trait TwoSum: Float {}
-
-impl<F> TwoSum for F where F: Float {}
+/// Error-free transformations of two term sums
+pub trait TwoSum<F>: Clone {
+    /// Sum transformation
+    ///
+    /// Transforms a sum `a + b` into the pair `(x, y)` where
+    ///
+    /// ```not_rust
+    /// x = fl(a + b)
+    /// ```
+    ///
+    /// is the sum of `a` and `b` with floating point rounding applied and
+    ///
+    /// ```not_rust
+    /// y = a + b - x
+    /// ```
+    ///
+    /// is the remainder of the addition.
+    fn two_sum(a: F, b: F) -> (F, F);
+}
 
 /// Split a floating-point number
 pub trait Split: Float {

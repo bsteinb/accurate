@@ -2,12 +2,16 @@
 
 pub mod traits;
 
+mod cascaded;
 mod ifastsum;
+mod kahan;
 mod naive;
 mod onlineexactsum;
 mod sumk;
 
+pub use self::cascaded::{Klein, Neumaier};
 pub use self::ifastsum::i_fast_sum_in_place;
+pub use self::kahan::Kahan;
 pub use self::naive::NaiveSum;
 pub use self::onlineexactsum::OnlineExactSum;
 pub use self::sumk::{Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9, SumK};

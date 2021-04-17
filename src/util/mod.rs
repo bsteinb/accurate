@@ -1,5 +1,7 @@
 //! Common infrastructure
 
+use num_traits::Float;
+
 #[cfg(feature = "parallel")]
 use std::ops::Add;
 
@@ -10,35 +12,67 @@ pub mod traits;
 
 use self::traits::{Round3, TwoProduct, TwoSum};
 
-#[cfg_attr(feature = "clippy", allow(doc_markdown))]
-/// Sum transformation
-///
-/// Transforms a sum `a + b` into the pair `(x, y)` where
-///
-/// ```not_rust
-/// x = fl(a + b)
-/// ```
-///
-/// is the sum of `a` and `b` with floating point rounding applied and
-///
-/// ```not_rust
-/// y = a + b - x
-/// ```
-///
-/// is the remainder of the addition.
+/// Dekker's two term sum transformation
+#[derive(Copy, Clone, Debug)]
+pub struct Dekker;
+
+impl<F> TwoSum<F> for Dekker
+where
+    F: Float,
+{
+    #[inline]
+    fn two_sum(a: F, b: F) -> (F, F) {
+        let x = a + b;
+        let y = (a - x) + b;
+        (x, y)
+    }
+}
+
+/// Neumaier's error-free two term sum transformation
+#[derive(Copy, Clone, Debug)]
+pub struct Neumaier;
+
+impl<F> TwoSum<F> for Neumaier
+where
+    F: Float,
+{
+    #[inline]
+    fn two_sum(a: F, b: F) -> (F, F) {
+        if a.abs() >= b.abs() {
+            Dekker::two_sum(a, b)
+        } else {
+            Dekker::two_sum(b, a)
+        }
+    }
+}
+
+/// Knuth's branch-less Error-free transformations of two term sums
 ///
 /// # References
 ///
 /// From Knuth's AoCP, Volume 2: Seminumerical Algorithms
-#[inline]
+#[derive(Copy, Clone, Debug)]
+pub struct Knuth;
+
+impl<F> TwoSum<F> for Knuth
+where
+    F: Float,
+{
+    #[inline]
+    fn two_sum(a: F, b: F) -> (F, F) {
+        let x = a + b;
+        let z = x - a;
+        let y = (a - (x - z)) + (b - z);
+        (x, y)
+    }
+}
+
+/// Knuth's branch-less Error-free transformations of two term sums
 pub fn two_sum<F>(a: F, b: F) -> (F, F)
 where
-    F: TwoSum,
+    F: Float
 {
-    let x = a + b;
-    let z = x - a;
-    let y = (a - (x - z)) + (b - z);
-    (x, y)
+    Knuth::two_sum(a, b)
 }
 
 cfg_if! {

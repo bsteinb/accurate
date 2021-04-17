@@ -6,6 +6,9 @@ This crate provides several algorithms that implement highly accurate or even gu
 sum and dot product for floating-point numbers without resorting to arbitrary precision arithmetic.
 These algorithms are available:
 
+- Kahan summation, based on [Kahan 65](https://doi.org/10.1145%2F363707.363723)
+- Neumaier summation, based on [Neumaier 74](https://doi.org/10.1002%2Fzamm.19740540106)
+- Klein summation, based on [Klein 06](https://doi.org/10.1007%2Fs00607-005-0139-x)
 - Accurate sum and dot product, based on [Ogita, Rump, and Oishi 05](http://dx.doi.org/10.1137/030601818)
 - Online exact summation, based on [Zhu and Hayes 10](http://dx.doi.org/10.1145/1824801.1824815)
 

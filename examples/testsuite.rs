@@ -21,7 +21,7 @@ use rand::Rng;
 use rayon::prelude::*;
 
 use accurate::dot::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, NaiveDot, OnlineExactDot};
-use accurate::sum::{NaiveSum, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
+use accurate::sum::{Kahan, Klein, NaiveSum, Neumaier, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
 use accurate::traits::*;
 use accurate::util::two_product;
 
@@ -403,10 +403,16 @@ fn main() {
         NaiveSum<_>
     };
     sum! {
+        "Kahan.svg",
+        "Kahan, Neumaier, and Klein summation, double precision",
+        (&zs, &ds, &cs),
+        NaiveSum<_>, Kahan<_>, Neumaier<_>, Klein<_>
+    };
+    sum! {
         "SumK.svg",
         "SumK for K = 2...9, double precision",
         (&zs, &ds, &cs),
-        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>
+        NaiveSum<_>, Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>
     };
     sum! {
         "OnlineExactSum.svg",
@@ -422,10 +428,16 @@ fn main() {
         NaiveSum<_>
     };
     parallel_sum! {
+        "ParallelKahan.svg",
+        "Parallel Kahan, Neumaier, and Klein summation, double precision",
+        (&zs, &ds, &cs),
+        NaiveSum<_>, Kahan<_>, Neumaier<_>, Klein<_>
+    };
+    parallel_sum! {
         "ParallelSumK.svg",
         "Parallel SumK for K = 2...9, double precision",
         (&zs, &ds, &cs),
-        Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>
+        NaiveSum<_>, Sum2<_>, Sum3<_>, Sum4<_>, Sum5<_>, Sum6<_>, Sum7<_>, Sum8<_>, Sum9<_>
     };
     parallel_sum! {
         "ParallelOnlineExactSum.svg",

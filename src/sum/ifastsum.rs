@@ -2,13 +2,13 @@
 
 use num_traits::Float;
 
-use util::traits::{HalfUlp, Round3, TwoSum};
+use util::traits::{HalfUlp, Round3};
 use util::{round3, two_sum};
 
 /// Calculates the correctly rounded sum of numbers in a slice
-pub trait IFastSum: TwoSum + HalfUlp + Round3 {}
+pub trait IFastSum: Float + HalfUlp + Round3 {}
 
-impl<F> IFastSum for F where F: TwoSum + HalfUlp + Round3 {}
+impl<F> IFastSum for F where F: Float + HalfUlp + Round3 {}
 
 /// Calculates the correctly rounded sum of numbers in a slice
 ///
