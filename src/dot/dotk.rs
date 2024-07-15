@@ -5,10 +5,10 @@ use std::ops::Add;
 use num_traits::Float;
 
 use super::traits::DotAccumulator;
-use sum::traits::SumAccumulator;
-use sum::{NaiveSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
-use util::traits::TwoProduct;
-use util::{two_product, two_sum};
+use crate::sum::traits::SumAccumulator;
+use crate::sum::{NaiveSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8};
+use crate::util::traits::TwoProduct;
+use crate::util::{two_product, two_sum};
 
 /// Calculates a dot product using both product transformation and cascaded accumulators
 ///

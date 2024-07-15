@@ -5,10 +5,10 @@ use std::ops::{Add, AddAssign};
 
 use num_traits::Float;
 
-use sum::traits::SumAccumulator;
-use sum::NaiveSum;
-use util::traits::TwoSum;
-use util::Neumaier as NeumaierTwoSum;
+use crate::sum::traits::SumAccumulator;
+use crate::sum::NaiveSum;
+use crate::util::traits::TwoSum;
+use crate::util::Neumaier as NeumaierTwoSum;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Cascaded<F, C, T> {

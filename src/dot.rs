@@ -21,7 +21,7 @@ use self::traits::DotAccumulator;
 #[cfg(feature = "parallel")]
 use self::traits::ParallelDotAccumulator;
 #[cfg(feature = "parallel")]
-use util::AddReducer;
+use crate::util::AddReducer;
 
 /// Adapts a `DotAccumulator` into a `Folder`
 #[cfg(feature = "parallel")]

@@ -4,7 +4,7 @@ use std::ops::{Add, AddAssign};
 
 use num_traits::Float;
 
-use sum::traits::SumAccumulator;
+use crate::sum::traits::SumAccumulator;
 
 /// Kahan summation
 ///

@@ -1,5 +1,7 @@
 //! Common traits
 
+use cfg_if::cfg_if;
+
 use ieee754::Ieee754;
 
 use num_traits::{Float, PrimInt, ToPrimitive, Zero};

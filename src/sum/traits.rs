@@ -7,10 +7,10 @@ use num_traits::Zero;
 #[cfg(feature = "parallel")]
 use rayon::iter::ParallelIterator;
 
-pub use sum::ifastsum::IFastSum;
+pub use crate::sum::ifastsum::IFastSum;
 
 #[cfg(feature = "parallel")]
-use sum::SumConsumer;
+use crate::sum::SumConsumer;
 
 /// Accumulates terms of a sum
 pub trait SumAccumulator<F>: Add<F, Output = Self> + AddAssign<F> + From<F> + Clone {
@@ -99,9 +99,6 @@ impl<Acc, F> ParallelSumAccumulator<F> for Acc where
 /// # Examples
 ///
 /// ```
-/// # extern crate accurate;
-/// # extern crate rayon;
-///
 /// use rayon::prelude::*;
 ///
 /// use accurate::traits::*;

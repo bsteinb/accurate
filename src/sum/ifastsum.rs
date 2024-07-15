@@ -2,8 +2,8 @@
 
 use num_traits::Float;
 
-use util::traits::{HalfUlp, Round3};
-use util::{round3, two_sum};
+use crate::util::traits::{HalfUlp, Round3};
+use crate::util::{round3, two_sum};
 
 /// Calculates the correctly rounded sum of numbers in a slice
 pub trait IFastSum: Float + HalfUlp + Round3 {}

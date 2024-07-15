@@ -133,9 +133,6 @@ performed through the `parallel_sum_with_accumulator()` and `parallel_dot_with_a
 extension methods on parallel iterators.
 
 ```
-# extern crate accurate;
-extern crate rayon;
-
 use rayon::prelude::*;
 
 # use accurate::traits::*;
@@ -177,16 +174,8 @@ assert_eq!(100_000.0, s);
 #![warn(clippy::unwrap_used)]
 #![allow(clippy::suspicious_op_assign_impl)]
 
-#[macro_use]
-extern crate cfg_if;
 #[cfg(doctest)]
-#[macro_use]
-extern crate doc_comment;
-extern crate ieee754;
-extern crate num_traits;
-
-#[cfg(feature = "parallel")]
-extern crate rayon;
+use doc_comment::doctest;
 
 #[cfg(doctest)]
 doctest!("../README.md");
@@ -198,9 +187,9 @@ pub mod util;
 /// Includes all traits of this crate
 pub mod traits {
     #[doc(inline)]
-    pub use dot::traits::*;
+    pub use crate::dot::traits::*;
     #[doc(inline)]
-    pub use sum::traits::*;
+    pub use crate::sum::traits::*;
     #[doc(inline)]
-    pub use util::traits::*;
+    pub use crate::util::traits::*;
 }

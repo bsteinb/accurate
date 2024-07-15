@@ -1,8 +1,8 @@
 //! The `SumK` algorithm
 
-use sum::cascaded::Cascaded;
-use sum::NaiveSum;
-use util::Knuth;
+use crate::sum::cascaded::Cascaded;
+use crate::sum::NaiveSum;
+use crate::util::Knuth;
 
 /// Calculates a sum using cascaded accumulators for the remainder terms
 ///

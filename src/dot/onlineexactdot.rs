@@ -3,10 +3,10 @@
 use std::ops::Add;
 
 use super::traits::DotAccumulator;
-use sum::traits::SumAccumulator;
-use sum::OnlineExactSum;
-use util::traits::TwoProduct;
-use util::two_product;
+use crate::sum::traits::SumAccumulator;
+use crate::sum::OnlineExactSum;
+use crate::util::traits::TwoProduct;
+use crate::util::two_product;
 
 /// Calculates the dot product using product transformation and `OnlineExactSum`
 ///

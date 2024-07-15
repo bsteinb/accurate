@@ -101,9 +101,6 @@ impl<Acc, F> ParallelDotAccumulator<F> for Acc where
 /// # Examples
 ///
 /// ```
-/// # extern crate accurate;
-/// # extern crate rayon;
-///
 /// use rayon::prelude::*;
 ///
 /// use accurate::traits::*;

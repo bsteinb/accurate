@@ -1,5 +1,7 @@
 //! Common infrastructure
 
+use cfg_if::cfg_if;
+
 use num_traits::Float;
 
 #[cfg(feature = "parallel")]

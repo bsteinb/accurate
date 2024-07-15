@@ -27,7 +27,7 @@ use self::traits::ParallelSumAccumulator;
 #[cfg(feature = "parallel")]
 use self::traits::SumAccumulator;
 #[cfg(feature = "parallel")]
-use util::AddReducer;
+use crate::util::AddReducer;
 
 /// Adapts a `SumAccumulator` into a `Folder`
 #[cfg(feature = "parallel")]
