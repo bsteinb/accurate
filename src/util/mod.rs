@@ -158,7 +158,7 @@ where
 {
     debug_assert!(s0 == s0 + s1);
     debug_assert!(s1 == s1 + s2);
-    if s1.has_half_ulp_form() && s1.signum() == s2.signum() {
+    if s1.has_half_ulp_form() && s1.sign() == s2.sign() {
         s0 + s1.next()
     } else {
         s0
