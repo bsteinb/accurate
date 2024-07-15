@@ -1,0 +1,31 @@
+name: Test
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    name: Test suite
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.allow-errors }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain-version:
+          - stable
+          - beta
+        allow-errors: [false]
+        include:
+          - toolchain-version: nightly
+            allow-errors: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain-version }}
+          components: clippy, rustfmt
+      - run: cargo build -v --no-default-features
+      - run: cargo build -v
+      - run: cargo test -v
+      - run: cargo clippy -v
+      - run: cargo fmt -v --check
