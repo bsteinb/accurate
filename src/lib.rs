@@ -175,7 +175,6 @@ assert_eq!(100_000.0, s);
 #![warn(clippy::string_add_assign)]
 #![warn(clippy::unicode_not_nfc)]
 #![warn(clippy::unwrap_used)]
-#![warn(clippy::wrong_pub_self_convention)]
 #![allow(clippy::suspicious_op_assign_impl)]
 
 #[macro_use]
