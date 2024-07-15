@@ -166,7 +166,7 @@ where
         // this point):
         debug_assert!(self.i < F::base_pow_significand_digits_half());
         // and (for `f32` and `f64`) we have:
-        debug_assert!(F::base_pow_significand_digits_half() < usize::max_value());
+        debug_assert!(F::base_pow_significand_digits_half() < usize::MAX);
         // thus we can assume:
         debug_assert!(self.i.checked_add(1).is_some());
         self.i += 1;

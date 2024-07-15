@@ -67,7 +67,7 @@ where
 
                 // Step 3(2)(b)(i)
                 // The following addition is guaranteed not to overflow, because:
-                debug_assert!(count < usize::max_value());
+                debug_assert!(count < usize::MAX);
                 // and thus:
                 debug_assert!(count.checked_add(1).is_some());
                 count += 1;
@@ -91,7 +91,7 @@ where
             *xs.get_unchecked_mut(count) = st;
         }
         // The following addition is guaranteed not to overflow, because:
-        debug_assert!(count < usize::max_value());
+        debug_assert!(count < usize::MAX);
         // and thus:
         debug_assert!(count.checked_add(1).is_some());
         *n = count + 1;
