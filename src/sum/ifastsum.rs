@@ -134,3 +134,16 @@ where
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::i_fast_sum_in_place;
+
+    #[test]
+    fn issue_5() {
+        let a: f32 = 4194304.0;
+        let b: f32 = 4194304.5;
+        let s = i_fast_sum_in_place(&mut [a, b]);
+        assert_eq!(s, 8388608.0);
+    }
+}
