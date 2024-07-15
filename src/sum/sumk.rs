@@ -1,7 +1,7 @@
 //! The `SumK` algorithm
 
-use sum::NaiveSum;
 use sum::cascaded::Cascaded;
+use sum::NaiveSum;
 use util::Knuth;
 
 /// Calculates a sum using cascaded accumulators for the remainder terms

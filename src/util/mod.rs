@@ -70,7 +70,7 @@ where
 /// Knuth's branch-less Error-free transformations of two term sums
 pub fn two_sum<F>(a: F, b: F) -> (F, F)
 where
-    F: Float
+    F: Float,
 {
     Knuth::two_sum(a, b)
 }
@@ -159,7 +159,11 @@ where
     debug_assert!(s0 == s0 + s1);
     debug_assert!(s1 == s1 + s2);
     if s1.has_half_ulp_form() && s1.sign() == s2.sign() {
-        s0 + if s1.is_sign_positive() { s1.next() } else { s1.prev() }
+        s0 + if s1.is_sign_positive() {
+            s1.next()
+        } else {
+            s1.prev()
+        }
     } else {
         s0
     }

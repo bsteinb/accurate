@@ -57,7 +57,10 @@ where
     F: Float,
 {
     fn from(x: F) -> Self {
-        Kahan { sum: x, c: F::zero() }
+        Kahan {
+            sum: x,
+            c: F::zero(),
+        }
     }
 }
 
@@ -69,9 +72,9 @@ where
 
     #[inline]
     fn add(mut self, rhs: Self) -> Self::Output {
-          self += rhs.sum;
-          self += rhs.c;
-          self
+        self += rhs.sum;
+        self += rhs.c;
+        self
     }
 }
 
@@ -79,7 +82,7 @@ unsafe impl<F> Send for Kahan<F> where F: Send {}
 
 impl<F> AddAssign<F> for Kahan<F>
 where
-    F: Float
+    F: Float,
 {
     #[inline]
     fn add_assign(&mut self, rhs: F) {

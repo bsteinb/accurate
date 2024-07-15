@@ -21,7 +21,10 @@ use rand::prelude::*;
 use rayon::prelude::*;
 
 use accurate::dot::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, NaiveDot, OnlineExactDot};
-use accurate::sum::{Kahan, Klein, NaiveSum, Neumaier, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
+use accurate::sum::{
+    Kahan, Klein, NaiveSum, Neumaier, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8,
+    Sum9,
+};
 use accurate::traits::*;
 
 fn mk_vec<T>(n: usize) -> Vec<T>

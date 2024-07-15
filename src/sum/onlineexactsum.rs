@@ -6,8 +6,8 @@ use num_traits::Float;
 
 use super::i_fast_sum_in_place;
 use super::traits::{IFastSum, SumAccumulator};
-use util::two_sum;
 use util::traits::{FloatFormat, RawExponent};
+use util::two_sum;
 
 /// Calculates a sum using separate accumulators for each possible exponent
 ///

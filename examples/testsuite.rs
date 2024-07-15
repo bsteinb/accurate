@@ -21,7 +21,10 @@ use rand::Rng;
 use rayon::prelude::*;
 
 use accurate::dot::{Dot2, Dot3, Dot4, Dot5, Dot6, Dot7, Dot8, Dot9, NaiveDot, OnlineExactDot};
-use accurate::sum::{Kahan, Klein, NaiveSum, Neumaier, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8, Sum9};
+use accurate::sum::{
+    Kahan, Klein, NaiveSum, Neumaier, OnlineExactSum, Sum2, Sum3, Sum4, Sum5, Sum6, Sum7, Sum8,
+    Sum9,
+};
 use accurate::traits::*;
 use accurate::util::two_product;
 
@@ -80,9 +83,7 @@ fn gendot2(n: usize, cnd: F) -> (Vec<F>, Vec<F>, F, F) {
         x.extend(c.into_iter().map(|x| -x));
         x.push(0.5 / cnd);
 
-        let b = (1..m - 1)
-            .map(|_| rng.gen())
-            .collect::<Vec<_>>();
+        let b = (1..m - 1).map(|_| rng.gen()).collect::<Vec<_>>();
 
         y = vec![1.0];
         y.extend_from_slice(&b);

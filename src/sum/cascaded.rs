@@ -5,10 +5,10 @@ use std::ops::{Add, AddAssign};
 
 use num_traits::Float;
 
-use sum::NaiveSum;
 use sum::traits::SumAccumulator;
-use util::Neumaier as NeumaierTwoSum;
+use sum::NaiveSum;
 use util::traits::TwoSum;
+use util::Neumaier as NeumaierTwoSum;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Cascaded<F, C, T> {
@@ -48,7 +48,11 @@ where
     C: SumAccumulator<F>,
 {
     fn from(x: F) -> Self {
-        Cascaded { s: x, c: C::zero(), t: PhantomData }
+        Cascaded {
+            s: x,
+            c: C::zero(),
+            t: PhantomData,
+        }
     }
 }
 
@@ -67,7 +71,7 @@ where
         Cascaded {
             s,
             c: (self.c + c) + rhs.c,
-            t: PhantomData
+            t: PhantomData,
         }
     }
 }
@@ -83,7 +87,7 @@ impl<F, C, T> AddAssign<F> for Cascaded<F, C, T>
 where
     F: Float,
     C: SumAccumulator<F>,
-    T: TwoSum<F>
+    T: TwoSum<F>,
 {
     #[inline]
     fn add_assign(&mut self, rhs: F) {
