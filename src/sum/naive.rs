@@ -2,13 +2,16 @@
 
 use std::ops::{Add, AddAssign};
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use num_traits::Float;
 
 use super::traits::SumAccumulator;
 
 /// Naive floating point summation
 ///
-/// ![](https://rockshrub.de/accurate/NaiveSum.svg)
+/// ![][NaiveSum]
 ///
 /// # Examples
 ///
@@ -19,6 +22,7 @@ use super::traits::SumAccumulator;
 /// let s = NaiveSum::zero() + 1.0 + 2.0 + 3.0;
 /// assert_eq!(6.0f64, s.sum());
 /// ```
+#[cfg_attr(doc, embed_doc_image("NaiveSum", "images/NaiveSum.svg"))]
 #[derive(Copy, Clone, Debug)]
 pub struct NaiveSum<F>(F);
 

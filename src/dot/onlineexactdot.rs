@@ -2,6 +2,9 @@
 
 use std::ops::Add;
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use super::traits::DotAccumulator;
 use crate::sum::traits::SumAccumulator;
 use crate::sum::OnlineExactSum;
@@ -10,7 +13,7 @@ use crate::util::two_product;
 
 /// Calculates the dot product using product transformation and `OnlineExactSum`
 ///
-/// ![](https://rockshrub.de/accurate/OnlineExactDot.svg)
+/// ![][OnlineExactDot]
 ///
 /// # Examples
 ///
@@ -21,6 +24,7 @@ use crate::util::two_product;
 /// let d = OnlineExactDot::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
+#[cfg_attr(doc, embed_doc_image("OnlineExactDot", "images/OnlineExactDot.svg"))]
 #[derive(Clone, Debug)]
 pub struct OnlineExactDot<F> {
     s: OnlineExactSum<F>,

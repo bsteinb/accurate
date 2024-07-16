@@ -2,6 +2,9 @@
 
 use std::ops::{Add, AddAssign};
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use num_traits::Float;
 
 use super::i_fast_sum_in_place;
@@ -11,7 +14,7 @@ use crate::util::two_sum;
 
 /// Calculates a sum using separate accumulators for each possible exponent
 ///
-/// ![](https://rockshrub.de/accurate/OnlineExactSum.svg)
+/// ![][OnlineExactSum]
 ///
 /// # Examples
 ///
@@ -26,6 +29,7 @@ use crate::util::two_sum;
 /// # References
 ///
 /// Based on [Zhu and Hayes 10](http://dx.doi.org/10.1145/1824801.1824815)
+#[cfg_attr(doc, embed_doc_image("OnlineExactSum", "images/OnlineExactSum.svg"))]
 #[derive(Clone, Debug)]
 pub struct OnlineExactSum<F> {
     i: usize,

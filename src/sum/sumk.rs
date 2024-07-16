@@ -1,5 +1,8 @@
 //! The `SumK` algorithm
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use crate::sum::cascaded::Cascaded;
 use crate::sum::NaiveSum;
 use crate::util::Knuth;
@@ -8,16 +11,17 @@ use crate::util::Knuth;
 ///
 /// See also `Sum2`... `Sum9`.
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type SumK<F, C> = Cascaded<F, C, Knuth>;
 
 /// `SumK` with two cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -32,11 +36,12 @@ pub type SumK<F, C> = Cascaded<F, C, Knuth>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum2<F> = SumK<F, NaiveSum<F>>;
 
 /// `SumK` with three cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -51,11 +56,12 @@ pub type Sum2<F> = SumK<F, NaiveSum<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum3<F> = SumK<F, Sum2<F>>;
 
 /// `SumK` with four cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -70,11 +76,12 @@ pub type Sum3<F> = SumK<F, Sum2<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum4<F> = SumK<F, Sum3<F>>;
 
 /// `SumK` with five cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -89,11 +96,12 @@ pub type Sum4<F> = SumK<F, Sum3<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum5<F> = SumK<F, Sum4<F>>;
 
 /// `SumK` with six cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -108,11 +116,12 @@ pub type Sum5<F> = SumK<F, Sum4<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum6<F> = SumK<F, Sum5<F>>;
 
 /// `SumK` with seven cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -127,11 +136,12 @@ pub type Sum6<F> = SumK<F, Sum5<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum7<F> = SumK<F, Sum6<F>>;
 
 /// `SumK` with eight cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -146,11 +156,12 @@ pub type Sum7<F> = SumK<F, Sum6<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum8<F> = SumK<F, Sum7<F>>;
 
 /// `SumK` with nine cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/SumK.svg)
+/// ![][SumK]
 ///
 /// # Examples
 ///
@@ -165,4 +176,5 @@ pub type Sum8<F> = SumK<F, Sum7<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("SumK", "images/SumK.svg"))]
 pub type Sum9<F> = SumK<F, Sum8<F>>;

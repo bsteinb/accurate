@@ -2,13 +2,16 @@
 
 use std::ops::Add;
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use num_traits::Float;
 
 use super::traits::DotAccumulator;
 
 /// Naive floating point dot product
 ///
-/// ![](https://rockshrub.de/accurate/NaiveDot.svg)
+/// ![][NaiveDot]
 ///
 /// # Examples
 ///
@@ -19,6 +22,7 @@ use super::traits::DotAccumulator;
 /// let d = NaiveDot::zero() + (1.0, 1.0) + (2.0, 2.0) + (3.0, 3.0);
 /// assert_eq!(14.0f64, d.dot());
 /// ```
+#[cfg_attr(doc, embed_doc_image("NaiveDot", "images/NaiveDot.svg"))]
 #[derive(Copy, Clone, Debug)]
 pub struct NaiveDot<F>(F);
 

@@ -2,13 +2,16 @@
 
 use std::ops::{Add, AddAssign};
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use num_traits::Float;
 
 use crate::sum::traits::SumAccumulator;
 
 /// Kahan summation
 ///
-/// ![](https://rockshrub.de/accurate/Kahan.svg)
+/// ![][Kahan]
 ///
 /// # Examples
 ///
@@ -23,6 +26,7 @@ use crate::sum::traits::SumAccumulator;
 /// # References
 ///
 /// Based on [Kahan 65](https://doi.org/10.1145%2F363707.363723)
+#[cfg_attr(doc, embed_doc_image("Kahan", "images/Kahan.svg"))]
 #[derive(Copy, Clone, Debug)]
 pub struct Kahan<F> {
     sum: F,

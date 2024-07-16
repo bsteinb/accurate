@@ -2,6 +2,9 @@
 
 use std::ops::Add;
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use num_traits::Float;
 
 use super::traits::DotAccumulator;
@@ -14,11 +17,12 @@ use crate::util::{two_product, two_sum};
 ///
 /// See also `Dot2`... `Dot9`.
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 #[derive(Copy, Clone, Debug)]
 pub struct DotK<F, R> {
     p: F,
@@ -91,7 +95,7 @@ where
 
 /// `DotK` with two cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -106,11 +110,12 @@ where
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot2<F> = DotK<F, NaiveSum<F>>;
 
 /// `DotK` with three cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -125,11 +130,12 @@ pub type Dot2<F> = DotK<F, NaiveSum<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot3<F> = DotK<F, Sum2<F>>;
 
 /// `DotK` with four cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -144,11 +150,12 @@ pub type Dot3<F> = DotK<F, Sum2<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot4<F> = DotK<F, Sum3<F>>;
 
 /// `DotK` with five cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -163,11 +170,12 @@ pub type Dot4<F> = DotK<F, Sum3<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot5<F> = DotK<F, Sum4<F>>;
 
 /// `DotK` with six cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -182,11 +190,12 @@ pub type Dot5<F> = DotK<F, Sum4<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot6<F> = DotK<F, Sum5<F>>;
 
 /// `DotK` with seven cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -201,11 +210,12 @@ pub type Dot6<F> = DotK<F, Sum5<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot7<F> = DotK<F, Sum6<F>>;
 
 /// `DotK` with eight cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -220,11 +230,12 @@ pub type Dot7<F> = DotK<F, Sum6<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot8<F> = DotK<F, Sum7<F>>;
 
 /// `DotK` with nine cascaded accumulators
 ///
-/// ![](https://rockshrub.de/accurate/DotK.svg)
+/// ![][DotK]
 ///
 /// # Examples
 ///
@@ -239,4 +250,5 @@ pub type Dot8<F> = DotK<F, Sum7<F>>;
 /// # References
 ///
 /// Based on [Ogita, Rump and Oishi 05](http://dx.doi.org/10.1137/030601818)
+#[cfg_attr(doc, embed_doc_image("DotK", "images/DotK.svg"))]
 pub type Dot9<F> = DotK<F, Sum8<F>>;

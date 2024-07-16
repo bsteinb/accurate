@@ -21,6 +21,7 @@ lint = [ "clippy" ]
 
 [dependencies]
 cfg-if = "1"
+embed-doc-image = "0.1"
 ieee754 = "0.2"
 num-traits = "0.2"
 rayon = { version = "1", optional = true }

@@ -3,6 +3,9 @@
 use std::marker::PhantomData;
 use std::ops::{Add, AddAssign};
 
+#[cfg(doc)]
+use embed_doc_image::embed_doc_image;
+
 use num_traits::Float;
 
 use crate::sum::traits::SumAccumulator;
@@ -99,7 +102,7 @@ where
 
 /// Neumaier summation
 ///
-/// ![](https://rockshrub.de/accurate/Kahan.svg)
+/// ![][Kahan]
 ///
 /// # Examples
 ///
@@ -114,11 +117,12 @@ where
 /// # References
 ///
 /// Based on [Neumaier 74](https://doi.org/10.1002%2Fzamm.19740540106)
+#[cfg_attr(doc, embed_doc_image("Kahan", "images/Kahan.svg"))]
 pub type Neumaier<F> = Cascaded<F, NaiveSum<F>, NeumaierTwoSum>;
 
 /// Klein summation
 ///
-/// ![](https://rockshrub.de/accurate/Kahan.svg)
+/// ![][Kahan]
 ///
 /// # Examples
 ///
@@ -133,4 +137,5 @@ pub type Neumaier<F> = Cascaded<F, NaiveSum<F>, NeumaierTwoSum>;
 /// # References
 ///
 /// Based on [Klein 06](https://doi.org/10.1007%2Fs00607-005-0139-x)
+#[cfg_attr(doc, embed_doc_image("Kahan", "images/Kahan.svg"))]
 pub type Klein<F> = Cascaded<F, Cascaded<F, NaiveSum<F>, NeumaierTwoSum>, NeumaierTwoSum>;
