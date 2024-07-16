@@ -152,7 +152,7 @@ fn gen_dots() -> (Vec<Vec<F>>, Vec<Vec<F>>, Vec<F>, Vec<F>) {
     let emax = 300;
     for e in 0..emax + 1 {
         print!("Working on exponent {} of {}", e, emax);
-        for _ in 0..10 {
+        for _ in 0..4 {
             print!(".");
             io::stdout().flush().unwrap();
             let (x, y, d, c) = gendot2(1000, 10.0.powi(e));
@@ -176,7 +176,7 @@ fn gen_sums() -> (Vec<Vec<F>>, Vec<F>, Vec<F>) {
     let emax = 280;
     for e in 0..emax + 1 {
         print!("Working on exponent {} of {}", e, emax);
-        for _ in 0..10 {
+        for _ in 0..4 {
             print!(".");
             io::stdout().flush().unwrap();
             let (z, s, c) = gensum(2000, 10.0.powi(e));
@@ -199,7 +199,9 @@ fn make_figure(filename: &'static str, title: &'static str) -> Figure {
     f.set(Title(title))
         .set(Output(Path::new(filename)))
         .configure(Axis::BottomX, |a| {
-            a.set(Label("condition number")).set(Scale::Logarithmic)
+            a.set(Label("condition number"))
+                .set(Scale::Logarithmic)
+                .set(Range::Limits(1.0e-10, 1.0e305))
         })
         .configure(Axis::LeftY, |a| {
             a.set(Label("relative error"))
@@ -262,16 +264,23 @@ fn dot_<Acc>(
     Acc: DotAccumulator<F>,
 {
     print!("Testing dot product with `{}`...", name);
-    let mut es = vec![];
+    let mut drawcs = vec![];
+    let mut drawes = vec![];
     for i in 0..xs.len() {
         let d = xs[i]
             .iter()
             .cloned()
             .zip(ys[i].iter().cloned())
             .dot_with_accumulator::<Acc>();
-        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
+        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
+        if e != drawes.last().cloned().unwrap_or(-1.0)
+            || cs[i] >= 1000.0 * drawcs.last().cloned().unwrap_or(-1.0)
+        {
+            drawcs.push(cs[i]);
+            drawes.push(e);
+        }
     }
-    plot(figure, name, &cs[..], &es[..]);
+    plot(figure, name, &drawcs[..], &drawes[..]);
     println!(" done.");
 }
 
@@ -294,16 +303,23 @@ fn parallel_dot_<Acc>(
     Acc: ParallelDotAccumulator<F>,
 {
     print!("Testing parallel dot with `{}`...", name);
-    let mut es = vec![];
+    let mut drawcs = vec![];
+    let mut drawes = vec![];
     for i in 0..xs.len() {
         let d = xs[i]
             .par_iter()
             .zip(ys[i].par_iter())
             .map(|(&x, &y)| (x, y))
             .parallel_dot_with_accumulator::<Acc>();
-        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
+        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
+        if e != drawes.last().cloned().unwrap_or(-1.0)
+            || cs[i] >= 1000.0 * drawcs.last().cloned().unwrap_or(-1.0)
+        {
+            drawcs.push(cs[i]);
+            drawes.push(e);
+        }
     }
-    plot(figure, name, &cs[..], &es[..]);
+    plot(figure, name, &drawcs[..], &drawes[..]);
     println!(" done.");
 }
 
@@ -320,12 +336,19 @@ where
     Acc: SumAccumulator<F>,
 {
     print!("Testing sum with `{}`...", name);
-    let mut es = vec![];
+    let mut drawcs = vec![];
+    let mut drawes = vec![];
     for i in 0..zs.len() {
         let d = zs[i].iter().cloned().sum_with_accumulator::<Acc>();
-        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
+        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
+        if e != drawes.last().cloned().unwrap_or(-1.0)
+            || cs[i] >= 1000.0 * drawcs.last().cloned().unwrap_or(-1.0)
+        {
+            drawcs.push(cs[i]);
+            drawes.push(e);
+        }
     }
-    plot(figure, name, &cs[..], &es[..]);
+    plot(figure, name, &drawcs[..], &drawes[..]);
     println!(" done.");
 }
 
@@ -342,15 +365,22 @@ where
     Acc: ParallelSumAccumulator<F>,
 {
     print!("Testing parallel sum with `{}`...", name);
-    let mut es = vec![];
+    let mut drawcs = vec![];
+    let mut drawes = vec![];
     for i in 0..zs.len() {
         let d = zs[i]
             .par_iter()
             .map(|&x| x)
             .parallel_sum_with_accumulator::<Acc>();
-        es.push(((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16));
+        let e = ((d - ds[i]).abs() / ds[i].abs()).min(1.0).max(1.0e-16);
+        if e != drawes.last().cloned().unwrap_or(-1.0)
+            || cs[i] >= 1000.0 * drawcs.last().cloned().unwrap_or(-1.0)
+        {
+            drawcs.push(cs[i]);
+            drawes.push(e);
+        }
     }
-    plot(figure, name, &cs[..], &es[..]);
+    plot(figure, name, &drawcs[..], &drawes[..]);
     println!(" done.");
 }
 
