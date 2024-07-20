@@ -1,0 +1,20 @@
+name: Release
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  test:
+    name: Test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo package -v
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: target/package/accurate-${{ github.ref }}.crate
+      - uses: katyo/publish-crates@v2
+        with:
+          registry-token: ${{ secrets.CRATES_IO_TOKEN }}
