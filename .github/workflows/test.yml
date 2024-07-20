@@ -29,3 +29,4 @@ jobs:
       - run: cargo test -v
       - run: cargo clippy -v
       - run: cargo fmt -v --check
+      - run: cargo package -v
