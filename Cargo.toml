@@ -11,6 +11,7 @@ readme = "README.md"
 keywords = [ "floating-point", "accurate", "sum", "dot-product" ]
 categories = [ "algorithms", "mathematics" ]
 license = "MIT OR Apache-2.0"
+exclude = [ "/.github", "/.travis.yml", "/ci" ]
 
 [features]
 default = [ "parallel" ]
