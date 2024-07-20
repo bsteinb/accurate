@@ -29,7 +29,7 @@ Add the `accurate` crate as a dependency in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-accurate = "0.3"
+accurate = "0.4"
 ```
 
 Then use it in your program like this:
