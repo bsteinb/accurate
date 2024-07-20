@@ -1,6 +1,6 @@
 # (More or less) accurate floating point algorithms
 
-[![Travis build status][travis-shield]][travis] [![Documentation: hosted][doc-shield]][doc] [![License: Apache License 2.0 or MIT][license-shield]][license] [![latest GitHub release][release-shield]][release] [![crate on crates.io][crate-shield]][crate]
+[![GitHub Actions status][gh-actions-shield]][gh-actions] [![Documentation: hosted][doc-shield]][doc] [![License: Apache License 2.0 or MIT][license-shield]][license] [![latest GitHub release][release-shield]][release] [![crate on crates.io][crate-shield]][crate]
 
 This crate provides several algorithms that implement highly accurate or even guaranteed correct
 sum and dot product for floating-point numbers without resorting to arbitrary precision arithmetic.
@@ -12,8 +12,8 @@ These algorithms are available:
 - Accurate sum and dot product, based on [Ogita, Rump, and Oishi 05](http://dx.doi.org/10.1137/030601818)
 - Online exact summation, based on [Zhu and Hayes 10](http://dx.doi.org/10.1145/1824801.1824815)
 
-[travis-shield]: https://img.shields.io/travis/bsteinb/accurate/master.svg?style=flat-square
-[travis]: https://travis-ci.org/bsteinb/accurate
+[gh-actions-shield]: https://img.shields.io/github/actions/workflow/status/bsteinb/accurate/test.yml?branch=master&style=flat-square
+[gh-actions]: https://github.com/bsteinb/accurate/actions
 [doc-shield]: https://img.shields.io/badge/documentation-docs.rs-blue.svg?style=flat-square
 [doc]: https://docs.rs/accurate/
 [license-shield]: https://img.shields.io/badge/license-Apache_License_2.0_or_MIT-blue.svg?style=flat-square
